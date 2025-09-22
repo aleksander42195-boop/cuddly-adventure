@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="22155" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+    <device id="watch45" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaWatchKitPlugin" version="22131"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Interface Controller-->
+        <scene sceneID="aou-V4-d1y">
+            <objects>
+                <controller id="AgC-eL-Hgc" customClass="InterfaceController" customModule="LifehackApp_WatchKit_Extension">
+                    <items>
+                        <label alignment="center" text="LifehackApp" id="IdU-wM-jmh">
+                            <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="font" style="UICTFontTextStyleHeadline"/>
+                        </label>
+                        <separator alignment="center" id="sEp-zU-6nL"/>
+                        <button width="1" alignment="center" title="Daily Tip" id="xcu-m0-9th">
+                            <color key="backgroundColor" red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <connections>
+                                <action selector="dailyTipButtonTapped" destination="AgC-eL-Hgc" id="Idg-5V-8RJ"/>
+                            </connections>
+                        </button>
+                        <separator alignment="center" id="3qo-Qr-8pq"/>
+                        <label width="1" alignment="center" text="Tap for productivity tips!" numberOfLines="0" id="YmG-5R-bEI">
+                            <color key="textColor" red="0.60000002384185791" green="0.60000002384185791" blue="0.60000002384185791" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                            <fontDescription key="font" style="UICTFontTextStyleCaption1"/>
+                        </label>
+                    </items>
+                    <connections>
+                        <outlet property="dailyTipButton" destination="xcu-m0-9th" id="N6x-f7-HnC"/>
+                        <outlet property="tipLabel" destination="YmG-5R-bEI" id="2Y5-6k-Rk7"/>
+                        <outlet property="titleLabel" destination="IdU-wM-jmh" id="VWo-gP-eKP"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="220" y="345"/>
+        </scene>
+    </scenes>
+</document>
