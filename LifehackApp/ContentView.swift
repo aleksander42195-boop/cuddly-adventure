@@ -8,7 +8,18 @@ struct ContentView: View {
         ZStack(alignment: .bottom) {
             TabView(selection: $appState.selectedTab) {
                 TodayView()
-                    .tabItem { Label("Today", systemImage: "sun.max") }
+                    .tabItem {
+                        ZStack(alignment: .topTrailing) {
+                            Label("Today", systemImage: "sun.max")
+                            if !appState.isHealthAuthorized {
+                                Circle()
+                                    .fill(Color.red)
+                                    .frame(width: 8, height: 8)
+                                    .offset(x: 8, y: -6)
+                                    .accessibilityHidden(true)
+                            }
+                        }
+                    }
                     .tag(AppState.Tab.today)
                 JournalView()
                     .tabItem { Label("Journal", systemImage: "book.closed") }

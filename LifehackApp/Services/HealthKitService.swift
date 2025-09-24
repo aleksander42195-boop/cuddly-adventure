@@ -25,6 +25,10 @@ final class HealthKitService {
     private let store = HKHealthStore()
     private(set) var isAuthorized: Bool = false
     private let calendar = Calendar.current
+    struct HealthDataPoint: Sendable, Hashable {
+        let date: Date
+        let value: Double
+    }
 
     private var readTypes: Set<HKSampleType> {
         var set: Set<HKSampleType> = []
@@ -79,6 +83,70 @@ final class HealthKitService {
             return try await fetchTodaySnapshot() ?? .placeholder
         } catch {
             return .placeholder
+        }
+    }
+
+    // MARK: Daily Series (for Trends)
+    func hrvDailyAverage(days: Int) async throws -> [HealthDataPoint] {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let type = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        let unit = HKUnit.secondUnit(with: .milli)
+        return try await dailyStatistics(
+            type: type,
+            options: .discreteAverage,
+            unit: unit,
+            days: days
+        )
+    }
+
+    func stepsDailyTotal(days: Int) async throws -> [HealthDataPoint] {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let type = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        let unit = HKUnit.count()
+        return try await dailyStatistics(
+            type: type,
+            options: .cumulativeSum,
+            unit: unit,
+            days: days
+        )
+    }
+
+    // Shared daily stats helper
+    private func dailyStatistics(type: HKQuantityType, options: HKStatisticsOptions, unit: HKUnit, days: Int) async throws -> [HealthDataPoint] {
+        let endDate = calendar.startOfDay(for: Date())
+        guard let startDate = calendar.date(byAdding: .day, value: -(days - 1), to: endDate) else { return [] }
+
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: calendar.date(byAdding: .day, value: 1, to: endDate), options: .strictEndDate)
+        let anchor = calendar.startOfDay(for: Date(timeIntervalSince1970: 0))
+        var interval = DateComponents()
+        interval.day = 1
+
+        return try await withCheckedThrowingContinuation { cont in
+            let q = HKStatisticsCollectionQuery(quantityType: type, quantitySamplePredicate: predicate, options: options, anchorDate: anchor, intervalComponents: interval)
+            q.initialResultsHandler = { _, collection, error in
+                if let error = error { cont.resume(throwing: error); return }
+                guard let collection = collection else { cont.resume(returning: []); return }
+                var points: [HealthDataPoint] = []
+                collection.enumerateStatistics(from: startDate, to: calendar.date(byAdding: .day, value: 1, to: endDate)!) { stats, _ in
+                    let date = stats.startDate
+                    let value: Double
+                    switch options {
+                    case .cumulativeSum:
+                        value = stats.sumQuantity()?.doubleValue(for: unit) ?? 0
+                    case .discreteAverage:
+                        value = stats.averageQuantity()?.doubleValue(for: unit) ?? 0
+                    default:
+                        value = 0
+                    }
+                    points.append(.init(date: date, value: value))
+                }
+                cont.resume(returning: points)
+            }
+            self.store.execute(q)
         }
     }
 
@@ -147,5 +215,8 @@ final class HealthKitService {
     func requestAuthorization() async throws -> Bool { false }
     func fetchTodaySnapshot() async throws -> TodaySnapshot? { .placeholder }
     func safeTodaySnapshot() async -> TodaySnapshot { .placeholder }
+    struct HealthDataPoint: Sendable, Hashable { let date: Date; let value: Double }
+    func hrvDailyAverage(days: Int) async throws -> [HealthDataPoint] { [] }
+    func stepsDailyTotal(days: Int) async throws -> [HealthDataPoint] { [] }
 }
 #endif

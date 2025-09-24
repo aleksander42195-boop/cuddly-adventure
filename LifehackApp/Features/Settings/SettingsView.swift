@@ -8,50 +8,58 @@ struct SettingsView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                Section("Coach") {
-                    NavigationLink("Coach Engine") {
-                        CoachEngineSettingsView()
-                    }
-                }
-
-                Section("Appearance") {
-                    Picker("App Icon", selection: Binding(
-                        get: { selectedIconKey ?? "__primary__" },
-                        set: { newVal in
-                            let key: String? = (newVal == "__primary__") ? nil : newVal
-                            selectedIconKey = key
-                            AppIconManager.set(key: key)
-                        }
-                    )) {
-                        ForEach(AppIconManager.options) { opt in
-                            Text(opt.title).tag(opt.key ?? "__primary__")
+            ScrollView {
+                VStack(spacing: AppTheme.spacing) {
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Coach").font(.headline)
+                            NavigationLink("Coach Engine") { CoachEngineSettingsView() }
                         }
                     }
-                }
-
-                Section("Preferences") {
-                    Toggle("Notifications", isOn: $notificationsEnabled)
-                    Toggle("Haptics", isOn: $hapticsEnabled)
-                }
-
-                Section("About") {
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-")
-                            .foregroundStyle(.secondary)
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Appearance").font(.headline)
+                            Picker("App Icon", selection: Binding(
+                                get: { selectedIconKey ?? "__primary__" },
+                                set: { newVal in
+                                    let key: String? = (newVal == "__primary__") ? nil : newVal
+                                    selectedIconKey = key
+                                    AppIconManager.set(key: key)
+                                }
+                            )) {
+                                ForEach(AppIconManager.options) { opt in
+                                    Text(opt.title).tag(opt.key ?? "__primary__")
+                                }
+                            }
+                            .pickerStyle(.menu)
+                        }
                     }
-                    if let url = URL(string: "https://example.com/privacy") {
-                        Link("Privacy Policy", destination: url)
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Preferences").font(.headline)
+                            Toggle("Notifications", isOn: $notificationsEnabled)
+                            Toggle("Haptics", isOn: $hapticsEnabled)
+                        }
+                    }
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("About").font(.headline)
+                            HStack {
+                                Text("Version")
+                                Spacer()
+                                Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-")
+                                    .foregroundStyle(.secondary)
+                            }
+                            if let url = URL(string: "https://example.com/privacy") {
+                                Link("Privacy Policy", destination: url)
+                            }
+                        }
                     }
                 }
+                .padding()
             }
+            .background(AppTheme.background.ignoresSafeArea())
             .navigationTitle("Innstillinger")
-            .scrollContentBackground(.hidden)
-            .background(
-                AppTheme.background.ignoresSafeArea()
-            )
             .onAppear { selectedIconKey = AppIconManager.currentKey() }
         }
     }
