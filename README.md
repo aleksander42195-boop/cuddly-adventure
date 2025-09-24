@@ -263,10 +263,12 @@ Add a license file if you plan to open source.
 ---
 Generated scaffold date: 2025-09-22
 
-### App Icons (Primary + Alternate “Dark”)
+### App Icons (iOS Primary + Alternate “Dark” + watchOS)
 Two icon sets are included in the asset catalog:
 - Primary: `Assets.xcassets/AppIcon.appiconset`
 - Alternate: `Assets.xcassets/AppIcon-Dark.appiconset` (switchable at runtime)
+And for watchOS:
+- Watch: `WatchApp/Assets.xcassets/AppIcon.appiconset`
 
 A helper script generates all required sizes from 1024×1024 artwork using macOS `sips`:
 
@@ -278,15 +280,19 @@ python3 scripts/generate_app_icons.py --primary /absolute/path/to/primary_1024.p
 # Alternate (Dark) only
 python3 scripts/generate_app_icons.py --dark /absolute/path/to/dark_1024.png
 
+# watchOS only
+python3 scripts/generate_app_icons.py --watch /absolute/path/to/watch_1024.png
+
 # Both at once
 python3 scripts/generate_app_icons.py \
 	--primary /absolute/path/to/primary_1024.png \
-	--dark /absolute/path/to/dark_1024.png
+	--dark /absolute/path/to/dark_1024.png \
+	--watch /absolute/path/to/watch_1024.png
 ```
 
 Notes:
-- Provide true 1024×1024, square, non-transparent artwork. PNG preferred (JPEG also supported).
-- The script preserves existing `Contents.json` and writes exactly the filenames listed there.
+- Provide true 1024×1024, square artwork. PNG preferred (JPEG also supported). Transparency is discouraged for store assets.
+- The script preserves existing `Contents.json` and writes exactly the filenames listed there (iOS + watchOS).
 - After generation, build in Xcode to preview.
 - The app includes a simple runtime icon picker in Settings to toggle the alternate icon (if the device supports alternate icons).
 
