@@ -6,10 +6,18 @@ import Charts
 struct TodayView: View {
     @EnvironmentObject var app: AppState
     @Environment(\.themeTokens) private var theme
+    @State private var studyOfTheDay: Study? = nil
 
     var body: some View {
         ScrollView {
             VStack(spacing: theme.spacing) {
+                // Top battery ring palette (left aligned)
+                HStack {
+                    BatteryPaletteRing(value: app.today.battery)
+                    Spacer()
+                }
+                .padding(.horizontal)
+
                 if !app.isHealthAuthorized {
                     GlassCard {
                         VStack(alignment: .leading, spacing: AppTheme.spacingS) {
@@ -28,10 +36,12 @@ struct TodayView: View {
                     }
                 }
                 GlassCard {
-                    HStack(spacing: AppTheme.spacingL) {
-                        MetricRing(title: "Stress",  value: app.today.stress,  systemImage: "bolt.heart")
-                        MetricRing(title: "Energy",  value: app.today.energy,  systemImage: "flame")
-                        MetricRing(title: "Battery", value: app.today.battery, systemImage: "battery.100")
+                    VStack(spacing: AppTheme.spacing) {
+                        StressGauge(stress: app.today.stress)
+                        HStack(spacing: AppTheme.spacing) {
+                            MetricRing(title: "Energy",  value: app.today.energy,  systemImage: "flame")
+                            Spacer()
+                        }
                     }
                 }
 
@@ -59,6 +69,43 @@ struct TodayView: View {
                     }
                 }
 
+                if let s = studyOfTheDay ?? StudyRecommender.shared.loadTodaysStudy() {
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Study of the day").font(.headline)
+                            Text(s.title).font(.subheadline).bold()
+                            Text("\(s.authors) • \(s.journal) (\(s.year))")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            if let first = s.takeaways.first { Text(first).font(.caption) }
+                            HStack {
+                                if let url = s.url {
+                                    Link("Open", destination: url)
+                                        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                                }
+                                Button(BookmarkStore.shared.isBookmarked(slug: s.slug) ? "Saved" : "Save") {
+                                    BookmarkStore.shared.toggle(slug: s.slug)
+                                }
+                                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                            }
+                        }
+                    }
+                }
+
+                // Sleep card with zodiac and last-night duration
+                StarrySleepCard(zodiac: Zodiac.from(date: app.birthdate), hours: app.lastNightSleepHours)
+
+                // Activity pyramid (using steps as proxy to METs for now)
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("Activity").font(.headline)
+                        ActivityPyramid(mets: app.todayMETHours)
+                        Text(String(format: "MET-h: %.1f", app.todayMETHours))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
                 Button {
                     app.tapHaptic()
                     Task { await app.refreshFromHealthIfAvailable() }
@@ -79,6 +126,7 @@ struct TodayView: View {
         }
         .refreshable {
             await app.refreshFromHealthIfAvailable()
+            studyOfTheDay = StudyRecommender.shared.selectStudy(for: app.today)
         }
         .background(AppTheme.background.ignoresSafeArea())
         .navigationTitle("Today")

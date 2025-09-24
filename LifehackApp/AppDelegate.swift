@@ -7,7 +7,6 @@
 
 import UIKit
 
-@main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -23,6 +22,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("App launched on unknown device")
         }
         
+        // Notifications
+        NotificationsManager.shared.configure()
+    NotificationsManager.shared.registerCategories()
+        NotificationsManager.shared.requestAuthorizationIfNeeded()
+
         return true
     }
 
@@ -38,5 +42,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Called when the user discards a scene session.
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    }
+}
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        // Handle custom actions first
+        NotificationsManager.shared.handleAction(response: response)
+        if let urlString = response.notification.request.content.userInfo["studyURL"] as? String,
+           let url = URL(string: urlString) {
+            UIApplication.shared.open(url)
+        }
+        completionHandler()
     }
 }

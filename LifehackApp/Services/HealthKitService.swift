@@ -35,6 +35,7 @@ final class HealthKitService {
         if let steps = HKObjectType.quantityType(forIdentifier: .stepCount) { set.insert(steps) }
         if let active = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) { set.insert(active) }
         if let energy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) { set.insert(energy) }
+        if let weight = HKObjectType.quantityType(forIdentifier: .bodyMass) { set.insert(weight) }
         if let mindful = HKObjectType.categoryType(forIdentifier: .mindfulSession) { set.insert(mindful) }
         if let sleep = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) { set.insert(sleep) }
         return set
@@ -186,6 +187,47 @@ final class HealthKitService {
         }
     }
 
+    // MARK: Sleep
+    func lastNightSleepHours() async throws -> Double {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let type = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
+            throw HealthKitServiceError.notAvailable
+        }
+
+        // Define a "last night" window: yesterday 18:00 to today 12:00
+        let cal = calendar
+        let now = Date()
+        let startOfToday = cal.startOfDay(for: now)
+        let yesterday = cal.date(byAdding: .day, value: -1, to: startOfToday)!
+        let start = cal.date(bySettingHour: 18, minute: 0, second: 0, of: yesterday)!
+        let end = cal.date(bySettingHour: 12, minute: 0, second: 0, of: startOfToday)!
+        let pred = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictEndDate)
+
+        return try await withCheckedThrowingContinuation { cont in
+            let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            let q = HKSampleQuery(sampleType: type, predicate: pred, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { _, results, error in
+                if let error = error { cont.resume(throwing: error); return }
+                let samples = (results as? [HKCategorySample]) ?? []
+                let asleepValues: Set<Int> = {
+                    var v: Set<Int> = [1] // asleepUnspecified
+                    if #available(iOS 16.0, *) {
+                        v.formUnion([3,4,5]) // core, deep, rem raw values
+                    }
+                    return v
+                }()
+                var total: TimeInterval = 0
+                for s in samples {
+                    guard asleepValues.contains(s.value) else { continue }
+                    let overlapStart = max(s.startDate, start)
+                    let overlapEnd = min(s.endDate, end)
+                    if overlapEnd > overlapStart { total += overlapEnd.timeIntervalSince(overlapStart) }
+                }
+                cont.resume(returning: total / 3600.0)
+            }
+            self.store.execute(q)
+        }
+    }
+
     // Heuristic computation (factored for future refinement)
     private func deriveHeuristics(hrvMs: Double, restingHR: Double, steps: Int) -> (stress: Double, energy: Double, battery: Double) {
         let stress = max(0.0, min(1.0, 1.0 - (hrvMs / 100.0)))
@@ -244,6 +286,46 @@ final class HealthKitService {
             self.store.execute(q)
         }
     }
+
+    // MARK: BodyMass & MET
+    private func latestBodyMassKg() async throws -> Double {
+        guard let type = HKObjectType.quantityType(forIdentifier: .bodyMass) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        let unit = HKUnit.gramUnit(with: .kilo)
+        return try await withCheckedThrowingContinuation { cont in
+            let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            let q = HKSampleQuery(sampleType: type, predicate: nil, limit: 1, sortDescriptors: [sort]) { _, results, error in
+                if let error = error { cont.resume(throwing: error); return }
+                guard let q = results?.first as? HKQuantitySample else { cont.resume(returning: 0); return }
+                cont.resume(returning: q.quantity.doubleValue(for: unit))
+            }
+            self.store.execute(q)
+        }
+    }
+
+    func todayMETHours() async throws -> Double {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let energyType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        let unit = HKUnit.kilocalorie()
+        // sum active energy today
+        let range = calendar.todayRange
+        let kcal: Double = try await withCheckedThrowingContinuation { cont in
+            let q = HKStatisticsQuery(quantityType: energyType, quantitySamplePredicate: .defaultPredicate(for: range), options: .cumulativeSum) { _, result, error in
+                if let error = error { cont.resume(throwing: error); return }
+                let val = result?.sumQuantity()?.doubleValue(for: unit) ?? 0
+                cont.resume(returning: val)
+            }
+            self.store.execute(q)
+        }
+        // latest body mass
+        let kg = try await latestBodyMassKg()
+        guard kg > 0 else { return 0 }
+        // MET-hours approx = kcal / kg
+        return kcal / kg
+    }
 }
 #else
 final class HealthKitService {
@@ -257,5 +339,6 @@ final class HealthKitService {
     func restingHRDailyAverage(days: Int) async throws -> [HealthDataPoint] { [] }
     func energyProxyDaily(days: Int) async -> [HealthDataPoint] { [] }
     func rollingAverage(_ series: [HealthDataPoint], window: Int) -> [HealthDataPoint] { series }
+    func lastNightSleepHours() async throws -> Double { 0 }
 }
 #endif

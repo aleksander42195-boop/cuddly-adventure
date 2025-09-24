@@ -9,6 +9,9 @@ final class AppState: ObservableObject {
     @Published var selectedTab: Tab = .today
     @Published var isOnboardingPresented: Bool = false
     @Published var hapticsEnabled: Bool = true
+    @AppStorage("user_birthdate") var birthdate: Date = ISO8601DateFormatter().date(from: "1990-01-01T00:00:00Z") ?? Date()
+    @Published var lastNightSleepHours: Double = 0
+    @Published var todayMETHours: Double = 0
 
     // Today snapshot used by TodayView
     @Published var today: TodaySnapshot = .empty
@@ -22,6 +25,11 @@ final class AppState: ObservableObject {
     func refreshFromHealthIfAvailable() async {
         let snap = await healthService.safeTodaySnapshot()
         today = snap
+        NotificationsManager.shared.scheduleStudySuggestions(basedOn: snap)
+        let sleep = (try? await healthService.lastNightSleepHours()) ?? 0
+        lastNightSleepHours = sleep
+        let mets = (try? await healthService.todayMETHours()) ?? 0
+        todayMETHours = mets
     }
 
     var isHealthAuthorized: Bool { healthService.isAuthorized }
