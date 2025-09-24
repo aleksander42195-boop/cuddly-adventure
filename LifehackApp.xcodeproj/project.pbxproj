@@ -7,24 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1234567890ABCDEF123456A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456B /* AppDelegate.swift */; };
-		A1234567890ABCDEF123456C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456D /* SceneDelegate.swift */; };
-		A1234567890ABCDEF123456E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456F /* ViewController.swift */; };
 		A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234561 /* DeviceManager.swift */; };
 		A1234567890ABCDEF1234562 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234563 /* Main.storyboard */; };
 		A1234567890ABCDEF1234564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234565 /* Assets.xcassets */; };
 		A1234567890ABCDEF1234566 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234567 /* LaunchScreen.storyboard */; };
+		A1234567890ABCDEF123456A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456B /* AppDelegate.swift */; };
+		A1234567890ABCDEF123456C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456D /* SceneDelegate.swift */; };
+		A1234567890ABCDEF123456E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456F /* ViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A1234567890ABCDEF1234568 /* LifehackApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LifehackApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A1234567890ABCDEF123456B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF123456D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF123456F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234561 /* DeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManager.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234563 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234565 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234567 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
+		A1234567890ABCDEF1234568 /* LifehackApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LifehackApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1234567890ABCDEF1234569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C0DEC0DEC0DEC0DEC0DEC0D1 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Signing.xcconfig; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
@@ -78,6 +75,14 @@
 				A1234567890ABCDEF1234568 /* LifehackApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C0DEC0DEC0DEC0DEC0DEC0D2 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				C0DEC0DEC0DEC0DEC0DEC0D1 /* Config/Signing.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -288,6 +293,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LifehackApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -320,6 +326,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LifehackApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
