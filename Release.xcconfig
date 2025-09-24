@@ -1,0 +1,33 @@
+// Release build settings for Lifehack
+// Attach in Xcode: TARGET -> Build Settings -> Release -> "Based on Configuration File".
+
+// MARK: - Product / Signing
+PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.lifehack
+CODE_SIGN_STYLE = Automatic
+DEVELOPMENT_TEAM = YOURTEAMID   // Replace with real Team ID
+
+// MARK: - Swift / Optimization
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited)
+SWIFT_OPTIMIZATION_LEVEL = -O
+SWIFT_COMPILATION_MODE = wholemodule
+OTHER_SWIFT_FLAGS = -Xfrontend -warn-long-function-bodies=500 -Xfrontend -warn-long-expression-type-checking=500
+
+// Strip debug symbols (adjust if you need symbolication via dSYMs)
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+
+// MARK: - Warnings / Safety
+ENABLE_TESTING_SEARCH_PATHS = NO
+GCC_WARN_UNUSED_FUNCTION = YES
+GCC_WARN_UNUSED_VARIABLE = YES
+CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES
+
+// MARK: - Custom App Flags (read at runtime)
+LIFEHACK_API_ENV = production
+LIFEHACK_ENABLE_FAKE_HEALTHKIT = NO
+LIFEHACK_VERBOSE_LOGGING = NO
+
+// Example Swift usage:
+//
+// if ProcessInfo.processInfo.environment["LIFEHACK_VERBOSE_LOGGING"] == "YES" {
+//     logger.debug("Verbose logging enabled (unexpected in Release)")
+// }

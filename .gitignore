@@ -1,0 +1,69 @@
+# Xcode
+DerivedData/
+build/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/contents.xcworkspacedata
+xcuserdata/
+*.xcuserstate
+
+# SwiftPM
+.build/
+Packages/
+Package.resolved
+
+# CocoaPods
+Pods/
+
+# Carthage
+Carthage/Build/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Archives
+*.xcarchive
+
+# Playground timelines
+**/timeline.xctimeline
+
+# Swift playgrounds
+Contents.swift
+playground.xcworkspace
+
+# Profiling
+*.profdata
+
+# Obj-C/Swift specific
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Secrets
+Config/Secrets.plist
+
+# User specific
+*.swp
+.DS_Store
+
+# Logs
+*.log
+
+# Generated
+*.moved-aside
+
+# Simulator
+*.simdevice
+
+# Firebase / Google
+GoogleService-Info.plist
+
+# SwiftGen / Sourcery cache
+.stencilcache/
+.sourcerycache/
+
+# Temporary
+.tmp/

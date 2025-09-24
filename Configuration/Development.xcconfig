@@ -1,0 +1,8 @@
+// Development build settings (attach via Xcode > Build Settings > Add Configuration File)
+
+#include "Debug.xcconfig"
+
+// Mark this build as developer mode
+LIFEHACK_DEVELOPER_MODE = YES
+LIFEHACK_ENABLE_FAKE_HEALTHKIT = YES
+LIFEHACK_VERBOSE_LOGGING = YES

@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      CI: "1"
+      # Optional: pass fake key to avoid network calls / or real via repository secret
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app
+          xcodebuild -version
+
+      - name: Cache DerivedData
+        uses: actions/cache@v3
+        with:
+            path: ~/Library/Developer/Xcode/DerivedData
+            key: dd-${{ runner.os }}-${{ hashFiles('**/*.swift','**/*.xcconfig','LifehackApp.xcodeproj/project.pbxproj') }}
+            restore-keys: dd-${{ runner.os }}-
+
+      - name: List schemes
+        run: xcodebuild -list -project LifehackApp.xcodeproj
+
+      - name: Build (Debug)
+        run: |
+          xcodebuild \
+            -project LifehackApp.xcodeproj \
+            -scheme LifehackApp \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5' \
+            build \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty
+        env:
+          NSUnbufferedIO: "YES"
+
+      - name: Test
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project LifehackApp.xcodeproj \
+            -scheme LifehackApp \
+            -configuration Debug \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5' \
+            -resultBundlePath TestResults \
+            test CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO | xcpretty --color
+        env:
+          NSUnbufferedIO: "YES"
+
+      - name: Archive test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult
+          path: TestResults.xcresult
+
+      - name: SwiftLint (optional)
+        if: always()
+        run: echo "Add SwiftLint step when configuration file is present"
+
+      - name: Fail if tests skipped (optional placeholder)
+        if: always()
+        run: echo "Add post-processing logic if needed"
+
+# Notes:
+# - Adjust scheme name if different.
+# - Add a Release job or distribute via Fastlane in a separate workflow if required.
+# - Provide Secrets.plist locally; for CI-only values, you can inject via environment & guard in code.

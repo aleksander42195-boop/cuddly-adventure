@@ -1,0 +1,72 @@
+/* Base (development) localization mirrors English */
+
+/* Tab titles */
+"today.title" = "Today";
+"journal.title" = "Journal";
+"nutrition.title" = "Nutrition";
+"coach.title" = "Coach";
+"settings.title" = "Settings";
+
+/* Today metrics */
+"metrics.stress" = "Stress";
+"metrics.energy" = "Energy";
+"metrics.battery" = "Battery";
+"metrics.hrv.sdnn" = "HRV (SDNN)";
+"metrics.restingHR.steps.format" = "Resting HR: %1$@ bpm · Steps: %2$@";
+"action.refresh.health" = "Refresh from Health";
+
+/* Buttons / generic actions */
+"action.save" = "Save";
+"action.clear" = "Clear";
+"action.request.health.access" = "Request Health Access";
+"action.add.100" = "+100";
+"action.add.250" = "+250";
+"action.add.500" = "+500";
+"action.set.goal" = "Set Goal";
+"action.save.key" = "Save Key";
+"action.save.keychain" = "Save (Keychain)";
+"action.save.userdefaults" = "Save (UserDefaults)";
+
+/* Nutrition */
+"nutrition.intake.format" = "Intake: %1$@ kcal / %2$@";
+"nutrition.placeholder" = "Extend later with macros and logging.";
+
+/* Journal */
+"journal.intro" = "Daily logs, HRV series, mood and notes coming here.";
+"journal.new.note" = "New Note";
+"journal.save.note" = "Save";
+
+/* Coach */
+"coach.placeholder.question" = "Ask your coach…";
+"coach.role.user" = "You";
+"coach.role.assistant" = "Coach";
+"coach.api.mode.completions" = "Completions";
+"coach.api.mode.responses" = "Responses";
+"coach.api.key.missing.title" = "Missing OpenAI API key";
+"coach.api.key.missing.body" = "Paste your key to enable real coach answers. Stored securely in Keychain.";
+"coach.api.key.saved" = "Key saved. You can now ask questions.";
+"coach.api.key.save.error.format" = "Failed to store key: %1$@";
+"coach.api.key.missing.inline" = "Missing OpenAI API key. Go to Settings → Coach API and save it.";
+"coach.message.empty.response" = "Empty answer – try again with more context.";
+
+/* Settings */
+"settings.section.general" = "General";
+"settings.section.coach.engine" = "Coach Engine";
+"settings.section.health" = "Health";
+"settings.section.coach.api.key" = "Coach API Key";
+"settings.haptics" = "Haptics";
+"settings.healthkit.status.authorized" = "Authorized";
+"settings.healthkit.status.unauthorized" = "Not authorized";
+"settings.engine.help" = "• Completions: classic chat engine (simple & quick)\n• Responses: newer API with 'items', useful for extensions";
+
+/* API / errors */
+"error.missing.apikey" = "Missing OpenAI API key.";
+"error.openai.generic.format" = "OpenAI error: %1$@";
+
+/* Accessibility */
+"accessibility.today.summary.format" = "Today metrics. Stress %1$@ percent. Energy %2$@ percent. Battery %3$@ percent. HRV %4$@. Steps %5$@.";
+"accessibility.coach.chat.count.format" = "Coach chat with %1$@ messages.";
+
+/* Misc */
+"app.version" = "Version";
+"app.build" = "Build";
