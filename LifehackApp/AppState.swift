@@ -25,7 +25,7 @@ final class AppState: ObservableObject {
         let snap = await healthService.safeTodaySnapshot()
         today = snap
         NotificationsManager.shared.scheduleStudySuggestions(basedOn: snap)
-        let sleep = await SleepService.shared.lastNightSleepHours()
+        let sleep = (try? await healthService.lastNightSleepHours()) ?? 0
         lastNightSleepHours = sleep
     }
 

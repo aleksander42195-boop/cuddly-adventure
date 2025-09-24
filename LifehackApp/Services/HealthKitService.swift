@@ -186,6 +186,47 @@ final class HealthKitService {
         }
     }
 
+    // MARK: Sleep
+    func lastNightSleepHours() async throws -> Double {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let type = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
+            throw HealthKitServiceError.notAvailable
+        }
+
+        // Define a "last night" window: yesterday 18:00 to today 12:00
+        let cal = calendar
+        let now = Date()
+        let startOfToday = cal.startOfDay(for: now)
+        let yesterday = cal.date(byAdding: .day, value: -1, to: startOfToday)!
+        let start = cal.date(bySettingHour: 18, minute: 0, second: 0, of: yesterday)!
+        let end = cal.date(bySettingHour: 12, minute: 0, second: 0, of: startOfToday)!
+        let pred = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictEndDate)
+
+        return try await withCheckedThrowingContinuation { cont in
+            let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            let q = HKSampleQuery(sampleType: type, predicate: pred, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { _, results, error in
+                if let error = error { cont.resume(throwing: error); return }
+                let samples = (results as? [HKCategorySample]) ?? []
+                let asleepValues: Set<Int> = {
+                    var v: Set<Int> = [1] // asleepUnspecified
+                    if #available(iOS 16.0, *) {
+                        v.formUnion([3,4,5]) // core, deep, rem raw values
+                    }
+                    return v
+                }()
+                var total: TimeInterval = 0
+                for s in samples {
+                    guard asleepValues.contains(s.value) else { continue }
+                    let overlapStart = max(s.startDate, start)
+                    let overlapEnd = min(s.endDate, end)
+                    if overlapEnd > overlapStart { total += overlapEnd.timeIntervalSince(overlapStart) }
+                }
+                cont.resume(returning: total / 3600.0)
+            }
+            self.store.execute(q)
+        }
+    }
+
     // Heuristic computation (factored for future refinement)
     private func deriveHeuristics(hrvMs: Double, restingHR: Double, steps: Int) -> (stress: Double, energy: Double, battery: Double) {
         let stress = max(0.0, min(1.0, 1.0 - (hrvMs / 100.0)))
@@ -257,5 +298,6 @@ final class HealthKitService {
     func restingHRDailyAverage(days: Int) async throws -> [HealthDataPoint] { [] }
     func energyProxyDaily(days: Int) async -> [HealthDataPoint] { [] }
     func rollingAverage(_ series: [HealthDataPoint], window: Int) -> [HealthDataPoint] { series }
+    func lastNightSleepHours() async throws -> Double { 0 }
 }
 #endif
