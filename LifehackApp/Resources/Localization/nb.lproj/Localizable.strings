@@ -1,0 +1,70 @@
+/* Fane-titler */
+"today.title" = "I dag";
+"journal.title" = "Journal";
+"nutrition.title" = "Ernæring";
+"coach.title" = "Coach";
+"settings.title" = "Innstillinger";
+
+/* Dagens målinger */
+"metrics.stress" = "Stress";
+"metrics.energy" = "Energi";
+"metrics.battery" = "Batteri";
+"metrics.hrv.sdnn" = "HRV (SDNN)";
+"metrics.restingHR.steps.format" = "Hvilepuls: %1$@ bpm · Skritt: %2$@";
+"action.refresh.health" = "Oppdater fra Helse";
+
+/* Knapper / handlinger */
+"action.save" = "Lagre";
+"action.clear" = "Tøm";
+"action.request.health.access" = "Be om Helse‑tilgang";
+"action.add.100" = "+100";
+"action.add.250" = "+250";
+"action.add.500" = "+500";
+"action.set.goal" = "Sett mål";
+"action.save.key" = "Lagre nøkkel";
+"action.save.keychain" = "Lagre (Keychain)";
+"action.save.userdefaults" = "Lagre (UserDefaults)";
+
+/* Ernæring */
+"nutrition.intake.format" = "Inntak: %1$@ kcal / %2$@";
+"nutrition.placeholder" = "Utvid senere med makroer og logging.";
+
+/* Journal */
+"journal.intro" = "Dagslogger, HRV-serier, humør og notater kommer her.";
+"journal.new.note" = "Nytt notat";
+"journal.save.note" = "Lagre";
+
+/* Coach */
+"coach.placeholder.question" = "Spør coachen…";
+"coach.role.user" = "Du";
+"coach.role.assistant" = "Coach";
+"coach.api.mode.completions" = "Completions";
+"coach.api.mode.responses" = "Responses";
+"coach.api.key.missing.title" = "Mangler OpenAI API‑nøkkel";
+"coach.api.key.missing.body" = "Lim inn nøkkelen for å aktivere ekte coach‑svar. Lagres sikkert i Keychain.";
+"coach.api.key.saved" = "Nøkkel lagret. Du kan nå stille spørsmål.";
+"coach.api.key.save.error.format" = "Feil ved lagring av nøkkel: %1$@";
+"coach.api.key.missing.inline" = "Mangler OpenAI API‑nøkkel. Gå til Innstillinger → Coach API.";
+"coach.message.empty.response" = "Tomt svar – prøv igjen med mer kontekst.";
+
+/* Innstillinger */
+"settings.section.general" = "Generelt";
+"settings.section.coach.engine" = "Coach‑motor";
+"settings.section.health" = "Helse";
+"settings.section.coach.api.key" = "Coach API‑nøkkel";
+"settings.haptics" = "Haptikk";
+"settings.healthkit.status.authorized" = "Godkjent";
+"settings.healthkit.status.unauthorized" = "Ikke godkjent";
+"settings.engine.help" = "• Completions: klassisk chat‑motor (enkelt og raskt)\n• Responses: nyere API med «items», nyttig for utvidelser";
+
+/* API / feil */
+"error.missing.apikey" = "Mangler OpenAI API‑nøkkel.";
+"error.openai.generic.format" = "OpenAI‑feil: %1$@";
+
+/* Tilgjengelighet */
+"accessibility.today.summary.format" = "Dagens målinger. Stress %1$@ prosent. Energi %2$@ prosent. Batteri %3$@ prosent. HRV %4$@. Skritt %5$@.";
+"accessibility.coach.chat.count.format" = "Coach‑chat med %1$@ meldinger.";
+
+/* Diverse */
+"app.version" = "Versjon";
+"app.build" = "Build";

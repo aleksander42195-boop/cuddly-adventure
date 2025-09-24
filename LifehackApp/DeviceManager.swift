@@ -170,7 +170,7 @@ class DeviceManager {
         let machineMirror = Mirror(reflecting: systemInfo.machine)
         let identifier = machineMirror.children.reduce("") { identifier, element in
             guard let value = element.value as? Int8, value != 0 else { return identifier }
-            // Safely construct a UnicodeScalar from the UInt8 without force unwrap
+            // Safely construct a UnicodeScalar from the Int8 byte without force unwrap
             let scalar = UnicodeScalar(UInt8(bitPattern: value))
             return identifier + String(scalar)
         }
