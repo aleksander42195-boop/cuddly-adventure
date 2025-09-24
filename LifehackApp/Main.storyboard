@@ -22,13 +22,13 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="LifehackApp - iOS Device Manager" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cKw-gR-8tX">
                                         <rect key="frame" x="0.0" y="0.0" width="353" height="28.666666666666668"/>
                                         <fontDescription key="fontDescription" type="system" weight="bold" pointSize="24"/>
-                                        <textColor key="textColor" systemColor="systemBlueColor"/>
+                                        <color key="textColor" systemColor="systemBlueColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="This app helps you select and manage iOS device compatibility for your LifehackApp." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3tZ-dP-9Yh">
                                         <rect key="frame" x="0.0" y="48.666666666666664" width="353" height="40.666666666666664"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <textColor key="textColor" systemColor="systemGrayColor"/>
+                                        <color key="textColor" systemColor="systemGrayColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QpT-cZ-bUd">
@@ -41,13 +41,13 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Current Device: Detecting..." textAlignment="left" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="OkV-Wt-8Pb">
                                         <rect key="frame" x="0.0" y="130.33333333333334" width="353" height="20.333333333333343"/>
                                         <fontDescription key="fontDescription" type="system" weight="medium" pointSize="17"/>
-                                        <textColor key="textColor" systemColor="labelColor"/>
+                                        <color key="textColor" systemColor="labelColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Compatibility: Checking..." textAlignment="left" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xN5-G2-QdM">
                                         <rect key="frame" x="0.0" y="170.66666666666666" width="353" height="20.333333333333343"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <textColor key="textColor" systemColor="labelColor"/>
+                                        <color key="textColor" systemColor="labelColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Xg-Uz-YLj">
@@ -70,7 +70,7 @@
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Device Status:&#10;Checking your specific devices..." textAlignment="left" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yMg-5o-lWj">
                                         <rect key="frame" x="0.0" y="302" width="353" height="407"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                        <textColor key="textColor" systemColor="labelColor"/>
+                                        <color key="textColor" systemColor="labelColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
