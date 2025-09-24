@@ -48,6 +48,10 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle("Innstillinger")
+            .scrollContentBackground(.hidden)
+            .background(
+                AppTheme.background.ignoresSafeArea()
+            )
             .onAppear { selectedIconKey = AppIconManager.currentKey() }
         }
     }

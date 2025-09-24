@@ -8,6 +8,7 @@ struct LifehackApp: App {
         WindowGroup {
             RootTabView()
                 .environmentObject(engineManager)
+                .onAppear { AppTheme.configureGlobal() }
         }
     }
 }

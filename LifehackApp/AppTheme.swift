@@ -63,6 +63,47 @@ enum AppTheme {
             )
     }
 
+    // MARK: - Liquid Glass modifier (applies to any container like buttons, menus, cards)
+
+    struct LiquidGlass: ViewModifier {
+        var cornerRadius: CGFloat = AppTheme.corner
+        func body(content: Content) -> some View {
+            content
+                .background(
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                        )
+                        .shadow(color: .black.opacity(0.25), radius: 20, x: 0, y: 10)
+                )
+        }
+    }
+
+    static func liquidGlass(cornerRadius: CGFloat = corner) -> some ViewModifier { LiquidGlass(cornerRadius: corner) }
+
+    // MARK: - Button Styles
+
+    struct LiquidGlassButtonStyle: ButtonStyle {
+        func makeBody(configuration: Configuration) -> some View {
+            configuration.label
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: AppTheme.cornerSmall, style: .continuous)
+                        .fill(.ultraThinMaterial)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: AppTheme.cornerSmall, style: .continuous)
+                                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+                        )
+                        .shadow(color: .black.opacity(0.2), radius: 12, x: 0, y: 8)
+                )
+                .scaleEffect(configuration.isPressed ? 0.98 : 1)
+                .animation(AppTheme.easeFast, value: configuration.isPressed)
+        }
+    }
+
     // MARK: - Card style wrapper
 
     @ViewBuilder
@@ -81,18 +122,21 @@ enum AppTheme {
 
     static func configureGlobal() {
         #if canImport(UIKit)
+        // Navigation Bar glass appearance
         let nav = UINavigationBarAppearance()
         nav.configureWithTransparentBackground()
-        nav.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterialDark)
-        nav.titleTextAttributes = [.foregroundColor: UIColor.white]
-        nav.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        nav.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+        nav.titleTextAttributes = [.foregroundColor: UIColor.label]
+        nav.largeTitleTextAttributes = [.foregroundColor: UIColor.label]
         UINavigationBar.appearance().standardAppearance = nav
         UINavigationBar.appearance().scrollEdgeAppearance = nav
-        UITabBar.appearance().scrollEdgeAppearance = {
-            let tb = UITabBarAppearance()
-            tb.configureWithTransparentBackground()
-            return tb
-        }()
+
+        // Tab Bar glass appearance
+        let tb = UITabBarAppearance()
+        tb.configureWithTransparentBackground()
+        tb.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+        UITabBar.appearance().standardAppearance = tb
+        UITabBar.appearance().scrollEdgeAppearance = tb
         #endif
     }
 
@@ -122,5 +166,10 @@ extension EnvironmentValues {
 extension View {
     func appThemeTokens(_ tokens: AppTheme.Tokens) -> some View {
         environment(\.themeTokens, tokens)
+    }
+
+    // Apply liquid glass style quickly to any view container
+    func liquidGlass(cornerRadius: CGFloat = AppTheme.corner) -> some View {
+        modifier(AppTheme.LiquidGlass(cornerRadius: cornerRadius))
     }
 }

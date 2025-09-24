@@ -32,7 +32,7 @@ struct TodayView: View {
                     Label("Refresh from Health", systemImage: "arrow.clockwise")
                         .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
             }
             .padding()
             .accessibilityElement(children: .combine)
