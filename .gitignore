@@ -87,6 +87,7 @@ iOSInjectionProject/
 # Secrets
 Config/Secrets.plist
 GoogleService-Info.plist
+Config/Signing.local.xcconfig
 
 # SwiftGen / Sourcery cache
 .stencilcache/
