@@ -1,69 +1,93 @@
-# Xcode
-DerivedData/
-build/
-*.xcworkspace/xcuserdata/
-*.xcworkspace/contents.xcworkspacedata
+##
+# gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+##
+
+## User settings
 xcuserdata/
 *.xcuserstate
 
-# SwiftPM
+## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
+*.xcscmblueprint
+*.xccheckout
+
+## compatibility with Xcode 3 and earlier (ignoring not required starting Xcode 4)
+build/
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+## Obj-C/Swift specific
+*.hmap
+
+## App packaging
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcarchive
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# Swift Package Manager
+# Add this if you want to avoid checking in source code from SwiftPM dependencies.
+# Packages/
+# Package.pins
+# Package.resolved
+# *.xcodeproj
+# .swiftpm
 .build/
-Packages/
-Package.resolved
 
 # CocoaPods
-Pods/
+# We recommend against adding the Pods directory to your .gitignore.
+# Pods/
 
 # Carthage
+# Carthage/Checkouts
 Carthage/Build/
 
-# Fastlane
+# Accio dependency management
+Dependencies/
+.accio/
+
+# fastlane
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
-# Archives
-*.xcarchive
+# Code Injection
+# After new code Injection tools there's a generated folder /iOSInjectionProject
+# https://github.com/johnno1962/injectionforxcode
+iOSInjectionProject/
 
-# Playground timelines
-**/timeline.xctimeline
-
-# Swift playgrounds
-Contents.swift
-playground.xcworkspace
-
-# Profiling
-*.profdata
-
-# Obj-C/Swift specific
-*.hmap
-*.ipa
-*.dSYM.zip
-*.dSYM
-
-# Secrets
-Config/Secrets.plist
-
-# User specific
-*.swp
+# Mac
 .DS_Store
+*.swp
 
 # Logs
 *.log
 
-# Generated
-*.moved-aside
+# Temporary files
+*.tmp
+*.temp
+/tmp/
+.tmp/
 
 # Simulator
 *.simdevice
 
-# Firebase / Google
+# Secrets
+Config/Secrets.plist
 GoogleService-Info.plist
 
 # SwiftGen / Sourcery cache
 .stencilcache/
 .sourcerycache/
-
-# Temporary
-.tmp/

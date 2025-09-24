@@ -143,11 +143,11 @@ Enable an isolated developer configuration:
 5. Safe to run on future simulators (e.g. “iPhone 17 Pro Max (2TB)” / iOS 26) — no compile‑time device assumptions.
 
 ### Adding OpenAI (ChatGPT) API Key
-reate (or edit) Config/Secrets.plist and ensure it contains (placeholder shown — DO NOT commit a real key):
+Create (or edit) Config/Secrets.plist and ensure it contains (placeholder shown — DO NOT commit a real key):
 ```xml
 <key>OPENAI_API_KEY</key>
 <string>sk-proj-your-real-key-here</string>
-```C
+```
 Notes:
 - Never commit the real key (Secrets.plist should stay ignored).
 - If already pushed, revoke & rotate the key in the OpenAI dashboard.
@@ -173,7 +173,7 @@ final class Secrets {
 					 let data = try? Data(contentsOf: url),
 					 let obj = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil),
 					 let d = obj as? [String: Any] {
-						dict = d
+					dict = d
 				} else { dict = [:] }
 		}
 		func string(_ key: String) -> String? { dict[key] as? String }
@@ -214,9 +214,9 @@ private func stepsToday() async throws -> Double {
 		let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date())
 		return try await withCheckedThrowingContinuation { cont in
 				let sumQuery = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, stats, error in
-						if let e = error { cont.resume(throwing: e); return }
-						let value = stats?.sumQuantity()?.doubleValue(for: .count()) ?? 0
-						cont.resume(returning: value)
+					if let e = error { cont.resume(throwing: e); return }
+					let value = stats?.sumQuantity()?.doubleValue(for: .count()) ?? 0
+					cont.resume(returning: value)
 				}
 				healthStore.execute(sumQuery)
 		}
