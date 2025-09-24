@@ -115,6 +115,42 @@ final class HealthKitService {
         )
     }
 
+    func restingHRDailyAverage(days: Int) async throws -> [HealthDataPoint] {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let type = HKObjectType.quantityType(forIdentifier: .restingHeartRate) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        let unit = HKUnit(from: "count/min")
+        return try await dailyStatistics(
+            type: type,
+            options: .discreteAverage,
+            unit: unit,
+            days: days
+        )
+    }
+
+    // Simple energy proxy series using heuristics from available series
+    func energyProxyDaily(days: Int) async -> [HealthDataPoint] {
+        // Use steps as a crude proxy; normalize to 0..1 scale, then *100 for readability
+        let steps = (try? await stepsDailyTotal(days: days)) ?? []
+        let mapped = steps.map { HealthDataPoint(date: $0.date, value: min(1.0, $0.value / 8000.0) * 100.0) }
+        return mapped
+    }
+
+    // Rolling average smoother
+    func rollingAverage(_ series: [HealthDataPoint], window: Int) -> [HealthDataPoint] {
+        guard window > 1, series.count >= window else { return series }
+        var acc = 0.0
+        var out: [HealthDataPoint] = []
+        for i in 0..<series.count {
+            acc += series[i].value
+            if i >= window { acc -= series[i - window].value }
+            let smoothed = i >= window - 1 ? acc / Double(window) : acc / Double(i + 1)
+            out.append(.init(date: series[i].date, value: smoothed))
+        }
+        return out
+    }
+
     // Shared daily stats helper
     private func dailyStatistics(type: HKQuantityType, options: HKStatisticsOptions, unit: HKUnit, days: Int) async throws -> [HealthDataPoint] {
         let endDate = calendar.startOfDay(for: Date())
@@ -218,5 +254,8 @@ final class HealthKitService {
     struct HealthDataPoint: Sendable, Hashable { let date: Date; let value: Double }
     func hrvDailyAverage(days: Int) async throws -> [HealthDataPoint] { [] }
     func stepsDailyTotal(days: Int) async throws -> [HealthDataPoint] { [] }
+    func restingHRDailyAverage(days: Int) async throws -> [HealthDataPoint] { [] }
+    func energyProxyDaily(days: Int) async -> [HealthDataPoint] { [] }
+    func rollingAverage(_ series: [HealthDataPoint], window: Int) -> [HealthDataPoint] { series }
 }
 #endif

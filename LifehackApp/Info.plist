@@ -69,6 +69,8 @@
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
+    <key>NSCameraUsageDescription</key>
+    <string>The camera is used to measure HRV via your fingertip using photoplethysmography.</string>
     <!-- App-specific keys merged from HEAD: health description and icons -->
     <key>NSHealthShareUsageDescription</key>
     <string>This app reads your activity, mindfulness and sleep data to display daily wellness metrics.</string>
