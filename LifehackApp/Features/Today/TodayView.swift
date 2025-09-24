@@ -11,6 +11,13 @@ struct TodayView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: theme.spacing) {
+                // Top battery ring palette (left aligned)
+                HStack {
+                    BatteryPaletteRing(value: app.today.battery)
+                    Spacer()
+                }
+                .padding(.horizontal)
+
                 if !app.isHealthAuthorized {
                     GlassCard {
                         VStack(alignment: .leading, spacing: AppTheme.spacingS) {
@@ -29,10 +36,12 @@ struct TodayView: View {
                     }
                 }
                 GlassCard {
-                    HStack(spacing: AppTheme.spacingL) {
-                        MetricRing(title: "Stress",  value: app.today.stress,  systemImage: "bolt.heart")
-                        MetricRing(title: "Energy",  value: app.today.energy,  systemImage: "flame")
-                        MetricRing(title: "Battery", value: app.today.battery, systemImage: "battery.100")
+                    VStack(spacing: AppTheme.spacing) {
+                        StressGauge(stress: app.today.stress)
+                        HStack(spacing: AppTheme.spacing) {
+                            MetricRing(title: "Energy",  value: app.today.energy,  systemImage: "flame")
+                            Spacer()
+                        }
                     }
                 }
 
@@ -80,6 +89,17 @@ struct TodayView: View {
                                 .buttonStyle(AppTheme.LiquidGlassButtonStyle())
                             }
                         }
+                    }
+                }
+
+                // Sleep card with zodiac and last-night duration
+                StarrySleepCard(zodiac: Zodiac.from(date: app.birthdate), hours: app.lastNightSleepHours)
+
+                // Activity pyramid (using steps as proxy to METs for now)
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("Activity").font(.headline)
+                        ActivityPyramid(mets: Double(app.today.steps) / 1000.0)
                     }
                 }
 
