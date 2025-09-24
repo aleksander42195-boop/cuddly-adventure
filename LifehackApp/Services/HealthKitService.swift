@@ -7,9 +7,24 @@ enum HealthKitServiceError: Error {
     case notAuthorized
 }
 
+private extension Calendar {
+    var todayRange: ClosedRange<Date> {
+        let start = startOfDay(for: Date())
+        let end = date(byAdding: .day, value: 1, to: start) ?? Date()
+        return start...end
+    }
+}
+
+private extension NSPredicate {
+    static func defaultPredicate(for range: ClosedRange<Date>) -> NSPredicate {
+        HKQuery.predicateForSamples(withStart: range.lowerBound, end: range.upperBound, options: .strictEndDate)
+    }
+}
+
 final class HealthKitService {
     private let store = HKHealthStore()
     private(set) var isAuthorized: Bool = false
+    private let calendar = Calendar.current
 
     private var readTypes: Set<HKSampleType> {
         var set: Set<HKSampleType> = []
@@ -47,14 +62,15 @@ final class HealthKitService {
     func fetchTodaySnapshot() async throws -> TodaySnapshot? {
         guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
 
-        async let stress = latestSDNN(in: calendar.todayRange)
-        async let energy = latestRestingHR(in: calendar.todayRange)
-        async let battery = sumSteps(in: calendar.todayRange)
+        let range = calendar.todayRange
+        async let hrvMs = latestSDNN(in: range)
+        async let resting = latestRestingHR(in: range)
+        async let stepsTotal = sumSteps(in: range)
 
-        let (hrvMs, resting, stepsTotal) = try await (stress, energy, battery)
-
-        return TodaySnapshot(stress: stress, energy: energy, battery: battery,
-                             hrvSDNNms: hrvMs, restingHR: resting, steps: stepsTotal)
+        let (hrv, rest, steps) = try await (hrvMs, resting, stepsTotal)
+        let heur = deriveHeuristics(hrvMs: hrv, restingHR: rest, steps: steps)
+        return TodaySnapshot(stress: heur.stress, energy: heur.energy, battery: heur.battery,
+                             hrvSDNNms: hrv, restingHR: rest, steps: steps)
     }
 
     // Convenience: return placeholder instead of throwing (UI-friendly)
@@ -100,19 +116,29 @@ final class HealthKitService {
     }
 
     private func latestQuantity(type: HKQuantityType, predicate: NSPredicate, unit: HKUnit) async throws -> Double {
-        let query = HKSampleQuery(sampleType: type, predicate: predicate, limit: 1, sortDescriptors: nil) { _, results, error in
-            // Handle results
+        try await withCheckedThrowingContinuation { cont in
+            let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: 1, sortDescriptors: [sort]) { _, results, error in
+                if let error = error { cont.resume(throwing: error); return }
+                guard let q = results?.first as? HKQuantitySample else {
+                    cont.resume(returning: 0)
+                    return
+                }
+                cont.resume(returning: q.quantity.doubleValue(for: unit))
+            }
+            self.store.execute(q)
         }
-        store.execute(query)
-        // Await results
     }
 
     private func sumQuantity(type: HKQuantityType, predicate: NSPredicate, unit: HKUnit) async throws -> Int {
-        let query = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .sum) { _, result, error in
-            // Handle results
+        try await withCheckedThrowingContinuation { cont in
+            let q = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
+                if let error = error { cont.resume(throwing: error); return }
+                let val = result?.sumQuantity()?.doubleValue(for: unit) ?? 0
+                cont.resume(returning: Int(val.rounded()))
+            }
+            self.store.execute(q)
         }
-        store.execute(query)
-        // Await results
     }
 }
 #else

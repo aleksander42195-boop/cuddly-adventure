@@ -10,21 +10,24 @@ final class AppState: ObservableObject {
     @Published var isOnboardingPresented: Bool = false
     @Published var hapticsEnabled: Bool = true
 
-    // Shared data
-    @Published var dailyMetrics: [Metric] = []
-    @Published var chatHistory: [ChatMessage] = []
+    // Today snapshot used by TodayView
+    @Published var today: TodaySnapshot = .empty
 
     let haptics = HapticsManager()
-    let healthService: HealthDataProviding = HealthKitService()
+    let healthService = HealthKitService()
 
-    init() { Task { await loadInitialData() } }
+    init() { Task { await refreshFromHealthIfAvailable() } }
 
-    func loadInitialData() async {
-        do {
-            dailyMetrics = try await healthService.fetchTodayMetrics()
-        } catch {
-            print("[AppState] Failed to load metrics: \(error)")
-        }
+    @MainActor
+    func refreshFromHealthIfAvailable() async {
+        let snap = await healthService.safeTodaySnapshot()
+        today = snap
+    }
+
+    var isHealthAuthorized: Bool { healthService.isAuthorized }
+    func requestHealthAuthorization() async {
+        _ = try? await healthService.requestAuthorization()
+        await refreshFromHealthIfAvailable()
     }
 
     func tapHaptic() {

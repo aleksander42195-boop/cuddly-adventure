@@ -100,6 +100,7 @@ struct TodaySnapshot: Sendable {
     }
 
     // UI-ready formatted strings
+    var hrvLabel: String { String(format: "%.0f ms", hrvSDNNms) }
     var restingHRLabel: String { String(format: "%.0f bpm", restingHR) }
     var stepsLabel: String { "\(steps)" }
     var batteryLabel: String { "\(batteryPercent)%" }

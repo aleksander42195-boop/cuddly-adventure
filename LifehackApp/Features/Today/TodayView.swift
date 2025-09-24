@@ -7,6 +7,23 @@ struct TodayView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: theme.spacing) {
+                if !app.isHealthAuthorized {
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Label("Health permissions needed", systemImage: "heart.text.square")
+                                .font(.headline)
+                            Text("Allow Health access to fetch HRV, Resting HR and Steps.")
+                                .foregroundStyle(.secondary)
+                            HStack {
+                                Spacer()
+                                Button("Allow in Health") {
+                                    Task { await app.requestHealthAuthorization() }
+                                }
+                                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                            }
+                        }
+                    }
+                }
                 GlassCard {
                     HStack(spacing: AppTheme.spacingL) {
                         MetricRing(title: "Stress",  value: app.today.stress,  systemImage: "bolt.heart")
@@ -27,7 +44,7 @@ struct TodayView: View {
 
                 Button {
                     app.tapHaptic()
-                    app.refreshFromHealthIfAvailable()
+                    Task { await app.refreshFromHealthIfAvailable() }
                 } label: {
                     Label("Refresh from Health", systemImage: "arrow.clockwise")
                         .frame(maxWidth: .infinity)
@@ -44,7 +61,7 @@ struct TodayView: View {
             )
         }
         .refreshable {
-            app.refreshFromHealthIfAvailable()
+            await app.refreshFromHealthIfAvailable()
         }
         .background(AppTheme.background.ignoresSafeArea())
         .navigationTitle("Today")

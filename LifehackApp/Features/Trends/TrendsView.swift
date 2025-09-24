@@ -18,7 +18,15 @@ struct TrendsView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("HRV (SDNN) Trend")
                             .font(.headline)
-                        Text("Coming soon")
+                        Text("Charts coming soon")
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                GlassCard {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Stress / Energy Balance")
+                            .font(.headline)
+                        Text("Charts coming soon")
                             .foregroundStyle(.secondary)
                     }
                 }
