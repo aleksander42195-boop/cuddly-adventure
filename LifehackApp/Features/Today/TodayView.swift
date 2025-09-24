@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(Charts)
+import Charts
+#endif
 
 struct TodayView: View {
     @EnvironmentObject var app: AppState
@@ -39,6 +42,11 @@ struct TodayView: View {
                             .font(.title2.monospacedDigit())
                         Text("Resting HR: \(app.today.restingHR, specifier: "%.0f") bpm · Steps: \(app.today.steps)")
                             .foregroundStyle(.secondary)
+#if canImport(Charts)
+                        TodayHRVSparkline()
+                            .frame(height: 60)
+                            .accessibilityLabel("7-day HRV sparkline. Latest \(app.today.hrvLabel).")
+#endif
                     }
                 }
 
@@ -94,3 +102,24 @@ struct TodayView: View {
             .appThemeTokens(AppTheme.tokens())
     }
 }
+
+#if canImport(Charts)
+private struct TodayHRVSparkline: View {
+    @EnvironmentObject var app: AppState
+    @State private var points: [HealthKitService.HealthDataPoint] = []
+    var body: some View {
+        Chart(points, id: \.date) { pt in
+            LineMark(x: .value("Date", pt.date, unit: .day), y: .value("HRV", pt.value))
+                .interpolationMethod(.monotone)
+                .foregroundStyle(.cyan)
+        }
+        .chartXAxis(.hidden)
+        .chartYAxis(.hidden)
+        .task { await load() }
+    }
+    private func load() async {
+        let data = (try? await app.healthService.hrvDailyAverage(days: 7)) ?? []
+        await MainActor.run { points = data }
+    }
+}
+#endif
