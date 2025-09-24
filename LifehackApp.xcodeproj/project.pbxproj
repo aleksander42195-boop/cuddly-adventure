@@ -77,14 +77,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C0DEC0DEC0DEC0DEC0DEC0D2 /* Config */ = {
-			isa = PBXGroup;
-			children = (
-				C0DEC0DEC0DEC0DEC0DEC0D1 /* Config/Signing.xcconfig */,
-			);
-			path = Config;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -145,7 +137,6 @@
 			files = (
 				A1234567890ABCDEF1234566 /* LaunchScreen.storyboard in Resources */,
 				A1234567890ABCDEF1234564 /* Assets.xcassets in Resources */,
-				A1234567890ABCDEF1234562 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,10 +147,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1234567890ABCDEF123456E /* ViewController.swift in Sources */,
 				A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */,
 				A1234567890ABCDEF123456A /* AppDelegate.swift in Sources */,
-				A1234567890ABCDEF123456C /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,7 +287,8 @@
 				INFOPLIST_FILE = LifehackApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				// Using SwiftUI App lifecycle; no main storyboard
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -331,7 +321,8 @@
 				INFOPLIST_FILE = LifehackApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				// Using SwiftUI App lifecycle; no main storyboard
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
