@@ -99,7 +99,10 @@ struct TodayView: View {
                 GlassCard {
                     VStack(alignment: .leading, spacing: AppTheme.spacingS) {
                         Text("Activity").font(.headline)
-                        ActivityPyramid(mets: Double(app.today.steps) / 1000.0)
+                        ActivityPyramid(mets: app.todayMETHours)
+                        Text(String(format: "MET-h: %.1f", app.todayMETHours))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                 }
 

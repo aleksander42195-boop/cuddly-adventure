@@ -35,6 +35,7 @@ final class HealthKitService {
         if let steps = HKObjectType.quantityType(forIdentifier: .stepCount) { set.insert(steps) }
         if let active = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) { set.insert(active) }
         if let energy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) { set.insert(energy) }
+        if let weight = HKObjectType.quantityType(forIdentifier: .bodyMass) { set.insert(weight) }
         if let mindful = HKObjectType.categoryType(forIdentifier: .mindfulSession) { set.insert(mindful) }
         if let sleep = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) { set.insert(sleep) }
         return set
@@ -284,6 +285,46 @@ final class HealthKitService {
             }
             self.store.execute(q)
         }
+    }
+
+    // MARK: BodyMass & MET
+    private func latestBodyMassKg() async throws -> Double {
+        guard let type = HKObjectType.quantityType(forIdentifier: .bodyMass) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        let unit = HKUnit.gramUnit(with: .kilo)
+        return try await withCheckedThrowingContinuation { cont in
+            let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            let q = HKSampleQuery(sampleType: type, predicate: nil, limit: 1, sortDescriptors: [sort]) { _, results, error in
+                if let error = error { cont.resume(throwing: error); return }
+                guard let q = results?.first as? HKQuantitySample else { cont.resume(returning: 0); return }
+                cont.resume(returning: q.quantity.doubleValue(for: unit))
+            }
+            self.store.execute(q)
+        }
+    }
+
+    func todayMETHours() async throws -> Double {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let energyType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        let unit = HKUnit.kilocalorie()
+        // sum active energy today
+        let range = calendar.todayRange
+        let kcal: Double = try await withCheckedThrowingContinuation { cont in
+            let q = HKStatisticsQuery(quantityType: energyType, quantitySamplePredicate: .defaultPredicate(for: range), options: .cumulativeSum) { _, result, error in
+                if let error = error { cont.resume(throwing: error); return }
+                let val = result?.sumQuantity()?.doubleValue(for: unit) ?? 0
+                cont.resume(returning: val)
+            }
+            self.store.execute(q)
+        }
+        // latest body mass
+        let kg = try await latestBodyMassKg()
+        guard kg > 0 else { return 0 }
+        // MET-hours approx = kcal / kg
+        return kcal / kg
     }
 }
 #else
