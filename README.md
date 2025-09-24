@@ -263,6 +263,37 @@ Add a license file if you plan to open source.
 ---
 Generated scaffold date: 2025-09-22
 
+### App Icons (Primary + Alternate “Dark”)
+Two icon sets are included in the asset catalog:
+- Primary: `Assets.xcassets/AppIcon.appiconset`
+- Alternate: `Assets.xcassets/AppIcon-Dark.appiconset` (switchable at runtime)
+
+A helper script generates all required sizes from 1024×1024 artwork using macOS `sips`:
+
+Usage (examples):
+```bash
+# Primary only
+python3 scripts/generate_app_icons.py --primary /absolute/path/to/primary_1024.png
+
+# Alternate (Dark) only
+python3 scripts/generate_app_icons.py --dark /absolute/path/to/dark_1024.png
+
+# Both at once
+python3 scripts/generate_app_icons.py \
+	--primary /absolute/path/to/primary_1024.png \
+	--dark /absolute/path/to/dark_1024.png
+```
+
+Notes:
+- Provide true 1024×1024, square, non-transparent artwork. PNG preferred (JPEG also supported).
+- The script preserves existing `Contents.json` and writes exactly the filenames listed there.
+- After generation, build in Xcode to preview.
+- The app includes a simple runtime icon picker in Settings to toggle the alternate icon (if the device supports alternate icons).
+
+Troubleshooting:
+- If icons don’t change on device, ensure app was launched at least once after install, and try killing/relaunching. Alternate icon changes are sandboxed by iOS and may not reflect immediately on the SpringBoard.
+- App Store submission typically expects no transparency and correct pixel sizes; the script produces exact sizes for all iPhone/iPad slots and iOS‑marketing (1024×1024).
+
 ### Chat API Modes
 The Coach tab supports two OpenAI API styles (toggle after you add an API key):
 - Completions (/v1/chat/completions) classic messages format.
