@@ -18,4 +18,11 @@ struct Study: Identifiable, Hashable {
     let summary: String
     let takeaways: [String]
     let category: Category
+
+    // Stable identifier derived from DOI if available, otherwise from title
+    var slug: String {
+        let base = (doi?.lowercased() ?? title.lowercased())
+        let allowed = base.unicodeScalars.filter { CharacterSet.alphanumerics.contains($0) }
+        return String(String.UnicodeScalarView(allowed))
+    }
 }

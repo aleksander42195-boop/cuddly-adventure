@@ -6,6 +6,7 @@ import Charts
 struct TodayView: View {
     @EnvironmentObject var app: AppState
     @Environment(\.themeTokens) private var theme
+    @State private var studyOfTheDay: Study? = nil
 
     var body: some View {
         ScrollView {
@@ -59,6 +60,29 @@ struct TodayView: View {
                     }
                 }
 
+                if let s = studyOfTheDay ?? StudyRecommender.shared.loadTodaysStudy() {
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Study of the day").font(.headline)
+                            Text(s.title).font(.subheadline).bold()
+                            Text("\(s.authors) • \(s.journal) (\(s.year))")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            if let first = s.takeaways.first { Text(first).font(.caption) }
+                            HStack {
+                                if let url = s.url {
+                                    Link("Open", destination: url)
+                                        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                                }
+                                Button(BookmarkStore.shared.isBookmarked(slug: s.slug) ? "Saved" : "Save") {
+                                    BookmarkStore.shared.toggle(slug: s.slug)
+                                }
+                                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                            }
+                        }
+                    }
+                }
+
                 Button {
                     app.tapHaptic()
                     Task { await app.refreshFromHealthIfAvailable() }
@@ -79,6 +103,7 @@ struct TodayView: View {
         }
         .refreshable {
             await app.refreshFromHealthIfAvailable()
+            studyOfTheDay = StudyRecommender.shared.selectStudy(for: app.today)
         }
         .background(AppTheme.background.ignoresSafeArea())
         .navigationTitle("Today")

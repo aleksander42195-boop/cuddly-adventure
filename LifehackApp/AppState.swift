@@ -22,6 +22,7 @@ final class AppState: ObservableObject {
     func refreshFromHealthIfAvailable() async {
         let snap = await healthService.safeTodaySnapshot()
         today = snap
+        NotificationsManager.shared.scheduleStudySuggestions(basedOn: snap)
     }
 
     var isHealthAuthorized: Bool { healthService.isAuthorized }
