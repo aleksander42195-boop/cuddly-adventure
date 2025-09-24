@@ -14,6 +14,7 @@ struct SettingsView: View {
                         VStack(alignment: .leading, spacing: AppTheme.spacingS) {
                             Text("Coach").font(.headline)
                             NavigationLink("Coach Engine") { CoachEngineSettingsView() }
+                            NavigationLink("HRV Studies") { StudiesView() }
                         }
                     }
                     GlassCard {
