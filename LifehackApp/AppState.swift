@@ -4,7 +4,7 @@ import SwiftUI
 
 @MainActor
 final class AppState: ObservableObject {
-    enum Tab: Hashable { case today, journal, nutrition, coach, settings }
+    enum Tab: Hashable { case today, journal, trends }
 
     @Published var selectedTab: Tab = .today
     @Published var isOnboardingPresented: Bool = false

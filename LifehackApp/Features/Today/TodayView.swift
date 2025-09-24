@@ -48,6 +48,18 @@ struct TodayView: View {
         }
         .background(AppTheme.background.ignoresSafeArea())
         .navigationTitle("Today")
+        .toolbar {
+            ToolbarItem(placement: .topBarLeading) {
+                HStack(spacing: 12) {
+                    NavigationLink(destination: SettingsView()) {
+                        Image(systemName: "gearshape")
+                    }
+                    NavigationLink(destination: ProfileView()) {
+                        Image(systemName: "person.crop.circle")
+                    }
+                }
+            }
+        }
     }
 }
 
