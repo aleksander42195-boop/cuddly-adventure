@@ -7,8 +7,11 @@ struct TrendsView: View {
     @EnvironmentObject var app: AppState
     @State private var hrv7: [HealthKitService.HealthDataPoint] = []
     @State private var steps7: [HealthKitService.HealthDataPoint] = []
+    @State private var rhr: [HealthKitService.HealthDataPoint] = []
+    @State private var energy: [HealthKitService.HealthDataPoint] = []
     @State private var loading: Bool = false
     @State private var days: Int = 7
+    @State private var smoothing: Bool = true
 
     var body: some View {
         ScrollView {
@@ -26,6 +29,9 @@ struct TrendsView: View {
                         }
                         .pickerStyle(.segmented)
                         .accessibilityLabel("Trends range")
+                        Toggle("Smoothing", isOn: $smoothing)
+                            .toggleStyle(.switch)
+                            .accessibilityLabel("Apply rolling average smoothing")
                     }
                 }
                 GlassCard {
@@ -113,6 +119,75 @@ date) { pt in
 #endif
                     }
                 }
+                GlassCard {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("Resting HR – last \(days) days").font(.headline)
+                            if loading { ProgressView().scaleEffect(0.8) }
+                        }
+#if canImport(Charts)
+                        let series = smoothing ? app.healthService.rollingAverage(rhr, window: 3) : rhr
+                        if series.isEmpty {
+                            Text("No data").foregroundStyle(.secondary)
+                        } else {
+                            Chart(series, id: \.date) { pt in
+                                LineMark(x: .value("Date", pt.date, unit: .day), y: .value("RHR", pt.value))
+                                    .interpolationMethod(.monotone)
+                                    .foregroundStyle(.orange)
+                                if let last = series.last, pt.date == last.date {
+                                    Annotation(position: .overlay, alignment: .topTrailing) {
+                                        Text("\(Int(last.value)) bpm")
+                                            .font(.caption2)
+                                            .padding(4)
+                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                                    }
+                                }
+                            }
+                            .frame(height: 160)
+                            .chartXAxis { AxisMarks(values: .automatic(desiredCount: 4)) }
+                            .chartYAxis { AxisMarks(position: .leading) }
+                            .accessibilityLabel("\(days)-day resting heart rate chart. Latest \(Int(series.last?.value ?? 0)) bpm.")
+                        }
+#else
+                        Text("Charts unavailable on this platform").foregroundStyle(.secondary)
+#endif
+                    }
+                }
+                GlassCard {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Text("Energy – last \(days) days").font(.headline)
+                            if loading { ProgressView().scaleEffect(0.8) }
+                        }
+#if canImport(Charts)
+                        let series = smoothing ? app.healthService.rollingAverage(energy, window: 3) : energy
+                        if series.isEmpty {
+                            Text("No data").foregroundStyle(.secondary)
+                        } else {
+                            Chart(series, id: \.date) { pt in
+                                AreaMark(x: .value("Date", pt.date, unit: .day), y: .value("Energy", pt.value))
+                                    .foregroundStyle(.green.opacity(0.35).gradient)
+                                LineMark(x: .value("Date", pt.date, unit: .day), y: .value("Energy", pt.value))
+                                    .foregroundStyle(.green)
+                                if let last = series.last, pt.date == last.date {
+                                    Annotation(position: .overlay, alignment: .topTrailing) {
+                                        Text("\(Int(last.value))")
+                                            .font(.caption2)
+                                            .padding(4)
+                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                                    }
+                                }
+                            }
+                            .frame(height: 160)
+                            .chartXAxis { AxisMarks(values: .automatic(desiredCount: 4)) }
+                            .chartYAxis { AxisMarks(position: .leading) }
+                            .accessibilityLabel("\(days)-day energy chart. Latest \(Int(series.last?.value ?? 0)).")
+                        }
+#else
+                        Text("Charts unavailable on this platform").foregroundStyle(.secondary)
+#endif
+                    }
+                }
             }
             .padding()
         }
@@ -128,10 +203,16 @@ date) { pt in
         loading = true
         async let hrv = app.healthService.hrvDailyAverage(days: days)
         async let steps = app.healthService.stepsDailyTotal(days: days)
+        async let rhrA = app.healthService.restingHRDailyAverage(days: days)
+        async let energyA = app.healthService.energyProxyDaily(days: days)
         let hrvRes = (try? await hrv) ?? []
         let stepsRes = (try? await steps) ?? []
+        let rhrRes = (try? await rhrA) ?? []
+        let energyRes = await energyA
         hrv7 = hrvRes
         steps7 = stepsRes
+        rhr = rhrRes
+        energy = energyRes
         loading = false
     }
 }

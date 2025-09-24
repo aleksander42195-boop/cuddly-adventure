@@ -43,10 +43,19 @@ struct TodayView: View {
                         Text("Resting HR: \(app.today.restingHR, specifier: "%.0f") bpm · Steps: \(app.today.steps)")
                             .foregroundStyle(.secondary)
 #if canImport(Charts)
-                        TodayHRVSparkline()
-                            .frame(height: 60)
-                            .accessibilityLabel("7-day HRV sparkline. Latest \(app.today.hrvLabel).")
+                        if app.isHealthAuthorized {
+                            TodayHRVSparkline()
+                                .frame(height: 60)
+                                .accessibilityLabel("7-day HRV sparkline. Latest \(app.today.hrvLabel).")
+                        }
 #endif
+                        if !app.isHealthAuthorized {
+                            HStack {
+                                Spacer()
+                                Button("Allow Health") { Task { await app.requestHealthAuthorization() } }
+                                    .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                            }
+                        }
                     }
                 }
 

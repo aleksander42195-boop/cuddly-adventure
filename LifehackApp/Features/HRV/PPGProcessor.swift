@@ -19,13 +19,23 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private let queue = DispatchQueue(label: "ppg.processor.queue")
 
     // Signal processing state
-    private var samples: [Double] = []   // normalized intensity samples
+    private var rawSamples: [Double] = []    // normalized intensity samples
+    private var filteredSamples: [Double] = []
     private var timestamps: [Double] = []
     private var lastSDNN: Double = 0
 
     // Config
     private let sampleRate: Double = 30.0 // approx; depends on device
     private let windowSeconds: Double = 45 // sliding window for SDNN
+    private let warmupSeconds: Double = 8
+
+    // Band-pass filter params (~0.7–3.5 Hz)
+    private let cutoffLowHz: Double = 0.7
+    private let cutoffHighHz: Double = 3.5
+    private var hpY: Double = 0
+    private var hpXPrev: Double = 0
+    private var lpY: Double = 0
+    private var cameraDevice: AVCaptureDevice?
 
     func start() throws {
         session.beginConfiguration()
@@ -35,7 +45,8 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             throw NSError(domain: "PPG", code: -1, userInfo: [NSLocalizedDescriptionKey: "Camera not available"])
         }
         let input = try AVCaptureDeviceInput(device: device)
-        if session.canAddInput(input) { session.addInput(input) }
+    if session.canAddInput(input) { session.addInput(input) }
+    cameraDevice = device
 
         output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
         output.alwaysDiscardsLateVideoFrames = true
@@ -46,12 +57,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         output.connections.first?.videoOrientation = .portrait
 
         // Enable torch if desired
-        if device.hasTorch && (delegate?.ppgProcessorRequiresTorch(self) ?? true) {
-            try? device.lockForConfiguration()
-            device.torchMode = .on
-            try? device.setTorchModeOn(level: AVCaptureDevice.maxAvailableTorchLevel * 0.6)
-            device.unlockForConfiguration()
-        }
+        applyTorchState()
 
         session.commitConfiguration()
         session.startRunning()
@@ -64,8 +70,27 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             device.unlockForConfiguration()
         }
         session.stopRunning()
-        samples.removeAll()
+        rawSamples.removeAll()
+        filteredSamples.removeAll()
         timestamps.removeAll()
+        hpY = 0; hpXPrev = 0; lpY = 0
+    }
+
+    func setTorch(enabled: Bool) {
+        guard let device = cameraDevice, device.hasTorch else { return }
+        try? device.lockForConfiguration()
+        defer { device.unlockForConfiguration() }
+        if enabled {
+            device.torchMode = .on
+            try? device.setTorchModeOn(level: AVCaptureDevice.maxAvailableTorchLevel * 0.6)
+        } else {
+            device.torchMode = .off
+        }
+    }
+
+    private func applyTorchState() {
+        let wants = delegate?.ppgProcessorRequiresTorch(self) ?? true
+        setTorch(enabled: wants)
     }
 
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
@@ -100,22 +125,25 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         // Invert (blood volume pulse correlates with lower intensity when finger covers lens)
         let sample = 1.0 - mean
 
-        // Append and keep sliding window
-        samples.append(sample)
+        // Band-pass filter (HP then LP) and append
+        let band = bandpass(sample)
+        rawSamples.append(sample)
+        filteredSamples.append(band)
         timestamps.append(t)
         dropOldSamples(olderThan: t - windowSeconds)
 
-        // Simple detrend + bandpass-like via moving average subtraction
-        let filtered = movingAverageDetrend(samples, window: Int(sampleRate * 0.8))
+        // Use filteredSamples for HR/RR estimation
+        let filtered = filteredSamples
 
-        // Peak detection for RR intervals (basic method with refractory period)
+        // Peak detection with adaptive thresholds
         let (rr, hr) = detectRRAndHR(filtered: filtered, times: timestamps, minRR: 0.3, maxRR: 2.0)
 
         if let last = filtered.last { DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didUpdateSignal: last) } }
-        if hr > 0 { DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didUpdateHeartRate: hr) } }
+        let duration = (timestamps.last ?? 0) - (timestamps.first ?? 0)
+        if hr > 0, duration >= warmupSeconds { DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didUpdateHeartRate: hr) } }
 
         let sdnn = sdnnMs(rr)
-        if sdnn > 0, abs(sdnn - lastSDNN) > 1 {
+        if sdnn > 0, duration >= warmupSeconds, abs(sdnn - lastSDNN) > 1 {
             lastSDNN = sdnn
             DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didComputeSDNN: sdnn) }
         }
@@ -128,26 +156,40 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         }
     }
 
-    private func movingAverageDetrend(_ x: [Double], window: Int) -> [Double] {
-        guard window > 1, x.count > window else { return x }
-        var result = [Double](repeating: 0, count: x.count)
-        var acc = 0.0
-        for i in 0..<x.count {
-            acc += x[i]
-            if i >= window { acc -= x[i - window] }
-            let mean = i >= window - 1 ? acc / Double(window) : acc / Double(i + 1)
-            result[i] = x[i] - mean
-        }
-        return result
+    // Simple 1st-order HP then LP to approximate band-pass
+    private func bandpass(_ x: Double) -> Double {
+        // High-pass
+        let dt = 1.0 / sampleRate
+        let rcHigh = 1.0 / (2 * Double.pi * cutoffLowHz)
+        let alphaHigh = rcHigh / (rcHigh + dt)
+        hpY = alphaHigh * (hpY + x - hpXPrev)
+        hpXPrev = x
+        // Low-pass
+        let rcLow = 1.0 / (2 * Double.pi * cutoffHighHz)
+        let alphaLow = dt / (rcLow + dt)
+        lpY = lpY + alphaLow * (hpY - lpY)
+        return lpY
     }
 
     private func detectRRAndHR(filtered: [Double], times: [Double], minRR: Double, maxRR: Double) -> ([Double], Double) {
-        guard filtered.count == times.count, filtered.count > 3 else { return ([], 0) }
+        guard filtered.count == times.count, filtered.count > 5 else { return ([], 0) }
+        // Adaptive threshold based on recent window statistics
+        let window = min(Int(sampleRate * 3.0), filtered.count)
+        let recent = Array(filtered.suffix(window))
+        let mean = recent.reduce(0, +) / Double(recent.count)
+        let variance = recent.reduce(0) { $0 + pow($1 - mean, 2) } / Double(recent.count)
+        let std = max(1e-6, sqrt(variance))
+        let threshold = mean + 0.5 * std
+
         var peaks: [Int] = []
-        let refractory = Int(sampleRate * 0.3)
-        for i in 1..<(filtered.count - 1) {
-            if filtered[i] > filtered[i - 1] && filtered[i] > filtered[i + 1] {
-                if peaks.last.map({ i - $0 > refractory }) ?? true {
+        let refractorySamples = Int(sampleRate * minRR * 0.8) // a bit stricter
+        for i in 2..<(filtered.count - 2) {
+            let y0 = filtered[i - 1]
+            let y1 = filtered[i]
+            let y2 = filtered[i + 1]
+            // Local maximum + above dynamic threshold
+            if y1 > y0 && y1 > y2 && y1 > threshold {
+                if peaks.last.map({ i - $0 > refractorySamples }) ?? true {
                     peaks.append(i)
                 }
             }
@@ -158,7 +200,13 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             let dt = times[peaks[i]] - times[peaks[i - 1]]
             if dt >= minRR && dt <= maxRR { rr.append(dt) }
         }
-        let hr = rr.last.map { 60.0 / $0 } ?? 0
+        // Heart rate from median of last few RR for stability
+        let hr: Double
+        if rr.isEmpty { hr = 0 } else {
+            let tail = Array(rr.suffix(5)).sorted()
+            let median = tail[tail.count / 2]
+            hr = 60.0 / median
+        }
         return (rr, hr)
     }
 

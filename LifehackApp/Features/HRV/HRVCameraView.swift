@@ -8,6 +8,7 @@ struct HRVCameraView: View {
     @State private var currentHR: Double = 0
     @State private var currentSDNN: Double = 0
     @State private var isRunning = false
+    @AppStorage("ppgTorchEnabled") private var torchEnabled: Bool = true
 
     var body: some View {
         NavigationStack {
@@ -33,6 +34,10 @@ struct HRVCameraView: View {
                 HStack(spacing: 12) {
                     Button(isRunning ? "Stop" : "Start") { toggleCapture() }
                         .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                    Toggle(isOn: $torchEnabled) { Image(systemName: torchEnabled ? "flashlight.on.fill" : "flashlight.off.fill") }
+                        .toggleStyle(.button)
+                        .labelStyle(.iconOnly)
+                        .onChange(of: torchEnabled) { _, newVal in ppg.setTorch(enabled: newVal) }
                     Button("Close") { stopAndClose() }
                         .buttonStyle(AppTheme.LiquidGlassButtonStyle())
                 }
@@ -76,7 +81,7 @@ struct HRVCameraView: View {
         },
         onHR: { bpm in currentHR = bpm },
         onSDNN: { ms in currentSDNN = ms },
-        wantsTorch: { true }
+        wantsTorch: { torchEnabled }
     ) }
 
     private func metric(title: String, value: String) -> some View {
