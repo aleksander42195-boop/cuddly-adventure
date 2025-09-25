@@ -184,6 +184,10 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
 
         var peaks: [Int] = []
         let refractorySamples = Int(sampleRate * minRR * 0.8) // a bit stricter
+        
+        // Ensure we have enough samples for safe indexing
+        guard filtered.count >= 5 else { return ([], 0) }
+        
         for i in 2..<(filtered.count - 2) {
             let y0 = filtered[i - 1]
             let y1 = filtered[i]
@@ -203,9 +207,16 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         }
         // Heart rate from median of last few RR for stability
         let hr: Double
-        if rr.isEmpty { hr = 0 } else {
+        if rr.isEmpty { 
+            hr = 0 
+        } else {
             let tail = Array(rr.suffix(5)).sorted()
-            let median = tail[tail.count / 2]
+            guard !tail.isEmpty else { hr = 0; return (rr, hr) }
+            
+            // Proper median calculation
+            let median = tail.count % 2 == 1 
+                ? tail[tail.count / 2] 
+                : (tail[tail.count / 2 - 1] + tail[tail.count / 2]) / 2.0
             hr = 60.0 / median
         }
         return (rr, hr)

@@ -13,7 +13,6 @@ final class NotificationsManager: NSObject, UNUserNotificationCenterDelegate {
     private let lastShownKey = "lastShownStudySlugs"
     private let lastScheduleKey = "lastStudyNotificationDate"
     private let dailyCap = 3
-    private let quietHours = 22...6 // 22:00 to 06:59
 
     func configure() {
         center.delegate = self
@@ -212,8 +211,7 @@ final class NotificationsManager: NSObject, UNUserNotificationCenterDelegate {
     }
 
     private func isQuietHour(hour: Int) -> Bool {
-        if quietHours.contains(hour) { return true }
-        // handle wrap-around for 22...6 range
+        // Quiet hours: 22:00 to 06:59 (wraps around midnight)
         return hour >= 22 || hour <= 6
     }
 }

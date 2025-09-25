@@ -10,7 +10,7 @@ enum HealthKitServiceError: Error {
 private extension Calendar {
     var todayRange: ClosedRange<Date> {
         let start = startOfDay(for: Date())
-        let end = date(byAdding: .day, value: 1, to: start) ?? Date()
+        let end = date(byAdding: DateComponents(day: 1, second: -1), to: start) ?? Date()
         return start...end
     }
 }
