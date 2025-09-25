@@ -17,7 +17,6 @@ enum KeychainError: Error, LocalizedError {
 
 // Lightweight string Keychain wrapper
 enum Keychain {
-    @discardableResult
     static func setString(_ value: String,
                           service: String,
                           account: String,
@@ -61,7 +60,6 @@ enum Keychain {
         return str
     }
 
-    @discardableResult
     static func delete(service: String, account: String) throws {
         let q: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,

@@ -6,6 +6,10 @@ struct ContentView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
+            // Ensure TabView has a background
+            Color(.systemBackground)
+                .ignoresSafeArea()
+            
             TabView(selection: $appState.selectedTab) {
                 TodayView()
                     .tabItem {

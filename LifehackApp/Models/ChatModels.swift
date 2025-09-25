@@ -1,7 +1,7 @@
 import Foundation
 
 public struct ChatMessage: Codable, Sendable, Identifiable {
-    public enum Role: String, Codable { case system, user, assistant }
+    public enum Role: String, Codable, Sendable { case system, user, assistant }
     public var id: UUID
     public var role: Role
     public var content: String
