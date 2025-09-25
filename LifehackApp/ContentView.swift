@@ -2,54 +2,31 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject private var appState: AppState
-    @State private var showCamera: Bool = false
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            // Ensure TabView has a background
-            Color(.systemBackground)
-                .ignoresSafeArea()
-            
-            TabView(selection: $appState.selectedTab) {
-                TodayView()
-                    .tabItem {
-                        ZStack(alignment: .topTrailing) {
-                            Label("Today", systemImage: "sun.max")
-                            if !appState.isHealthAuthorized {
-                                Circle()
-                                    .fill(Color.red)
-                                    .frame(width: 8, height: 8)
-                                    .offset(x: 8, y: -6)
-                                    .accessibilityHidden(true)
-                            }
+        TabView(selection: $appState.selectedTab) {
+            TodayView()
+                .tabItem {
+                    ZStack(alignment: .topTrailing) {
+                        Label("Today", systemImage: "sun.max")
+                        if !appState.isHealthAuthorized {
+                            Circle()
+                                .fill(Color.red)
+                                .frame(width: 8, height: 8)
+                                .offset(x: 8, y: -6)
+                                .accessibilityHidden(true)
                         }
                     }
-                    .tag(AppState.Tab.today)
-                JournalView()
-                    .tabItem { Label("Journal", systemImage: "book.closed") }
-                    .tag(AppState.Tab.journal)
-                TrendsView()
-                    .tabItem { Label("Trends", systemImage: "chart.line.uptrend.xyaxis") }
-                    .tag(AppState.Tab.trends)
-            }
-
-            Button {
-                showCamera = true
-            } label: {
-                Image(systemName: "camera.aperture")
-                    .font(.system(size: 22, weight: .semibold))
-                    .padding(18)
-                    .background(
-                        Circle().fill(.ultraThinMaterial)
-                            .overlay(Circle().stroke(Color.white.opacity(0.18), lineWidth: 1))
-                            .shadow(color: .black.opacity(0.25), radius: 20, x: 0, y: 10)
-                    )
-            }
-            .buttonStyle(.plain)
-            .padding(.bottom, 24)
-            .accessibilityLabel("Open Camera for HRV measurement")
-            .sheet(isPresented: $showCamera) { HRVCameraView() }
+                }
+                .tag(AppState.Tab.today)
+            JournalView()
+                .tabItem { Label("Journal", systemImage: "book.closed") }
+                .tag(AppState.Tab.journal)
+            TrendsView()
+                .tabItem { Label("Trends", systemImage: "chart.line.uptrend.xyaxis") }
+                .tag(AppState.Tab.trends)
         }
+        .background(AppTheme.background.ignoresSafeArea())
     }
 }
 

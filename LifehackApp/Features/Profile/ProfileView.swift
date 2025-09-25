@@ -26,6 +26,18 @@ struct ProfileView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("User Metrics").font(.headline)
+                        NavigationLink("Health Settings") { 
+                            UserMetricsView()
+                        }
+                        NavigationLink("Privacy & Data") { 
+                            PrivacySettingsView()
+                        }
+                    }
+                }
             }
             .padding()
         }

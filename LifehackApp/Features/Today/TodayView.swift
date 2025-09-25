@@ -40,7 +40,7 @@ struct TodayView: View {
                 }
             }
         }
-        // TODO: Re-enable sheets after fixing import issues
+        // TODO: Fix sheet imports
         // .sheet(isPresented: $showingHRVExplanation) {
         //     HRVCameraExplanationView()
         // }
