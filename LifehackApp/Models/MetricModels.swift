@@ -129,6 +129,12 @@ struct TodaySnapshot: Sendable {
         stress: 0, energy: 0, battery: 0,
         hrvSDNNms: 0, restingHR: 0, steps: 0
     )
+
+    // Sample placeholder data for previews/testing
+    static let placeholder = TodaySnapshot(
+        stress: 0.3, energy: 0.7, battery: 0.8,
+        hrvSDNNms: 42.5, restingHR: 65, steps: 8247
+    )
 }
 
 private extension Double {

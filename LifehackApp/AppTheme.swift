@@ -149,7 +149,7 @@ enum AppTheme {
         let accent = AppTheme.accent
     }
 
-    private struct ThemeTokensKey: EnvironmentKey {
+    struct ThemeTokensKey: EnvironmentKey {
         static let defaultValue: Tokens = .init()
     }
 

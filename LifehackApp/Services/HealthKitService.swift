@@ -168,7 +168,7 @@ final class HealthKitService {
                 if let error = error { cont.resume(throwing: error); return }
                 guard let collection = collection else { cont.resume(returning: []); return }
                 var points: [HealthDataPoint] = []
-                collection.enumerateStatistics(from: startDate, to: calendar.date(byAdding: .day, value: 1, to: endDate)!) { stats, _ in
+                collection.enumerateStatistics(from: startDate, to: self.calendar.date(byAdding: .day, value: 1, to: endDate)!) { stats, _ in
                     let date = stats.startDate
                     let value: Double
                     switch options {

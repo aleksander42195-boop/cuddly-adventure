@@ -152,7 +152,8 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private func dropOldSamples(olderThan cutoff: Double) {
         while let firstT = timestamps.first, firstT < cutoff {
             timestamps.removeFirst()
-            samples.removeFirst()
+            rawSamples.removeFirst()
+            filteredSamples.removeFirst()
         }
     }
 

@@ -21,30 +21,11 @@
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>UIApplicationSceneManifest</key>
-    <dict>
-        <key>UIApplicationSupportsMultipleScenes</key>
-        <false/>
-        <key>UISceneConfigurations</key>
-        <dict>
-            <key>UIWindowSceneSessionRoleApplication</key>
-            <array>
-                <dict>
-                    <key>UISceneConfigurationName</key>
-                    <string>Default Configuration</string>
-                    <key>UISceneDelegateClassName</key>
-                    <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-                    <key>UISceneStoryboardFile</key>
-                    <string>Main</string>
-                </dict>
-            </array>
-        </dict>
-    </dict>
+    <dict/>
     <key>UIApplicationSupportsIndirectInputEvents</key>
     <true/>
     <key>UILaunchStoryboardName</key>
     <string>LaunchScreen</string>
-    <key>UIMainStoryboardFile</key>
-    <string>Main</string>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
         <string>armv7</string>
@@ -74,6 +55,8 @@
     <!-- App-specific keys merged from HEAD: health description and icons -->
     <key>NSHealthShareUsageDescription</key>
     <string>This app reads your activity, mindfulness and sleep data to display daily wellness metrics.</string>
+    <key>NSHealthUpdateUsageDescription</key>
+    <string>This app can write workout and mindfulness data to HealthKit to help track your wellness journey.</string>
     <key>CFBundleIcons</key>
     <dict>
         <key>CFBundlePrimaryIcon</key>

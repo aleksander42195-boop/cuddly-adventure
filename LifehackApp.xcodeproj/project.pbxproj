@@ -7,23 +7,132 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BOOTST000000000000001 /* AppBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BOOTST000000000000000 /* AppBootstrap.swift */; };
+		KEYCHN000000000000001 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = KEYCHN000000000000000 /* Keychain.swift */; };
+		COACHENG000000000000001 /* CoachEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHENG000000000000000 /* CoachEngine.swift */; };
+		CHATMDL000000000000001 /* ChatModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHATMDL000000000000000 /* ChatModels.swift */; };
+		SHRKEYS000000000000001 /* SharedKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = SHRKEYS000000000000000 /* SharedKeys.swift */; };
+		APPGRUP000000000000001 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPGRUP000000000000000 /* AppGroup.swift */; };
+		SECRTS000000000000001 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = SECRTS000000000000000 /* Secrets.swift */; };
+		CHATSVC000000000000001 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHATSVC000000000000000 /* ChatService.swift */; };
+		OFFHEUR000000000000001 /* OfflineHeuristicsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OFFHEUR000000000000000 /* OfflineHeuristicsService.swift */; };
+		OAIRESP000000000000001 /* OpenAIResponsesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAIRESP000000000000000 /* OpenAIResponsesService.swift */; };
+		OAICHAT000000000000001 /* OpenAIChatCompletionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAICHAT000000000000000 /* OpenAIChatCompletionsService.swift */; };
 		A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234561 /* DeviceManager.swift */; };
-		A1234567890ABCDEF1234562 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234563 /* Main.storyboard */; };
 		A1234567890ABCDEF1234564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234565 /* Assets.xcassets */; };
-		A1234567890ABCDEF1234566 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234567 /* LaunchScreen.storyboard */; };
 		A1234567890ABCDEF123456A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456B /* AppDelegate.swift */; };
 		A1234567890ABCDEF123456C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456D /* SceneDelegate.swift */; };
 		A1234567890ABCDEF123456E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456F /* ViewController.swift */; };
+		A1MAIN000000000000000002 /* LifehackApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1MAIN000000000000000001 /* LifehackApp.swift */; };
+		HLTHKT000000000000000001 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = HLTHKT000000000000000000 /* HealthKit.framework */; };
+		COACH000000000000000001 /* CoachEngineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACH000000000000000000 /* CoachEngineManager.swift */; };
+		THEME000000000000000001 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = THEME000000000000000000 /* AppTheme.swift */; };
+		ROOTT000000000000000001 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ROOTT000000000000000000 /* RootTabView.swift */; };
+		STATE000000000000000001 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = STATE000000000000000000 /* AppState.swift */; };
+		CNTNT000000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CNTNT000000000000000000 /* ContentView.swift */; };
+		METRICS000000000000001 /* MetricModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = METRICS000000000000000 /* MetricModels.swift */; };
+		HLTHKIT000000000000001 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = HLTHKIT000000000000000 /* HealthKitService.swift */; };
+		NOTIF00000000000000001 /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTIF00000000000000000 /* NotificationsManager.swift */; };
+		HAPTCS000000000000001 /* HapticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = HAPTCS000000000000000 /* HapticsManager.swift */; };
+		STUDY00000000000000001 /* Study.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDY00000000000000000 /* Study.swift */; };
+		HRVSTUD000000000000001 /* HRVStudies.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVSTUD000000000000000 /* HRVStudies.swift */; };
+		BKMKSTR000000000000001 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BKMKSTR000000000000000 /* BookmarkStore.swift */; };
+		GLSCARD000000000000001 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = GLSCARD000000000000000 /* GlassCard.swift */; };
+		STRGAUG000000000000001 /* StressGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = STRGAUG000000000000000 /* StressGauge.swift */; };
+		BATTPAL000000000000001 /* BatteryPaletteRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BATTPAL000000000000000 /* BatteryPaletteRing.swift */; };
+		STARSLP000000000000001 /* StarrySleepCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = STARSLP000000000000000 /* StarrySleepCard.swift */; };
+		ACTPYR000000000000001 /* ActivityPyramid.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACTPYR000000000000000 /* ActivityPyramid.swift */; };
+		METRNG000000000000001 /* MetricRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = METRNG000000000000000 /* MetricRing.swift */; };
+		TODAYV000000000000001 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TODAYV000000000000000 /* TodayView.swift */; };
+		STUDYV000000000000001 /* StudiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDYV000000000000000 /* StudiesView.swift */; };
+		SETTGV000000000000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SETTGV000000000000000 /* SettingsView.swift */; };
+		PROFIV000000000000001 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PROFIV000000000000000 /* ProfileView.swift */; };
+		TRENDSV000000000000001 /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TRENDSV000000000000000 /* TrendsView.swift */; };
+		JOURNV000000000000001 /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JOURNV000000000000000 /* JournalView.swift */; };
+		NUTRIV000000000000001 /* NutritionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NUTRIV000000000000000 /* NutritionView.swift */; };
+		COACHV000000000000001 /* CoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHV000000000000000 /* CoachView.swift */; };
+		COACHGV000000000000001 /* CoachingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHGV000000000000000 /* CoachingView.swift */; };
+		STRMCV000000000000001 /* StreamingCoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = STRMCV000000000000000 /* StreamingCoachView.swift */; };
+		COACHVM000000000000001 /* CoachVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHVM000000000000000 /* CoachVM.swift */; };
+		COACHSET00000000000001 /* CoachEngineSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHSET00000000000000 /* CoachEngineSettingsView.swift */; };
+		HRVCAM000000000000001 /* HRVCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVCAM000000000000000 /* HRVCameraView.swift */; };
+		PPGPROC000000000000001 /* PPGProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGPROC000000000000000 /* PPGProcessor.swift */; };
+		PPGDLG000000000000001 /* PPGProcessorDelegateAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGDLG000000000000000 /* PPGProcessorDelegateAdapter.swift */; };
+		APPICON000000000000001 /* AppIconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPICON000000000000000 /* AppIconManager.swift */; };
+		ZODIAC000000000000001 /* Zodiac.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZODIAC000000000000000 /* Zodiac.swift */; };
+		OAICHAT2000000000000001 /* OpenAIChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAICHAT2000000000000000 /* OpenAIChatService.swift */; };
+		OAICLIENT000000000001 /* OpenAIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAICLIENT000000000000 /* OpenAIClient.swift */; };
+		SSE0000000000000000001 /* SSE.swift in Sources */ = {isa = PBXBuildFile; fileRef = SSE0000000000000000000 /* SSE.swift */; };
+		TOKENCTR000000000000001 /* TokenCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = TOKENCTR000000000000000 /* TokenCounter.swift */; };
+		SECSTR000000000000001 /* SecureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = SECSTR000000000000000 /* SecureStore.swift */; };
+		DEVFLG000000000000001 /* DeveloperFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEVFLG000000000000000 /* DeveloperFlags.swift */; };
+		SLPSVC000000000000001 /* SleepService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SLPSVC000000000000000 /* SleepService.swift */; };
+		STUDYREC000000000000001 /* StudyRecommender.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDYREC000000000000000 /* StudyRecommender.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BOOTST000000000000000 /* AppBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBootstrap.swift; sourceTree = "<group>"; };
+		COACHENG000000000000000 /* CoachEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CoachEngine.swift; sourceTree = "<group>"; };
+		CHATMDL000000000000000 /* ChatModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ChatModels.swift; sourceTree = "<group>"; };
+		SHRKEYS000000000000000 /* SharedKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config/SharedKeys.swift; sourceTree = "<group>"; };
+		APPGRUP000000000000000 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config/AppGroup.swift; sourceTree = "<group>"; };
+		SECRTS000000000000000 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Secrets.swift; sourceTree = "<group>"; };
+		CHATSVC000000000000000 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ChatService.swift; sourceTree = "<group>"; };
+		KEYCHN000000000000000 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Security/Keychain.swift; sourceTree = "<group>"; };
+		OFFHEUR000000000000000 /* OfflineHeuristicsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OfflineHeuristicsService.swift; sourceTree = "<group>"; };
+		OAIRESP000000000000000 /* OpenAIResponsesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIResponsesService.swift; sourceTree = "<group>"; };
+		OAICHAT000000000000000 /* OpenAIChatCompletionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIChatCompletionsService.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234561 /* DeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManager.swift; sourceTree = "<group>"; };
-		A1234567890ABCDEF1234563 /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234565 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		A1234567890ABCDEF1234567 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234568 /* LifehackApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LifehackApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1234567890ABCDEF1234569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C0DEC0DEC0DEC0DEC0DEC0D1 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Signing.xcconfig; sourceTree = SOURCE_ROOT; };
+		A1MAIN000000000000000001 /* LifehackApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifehackApp.swift; sourceTree = "<group>"; };
+		COACH000000000000000000 /* CoachEngineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CoachEngineManager.swift; sourceTree = "<group>"; };
+		THEME000000000000000000 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		ROOTT000000000000000000 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		STATE000000000000000000 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		CNTNT000000000000000000 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		ENTITL000000000000000000 /* LifehackApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LifehackApp.entitlements; sourceTree = "<group>"; };
+		HLTHKT000000000000000000 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
+		METRICS000000000000000 /* MetricModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/MetricModels.swift; sourceTree = "<group>"; };
+		HLTHKIT000000000000000 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/HealthKitService.swift; sourceTree = "<group>"; };
+		NOTIF00000000000000000 /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/NotificationsManager.swift; sourceTree = "<group>"; };
+		HAPTCS000000000000000 /* HapticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/HapticsManager.swift; sourceTree = "<group>"; };
+		STUDY00000000000000000 /* Study.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Study.swift; sourceTree = "<group>"; };
+		HRVSTUD000000000000000 /* HRVStudies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/HRVStudies.swift; sourceTree = "<group>"; };
+		BKMKSTR000000000000000 /* BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/BookmarkStore.swift; sourceTree = "<group>"; };
+		GLSCARD000000000000000 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/GlassCard.swift; sourceTree = "<group>"; };
+		STRGAUG000000000000000 /* StressGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/StressGauge.swift; sourceTree = "<group>"; };
+		BATTPAL000000000000000 /* BatteryPaletteRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/BatteryPaletteRing.swift; sourceTree = "<group>"; };
+		STARSLP000000000000000 /* StarrySleepCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/StarrySleepCard.swift; sourceTree = "<group>"; };
+		ACTPYR000000000000000 /* ActivityPyramid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/ActivityPyramid.swift; sourceTree = "<group>"; };
+		METRNG000000000000000 /* MetricRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/MetricRing.swift; sourceTree = "<group>"; };
+		TODAYV000000000000000 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Today/TodayView.swift; sourceTree = "<group>"; };
+		STUDYV000000000000000 /* StudiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Studies/StudiesView.swift; sourceTree = "<group>"; };
+		SETTGV000000000000000 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/SettingsView.swift; sourceTree = "<group>"; };
+		PROFIV000000000000000 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/ProfileView.swift; sourceTree = "<group>"; };
+		TRENDSV000000000000000 /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Trends/TrendsView.swift; sourceTree = "<group>"; };
+		JOURNV000000000000000 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Journal/JournalView.swift; sourceTree = "<group>"; };
+		NUTRIV000000000000000 /* NutritionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Nutrition/NutritionView.swift; sourceTree = "<group>"; };
+		COACHV000000000000000 /* CoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachView.swift; sourceTree = "<group>"; };
+		COACHGV000000000000000 /* CoachingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachingView.swift; sourceTree = "<group>"; };
+		STRMCV000000000000000 /* StreamingCoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/StreamingCoachView.swift; sourceTree = "<group>"; };
+		COACHVM000000000000000 /* CoachVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachVM.swift; sourceTree = "<group>"; };
+		COACHSET00000000000000 /* CoachEngineSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/CoachEngineSettingsView.swift; sourceTree = "<group>"; };
+		HRVCAM000000000000000 /* HRVCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/HRVCameraView.swift; sourceTree = "<group>"; };
+		PPGPROC000000000000000 /* PPGProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessor.swift; sourceTree = "<group>"; };
+		PPGDLG000000000000000 /* PPGProcessorDelegateAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessorDelegateAdapter.swift; sourceTree = "<group>"; };
+		APPICON000000000000000 /* AppIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/AppIconManager.swift; sourceTree = "<group>"; };
+		ZODIAC000000000000000 /* Zodiac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/Zodiac.swift; sourceTree = "<group>"; };
+		OAICHAT2000000000000000 /* OpenAIChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIChatService.swift; sourceTree = "<group>"; };
+		OAICLIENT000000000000 /* OpenAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIClient.swift; sourceTree = "<group>"; };
+		SSE0000000000000000000 /* SSE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SSE.swift; sourceTree = "<group>"; };
+		TOKENCTR000000000000000 /* TokenCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/TokenCounter.swift; sourceTree = "<group>"; };
+		SECSTR000000000000000 /* SecureStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SecureStore.swift; sourceTree = "<group>"; };
+		DEVFLG000000000000000 /* DeveloperFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DeveloperFlags.swift; sourceTree = "<group>"; };
+		SLPSVC000000000000000 /* SleepService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SleepService.swift; sourceTree = "<group>"; };
+		STUDYREC000000000000000 /* StudyRecommender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/StudyRecommender.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,6 +140,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				HLTHKT000000000000000001 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,6 +153,7 @@
 				C0DEC0DEC0DEC0DEC0DEC0D2 /* Config */,
 				A1234567890ABCDEF1234572 /* LifehackApp */,
 				A1234567890ABCDEF1234573 /* Products */,
+				FRAMEWK000000000000000 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -57,13 +168,67 @@
 		A1234567890ABCDEF1234572 /* LifehackApp */ = {
 			isa = PBXGroup;
 			children = (
+				A1MAIN000000000000000001 /* LifehackApp.swift */,
+				ENTITL000000000000000000 /* LifehackApp.entitlements */,
+				COACH000000000000000000 /* CoachEngineManager.swift */,
+				THEME000000000000000000 /* AppTheme.swift */,
+				ROOTT000000000000000000 /* RootTabView.swift */,
+				STATE000000000000000000 /* AppState.swift */,
+				CNTNT000000000000000000 /* ContentView.swift */,
+				BOOTST000000000000000 /* AppBootstrap.swift */,
+				METRICS000000000000000 /* MetricModels.swift */,
+				COACHENG000000000000000 /* CoachEngine.swift */,
+				CHATMDL000000000000000 /* ChatModels.swift */,
+				CHATSVC000000000000000 /* ChatService.swift */,
+				SHRKEYS000000000000000 /* SharedKeys.swift */,
+				APPGRUP000000000000000 /* AppGroup.swift */,
+				SECRTS000000000000000 /* Secrets.swift */,
+				KEYCHN000000000000000 /* Keychain.swift */,
+				HAPTCS000000000000000 /* HapticsManager.swift */,
+				OFFHEUR000000000000000 /* OfflineHeuristicsService.swift */,
+				HLTHKIT000000000000000 /* HealthKitService.swift */,
+				NOTIF00000000000000000 /* NotificationsManager.swift */,
+				BKMKSTR000000000000000 /* BookmarkStore.swift */,
+				STUDY00000000000000000 /* Study.swift */,
+				HRVSTUD000000000000000 /* HRVStudies.swift */,
+				STUDYREC000000000000000 /* StudyRecommender.swift */,
+				GLSCARD000000000000000 /* GlassCard.swift */,
+				STRGAUG000000000000000 /* StressGauge.swift */,
+				BATTPAL000000000000000 /* BatteryPaletteRing.swift */,
+				STARSLP000000000000000 /* StarrySleepCard.swift */,
+				ACTPYR000000000000000 /* ActivityPyramid.swift */,
+				METRNG000000000000000 /* MetricRing.swift */,
+				TODAYV000000000000000 /* TodayView.swift */,
+				STUDYV000000000000000 /* StudiesView.swift */,
+				SETTGV000000000000000 /* SettingsView.swift */,
+				PROFIV000000000000000 /* ProfileView.swift */,
+				TRENDSV000000000000000 /* TrendsView.swift */,
+				JOURNV000000000000000 /* JournalView.swift */,
+				NUTRIV000000000000000 /* NutritionView.swift */,
+				COACHV000000000000000 /* CoachView.swift */,
+				COACHGV000000000000000 /* CoachingView.swift */,
+				STRMCV000000000000000 /* StreamingCoachView.swift */,
+				COACHVM000000000000000 /* CoachVM.swift */,
+				COACHSET00000000000000 /* CoachEngineSettingsView.swift */,
+				HRVCAM000000000000000 /* HRVCameraView.swift */,
+				PPGPROC000000000000000 /* PPGProcessor.swift */,
+				PPGDLG000000000000000 /* PPGProcessorDelegateAdapter.swift */,
+				APPICON000000000000000 /* AppIconManager.swift */,
+				ZODIAC000000000000000 /* Zodiac.swift */,
+				OAICHAT2000000000000000 /* OpenAIChatService.swift */,
+				OAICLIENT000000000000 /* OpenAIClient.swift */,
+				SSE0000000000000000000 /* SSE.swift */,
+				TOKENCTR000000000000000 /* TokenCounter.swift */,
+				SECSTR000000000000000 /* SecureStore.swift */,
+				DEVFLG000000000000000 /* DeveloperFlags.swift */,
+				SLPSVC000000000000000 /* SleepService.swift */,
+				OAIRESP000000000000000 /* OpenAIResponsesService.swift */,
+				OAICHAT000000000000000 /* OpenAIChatCompletionsService.swift */,
 				A1234567890ABCDEF123456B /* AppDelegate.swift */,
 				A1234567890ABCDEF123456D /* SceneDelegate.swift */,
 				A1234567890ABCDEF123456F /* ViewController.swift */,
 				A1234567890ABCDEF1234561 /* DeviceManager.swift */,
-				A1234567890ABCDEF1234563 /* Main.storyboard */,
 				A1234567890ABCDEF1234565 /* Assets.xcassets */,
-				A1234567890ABCDEF1234567 /* LaunchScreen.storyboard */,
 				A1234567890ABCDEF1234569 /* Info.plist */,
 			);
 			path = LifehackApp;
@@ -77,12 +242,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C0DEC0DEC0DEC0DEC0DEC0D2 /* Config */ = {
+		FRAMEWK000000000000000 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				C0DEC0DEC0DEC0DEC0DEC0D1 /* Config/Signing.xcconfig */,
+				HLTHKT000000000000000000 /* HealthKit.framework */,
 			);
-			path = Config;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -143,9 +308,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1234567890ABCDEF1234566 /* LaunchScreen.storyboard in Resources */,
 				A1234567890ABCDEF1234564 /* Assets.xcassets in Resources */,
-				A1234567890ABCDEF1234562 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,10 +319,63 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A1234567890ABCDEF123456E /* ViewController.swift in Sources */,
 				A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */,
 				A1234567890ABCDEF123456A /* AppDelegate.swift in Sources */,
-				A1234567890ABCDEF123456C /* SceneDelegate.swift in Sources */,
+				A1MAIN000000000000000002 /* LifehackApp.swift in Sources */,
+				COACH000000000000000001 /* CoachEngineManager.swift in Sources */,
+				THEME000000000000000001 /* AppTheme.swift in Sources */,
+				ROOTT000000000000000001 /* RootTabView.swift in Sources */,
+				STATE000000000000000001 /* AppState.swift in Sources */,
+				CNTNT000000000000000001 /* ContentView.swift in Sources */,
+				COACHENG000000000000001 /* CoachEngine.swift in Sources */,
+				CHATMDL000000000000001 /* ChatModels.swift in Sources */,
+				CHATSVC000000000000001 /* ChatService.swift in Sources */,
+				SHRKEYS000000000000001 /* SharedKeys.swift in Sources */,
+				APPGRUP000000000000001 /* AppGroup.swift in Sources */,
+				SECRTS000000000000001 /* Secrets.swift in Sources */,
+				KEYCHN000000000000001 /* Keychain.swift in Sources */,
+				HAPTCS000000000000001 /* HapticsManager.swift in Sources */,
+				OFFHEUR000000000000001 /* OfflineHeuristicsService.swift in Sources */,
+				HLTHKIT000000000000001 /* HealthKitService.swift in Sources */,
+				NOTIF00000000000000001 /* NotificationsManager.swift in Sources */,
+				BKMKSTR000000000000001 /* BookmarkStore.swift in Sources */,
+				STUDY00000000000000001 /* Study.swift in Sources */,
+				HRVSTUD000000000000001 /* HRVStudies.swift in Sources */,
+				STUDYREC000000000000001 /* StudyRecommender.swift in Sources */,
+				GLSCARD000000000000001 /* GlassCard.swift in Sources */,
+				STRGAUG000000000000001 /* StressGauge.swift in Sources */,
+				BATTPAL000000000000001 /* BatteryPaletteRing.swift in Sources */,
+				STARSLP000000000000001 /* StarrySleepCard.swift in Sources */,
+				ACTPYR000000000000001 /* ActivityPyramid.swift in Sources */,
+				METRNG000000000000001 /* MetricRing.swift in Sources */,
+				TODAYV000000000000001 /* TodayView.swift in Sources */,
+				STUDYV000000000000001 /* StudiesView.swift in Sources */,
+				SETTGV000000000000001 /* SettingsView.swift in Sources */,
+				PROFIV000000000000001 /* ProfileView.swift in Sources */,
+				TRENDSV000000000000001 /* TrendsView.swift in Sources */,
+				JOURNV000000000000001 /* JournalView.swift in Sources */,
+				NUTRIV000000000000001 /* NutritionView.swift in Sources */,
+				COACHV000000000000001 /* CoachView.swift in Sources */,
+				COACHGV000000000000001 /* CoachingView.swift in Sources */,
+				STRMCV000000000000001 /* StreamingCoachView.swift in Sources */,
+				COACHVM000000000000001 /* CoachVM.swift in Sources */,
+				COACHSET00000000000001 /* CoachEngineSettingsView.swift in Sources */,
+				HRVCAM000000000000001 /* HRVCameraView.swift in Sources */,
+				PPGPROC000000000000001 /* PPGProcessor.swift in Sources */,
+				PPGDLG000000000000001 /* PPGProcessorDelegateAdapter.swift in Sources */,
+				APPICON000000000000001 /* AppIconManager.swift in Sources */,
+				ZODIAC000000000000001 /* Zodiac.swift in Sources */,
+				OAICHAT2000000000000001 /* OpenAIChatService.swift in Sources */,
+				OAICLIENT000000000000001 /* OpenAIClient.swift in Sources */,
+				SSE0000000000000000001 /* SSE.swift in Sources */,
+				TOKENCTR000000000000001 /* TokenCounter.swift in Sources */,
+				SECSTR000000000000001 /* SecureStore.swift in Sources */,
+				DEVFLG000000000000001 /* DeveloperFlags.swift in Sources */,
+				SLPSVC000000000000001 /* SleepService.swift in Sources */,
+				OAIRESP000000000000001 /* OpenAIResponsesService.swift in Sources */,
+				OAICHAT000000000000001 /* OpenAIChatCompletionsService.swift in Sources */,
+				BOOTST000000000000001 /* AppBootstrap.swift in Sources */,
+				METRICS000000000000001 /* MetricModels.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +507,7 @@
 				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1 /* Signing.xcconfig */;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LifehackApp/LifehackApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = CTQ236WDL9;
@@ -298,7 +515,8 @@
 				INFOPLIST_FILE = LifehackApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				// Using SwiftUI App lifecycle; no main storyboard
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -324,6 +542,7 @@
 				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1 /* Signing.xcconfig */;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = LifehackApp/LifehackApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = CTQ236WDL9;
@@ -331,7 +550,8 @@
 				INFOPLIST_FILE = LifehackApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				// Using SwiftUI App lifecycle; no main storyboard
+				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;

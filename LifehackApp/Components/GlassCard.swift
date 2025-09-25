@@ -19,16 +19,9 @@ struct GlassCard<Content: View>: View {
         VStack(alignment: .leading) {
             Text("Title").font(.headline)
             Text("Body text").font(.subheadline)
-        }
-    }
-    .padding()
-    .background(AppTheme.background.ignoresSafeArea())
-}
-    .padding()
-}
-                .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
     }
     .padding()
+    .background(AppTheme.background.ignoresSafeArea())
 }
