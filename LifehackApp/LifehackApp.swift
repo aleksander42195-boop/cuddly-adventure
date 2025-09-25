@@ -3,20 +3,25 @@ import SwiftUI
 import UIKit
 #endif
 
+import SwiftUI
+
 @main
 struct LifehackApp: App {
-    @StateObject private var engineManager = CoachEngineManager()
+    @StateObject private var appState = AppState()
+    @StateObject private var coachEngineManager = CoachEngineManager()
     @Environment(\.scenePhase) private var scenePhase
     
     init() {
         // Initialize app lifecycle management directly
-        setupAppLifecycle()
+        AppTheme.configureGlobal()
+        NotificationsManager.shared.configure()
     }
 
     var body: some Scene {
         WindowGroup {
             RootTabView()
-                .environmentObject(engineManager)
+                .environmentObject(appState)
+                .environmentObject(coachEngineManager)
                 .onAppear {
                     AppTheme.configureGlobal()
                     AppBootstrap.configureNotifications()

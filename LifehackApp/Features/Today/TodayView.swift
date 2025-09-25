@@ -13,207 +13,17 @@ struct TodayView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: theme.spacing) {
-                // Top section with battery ring and controls
-                HStack {
-                    BatteryPaletteRing(value: app.today.battery)
-                    Spacer()
-                    
-                    // Camera and Settings buttons
-                    HStack(spacing: 16) {
-                        // Camera button
-                        Button {
-                            app.tapHaptic()
-                            showingHRVExplanation = true
-                        } label: {
-                            Image(systemName: "camera.fill")
-                                .font(.title2)
-                                .foregroundStyle(.white)
-                                .frame(width: 44, height: 44)
-                                .background(
-                                    LinearGradient(
-                                        colors: [.cyan, .blue],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                                .clipShape(Circle())
-                                .shadow(color: .cyan.opacity(0.3), radius: 8, x: 0, y: 4)
-                        }
-                        .accessibilityLabel("Learn about HRV Camera")
-                        
-                        // Settings cogwheel - golden sandy style
-                        NavigationLink(destination: SettingsView()) {
-                            Image(systemName: "gearshape.fill")
-                                .font(.title2)
-                                .foregroundStyle(.white)
-                                .frame(width: 44, height: 44)
-                                .background(
-                                    LinearGradient(
-                                        colors: [Color(red: 0.8, green: 0.6, blue: 0.2), Color(red: 0.9, green: 0.7, blue: 0.4)],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                                .clipShape(Circle())
-                                .shadow(color: Color(red: 0.8, green: 0.6, blue: 0.2).opacity(0.3), radius: 8, x: 0, y: 4)
-                        }
-                        .onTapGesture { app.tapHaptic() }
-                        .accessibilityLabel("Open Settings")
-                    }
-                }
-                .padding(.horizontal)
-
-                if !app.isHealthAuthorized {
-                    GlassCard {
-                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                            Label("Health permissions needed", systemImage: "heart.text.square")
-                                .font(.headline)
-                            Text("Allow Health access to fetch HRV, Resting HR and Steps.")
-                                .foregroundStyle(.secondary)
-                            HStack {
-                                Spacer()
-                                Button("Allow in Health") {
-                                    Task { await app.requestHealthAuthorization() }
-                                }
-                                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
-                            }
-                        }
-                    }
-                }
-                GlassCard {
-                    VStack(spacing: AppTheme.spacing) {
-                        StressGauge(stress: app.today.stress)
-                        HStack(spacing: AppTheme.spacing) {
-                            MetricRing(title: "Energy",  value: app.today.energy,  systemImage: "flame")
-                            Spacer()
-                        }
-                    }
-                }
-
-                GlassCard {
-                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                        Text("HRV (SDNN)").font(.headline)
-                        Text(app.today.hrvLabel)
-                            .font(.title2.monospacedDigit())
-                        Text("Resting HR: \(app.today.restingHR, specifier: "%.0f") bpm · Steps: \(app.today.steps)")
-                            .foregroundStyle(.secondary)
-#if canImport(Charts)
-                        if app.isHealthAuthorized {
-                            TodayHRVSparkline()
-                                .frame(height: 60)
-                                .accessibilityLabel("7-day HRV sparkline. Latest \(app.today.hrvLabel).")
-                        }
-#endif
-                        if !app.isHealthAuthorized {
-                            HStack {
-                                Spacer()
-                                Button("Allow Health") { Task { await app.requestHealthAuthorization() } }
-                                    .buttonStyle(AppTheme.LiquidGlassButtonStyle())
-                            }
-                        }
-                    }
-                }
-
-                if let s = studyOfTheDay ?? StudyRecommender.shared.loadTodaysStudy() {
-                    GlassCard {
-                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                            Text("Study of the day").font(.headline)
-                            Text(s.title).font(.subheadline).bold()
-                            Text("\(s.authors) • \(s.journal) (\(s.year))")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            if let first = s.takeaways.first { Text(first).font(.caption) }
-                            HStack {
-                                if let url = s.url {
-                                    Link("Open", destination: url)
-                                        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
-                                }
-                                Button(BookmarkStore.shared.isBookmarked(slug: s.slug) ? "Saved" : "Save") {
-                                    BookmarkStore.shared.toggle(slug: s.slug)
-                                }
-                                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
-                            }
-                        }
-                    }
-                }
-
-                // Sleep card with zodiac and last-night duration
-                StarrySleepCard(zodiac: Zodiac.from(date: app.birthdate), hours: app.lastNightSleepHours)
-
-                // Activity pyramid (using steps as proxy to METs for now)
-                GlassCard {
-                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                        Text("Activity").font(.headline)
-                        ActivityPyramid(mets: app.todayMETHours)
-                        Text(String(format: "MET-h: %.1f", app.todayMETHours))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-
-                // AI Coach Menu Card
-                GlassCard {
-                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                        HStack {
-                            Image(systemName: "brain.head.profile")
-                                .font(.headline)
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [.purple, .pink],
-                                        startPoint: .topLeading,
-                                        endPoint: .bottomTrailing
-                                    )
-                                )
-                            Text("AI Health Coach")
-                                .font(.headline)
-                            Spacer()
-                        }
-                        
-                        Text("Get personalized insights based on your health data")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        
-                        HStack {
-                            Button {
-                                app.tapHaptic()
-                                showingChatGPTLogin = true
-                            } label: {
-                                HStack {
-                                    Image(systemName: "message.fill")
-                                        .foregroundStyle(
-                                            LinearGradient(
-                                                colors: [.purple, .pink],
-                                                startPoint: .leading,
-                                                endPoint: .trailing
-                                            )
-                                        )
-                                    Text("Setup AI Coach")
-                                }
-                            }
-                            .buttonStyle(AppTheme.LiquidGlassButtonStyle())
-                            
-                            Spacer()
-                        }
-                    }
-                }
-
-                Button {
-                    app.tapHaptic()
-                    Task { await app.refreshFromHealthIfAvailable() }
-                } label: {
-                    Label("Refresh from Health", systemImage: "arrow.clockwise")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                topControlsSection
+                healthPermissionSection
+                stressSection
+                hrvSection
+                studySection
+                sleepSection
+                activitySection
+                aiCoachSection
+                refreshButton
             }
             .padding()
-            .accessibilityElement(children: .combine)
-            .accessibilityLabel(
-                "Today metrics. Stress \(Int(app.today.stress * 100)) percent. " +
-                "Energy \(Int(app.today.energy * 100)) percent. " +
-                "Battery \(Int(app.today.battery * 100)) percent. " +
-                "HRV \(app.today.hrvLabel). Steps \(app.today.steps)."
-            )
         }
         .refreshable {
             await app.refreshFromHealthIfAvailable()
@@ -221,6 +31,7 @@ struct TodayView: View {
         }
         .background(AppTheme.background.ignoresSafeArea())
         .navigationTitle("Today")
+        .navigationBarHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 NavigationLink(destination: ProfileView()) {
@@ -229,12 +40,237 @@ struct TodayView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingHRVExplanation) {
-            HRVCameraExplanationView()
+        // TODO: Re-enable sheets after fixing import issues
+        // .sheet(isPresented: $showingHRVExplanation) {
+        //     HRVCameraExplanationView()
+        // }
+        // .sheet(isPresented: $showingChatGPTLogin) {
+        //     ChatGPTLoginView()
+        // }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(
+            "Today metrics. Stress \(Int(app.today.stress * 100)) percent. " +
+            "Energy \(Int(app.today.energy * 100)) percent. " +
+            "Battery \(Int(app.today.battery * 100)) percent. " +
+            "HRV \(app.today.hrvLabel). Steps \(app.today.steps)."
+        )
+    }
+    
+    private var topControlsSection: some View {
+        HStack {
+            BatteryPaletteRing(value: app.today.battery)
+            Spacer()
+            
+            HStack(spacing: 16) {
+                cameraButton
+                settingsButton
+            }
         }
-        .sheet(isPresented: $showingChatGPTLogin) {
-            ChatGPTLoginView()
+    }
+    
+    private var cameraButton: some View {
+        Button {
+            app.tapHaptic()
+            showingHRVExplanation = true
+        } label: {
+            Image(systemName: "camera.fill")
+                .font(.title2)
+                .foregroundStyle(.white)
+                .frame(width: 44, height: 44)
+                .background(.cyan)
+                .clipShape(Circle())
+                .shadow(color: .cyan.opacity(0.3), radius: 8, x: 0, y: 4)
         }
+        .accessibilityLabel("Learn about HRV Camera")
+    }
+    
+    private var settingsButton: some View {
+        NavigationLink(destination: SettingsView()) {
+            Image(systemName: "gearshape.fill")
+                .font(.title2)
+                .foregroundStyle(.white)
+                .frame(width: 44, height: 44)
+                .background(.orange)
+                .clipShape(Circle())
+                .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
+        }
+        .onTapGesture { app.tapHaptic() }
+        .accessibilityLabel("Open Settings")
+    }
+    
+    private var healthPermissionSection: some View {
+        Group {
+            if !app.isHealthAuthorized {
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        HStack {
+                            Image(systemName: "heart.fill")
+                                .foregroundStyle(.pink)
+                            Text("Health Access")
+                                .font(.headline)
+                            Spacer()
+                        }
+                        
+                        Text("Enable HealthKit permissions to start tracking your heart rate variability and fitness metrics.")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                        
+                        Button("Enable Health Access") {
+                            Task { await app.requestHealthAuthorization() }
+                        }
+                        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                    }
+                }
+            }
+        }
+    }
+    
+    private var stressSection: some View {
+        GlassCard {
+            VStack(spacing: AppTheme.spacing) {
+                StressGauge(stress: app.today.stress)
+                HStack(spacing: AppTheme.spacing) {
+                    MetricRing(title: "Energy", value: app.today.energy, systemImage: "flame")
+                    Spacer()
+                }
+            }
+        }
+    }
+    
+    private var hrvSection: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                Text("HRV (SDNN)")
+                    .font(.headline)
+                
+                Text(app.today.hrvLabel)
+                    .font(.title2.monospacedDigit())
+                
+                Text("Resting HR: \(app.today.restingHR, specifier: "%.0f") bpm · Steps: \(app.today.steps)")
+                    .foregroundStyle(.secondary)
+                
+                #if canImport(Charts)
+                if app.isHealthAuthorized {
+                    TodayHRVSparkline()
+                        .frame(height: 60)
+                        .accessibilityLabel("7-day HRV sparkline. Latest \(app.today.hrvLabel).")
+                }
+                #endif
+                
+                if !app.isHealthAuthorized {
+                    HStack {
+                        Spacer()
+                        Button("Allow Health") { 
+                            Task { await app.requestHealthAuthorization() } 
+                        }
+                        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                    }
+                }
+            }
+        }
+    }
+    
+    private var studySection: some View {
+        Group {
+            if let s = studyOfTheDay ?? StudyRecommender.shared.loadTodaysStudy() {
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("Study of the day")
+                            .font(.headline)
+                        
+                        Text(s.title)
+                            .font(.subheadline)
+                            .bold()
+                        
+                        Text("\(s.authors) • \(s.journal) (\(s.year))")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        
+                        if let first = s.takeaways.first { 
+                            Text(first)
+                                .font(.caption) 
+                        }
+                        
+                        HStack {
+                            if let url = s.url {
+                                Link("Open", destination: url)
+                                    .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                            }
+                            
+                            Button(BookmarkStore.shared.isBookmarked(slug: s.slug) ? "Saved" : "Save") {
+                                BookmarkStore.shared.toggle(slug: s.slug)
+                            }
+                            .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private var sleepSection: some View {
+        StarrySleepCard(zodiac: Zodiac.from(date: app.birthdate), hours: app.lastNightSleepHours)
+    }
+    
+    private var activitySection: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                Text("Activity")
+                    .font(.headline)
+                
+                ActivityPyramid(mets: app.todayMETHours)
+                
+                Text(String(format: "MET-h: %.1f", app.todayMETHours))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+    
+    private var aiCoachSection: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                HStack {
+                    Image(systemName: "brain.head.profile")
+                        .font(.headline)
+                        .foregroundStyle(.purple)
+                    Text("AI Health Coach")
+                        .font(.headline)
+                    Spacer()
+                }
+                
+                Text("Get personalized insights based on your health data")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                
+                HStack {
+                    Button {
+                        app.tapHaptic()
+                        showingChatGPTLogin = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "message.fill")
+                                .foregroundStyle(.purple)
+                            Text("Setup AI Coach")
+                        }
+                    }
+                    .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                    
+                    Spacer()
+                }
+            }
+        }
+    }
+    
+    private var refreshButton: some View {
+        Button {
+            app.tapHaptic()
+            Task { await app.refreshFromHealthIfAvailable() }
+        } label: {
+            Label("Refresh from Health", systemImage: "arrow.clockwise")
+                .frame(maxWidth: .infinity)
+        }
+        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
     }
 }
 
