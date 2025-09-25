@@ -15,10 +15,9 @@ struct TodayView: View {
             VStack(spacing: theme.spacing) {
                 topControlsSection
                 healthPermissionSection
-                stressSection
+                metricsSection
                 hrvSection
                 studySection
-                sleepSection
                 activitySection
                 aiCoachSection
                 refreshButton
@@ -40,13 +39,34 @@ struct TodayView: View {
                 }
             }
         }
-        // TODO: Fix sheet imports
-        // .sheet(isPresented: $showingHRVExplanation) {
-        //     HRVCameraExplanationView()
-        // }
-        // .sheet(isPresented: $showingChatGPTLogin) {
-        //     ChatGPTLoginView()
-        // }
+        .sheet(isPresented: $showingHRVExplanation) {
+            NavigationView {
+                HRVCameraView()
+                    .navigationTitle("HRV Camera")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingHRVExplanation = false
+                            }
+                        }
+                    }
+            }
+        }
+        .sheet(isPresented: $showingChatGPTLogin) {
+            NavigationView {
+                StreamingCoachView()
+                    .navigationTitle("AI Health Coach")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingChatGPTLogin = false
+                            }
+                        }
+                    }
+            }
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
             "Today metrics. Stress \(Int(app.today.stress * 100)) percent. " +
@@ -58,7 +78,6 @@ struct TodayView: View {
     
     private var topControlsSection: some View {
         HStack {
-            BatteryPaletteRing(value: app.today.battery)
             Spacer()
             
             HStack(spacing: 16) {
@@ -125,13 +144,42 @@ struct TodayView: View {
         }
     }
     
-    private var stressSection: some View {
+    private var metricsSection: some View {
         GlassCard {
             VStack(spacing: AppTheme.spacing) {
-                StressGauge(stress: app.today.stress)
-                HStack(spacing: AppTheme.spacing) {
-                    MetricRing(title: "Energy", value: app.today.energy, systemImage: "flame")
+                // Sleep score at the top
+                HStack {
+                    Text("Sleep")
+                        .font(.headline)
                     Spacer()
+                    Text("Last night: \(String(format: "%.1f", app.lastNightSleepHours)) h")
+                        .font(.title2.monospacedDigit())
+                    Text("• Zodiac: \(Zodiac.from(date: app.birthdate).rawValue)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.bottom, AppTheme.spacingS)
+                
+                // Main metrics row with equal spacing
+                HStack(spacing: 0) {
+                    // Energy on the left
+                    MetricRing(title: "Energy", value: app.today.energy, systemImage: "flame")
+                        .frame(maxWidth: .infinity)
+                    
+                    // Battery in the center
+                    VStack(spacing: 4) {
+                        Text("Battery")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        BatteryPaletteRing(value: app.today.battery, size: 70)
+                    }
+                    .frame(maxWidth: .infinity)
+                    
+                    // Stress on the right  
+                    VStack {
+                        StressGauge(stress: app.today.stress, size: 120)
+                    }
+                    .frame(maxWidth: .infinity)
                 }
             }
         }
@@ -206,10 +254,6 @@ struct TodayView: View {
                 }
             }
         }
-    }
-    
-    private var sleepSection: some View {
-        StarrySleepCard(zodiac: Zodiac.from(date: app.birthdate), hours: app.lastNightSleepHours)
     }
     
     private var activitySection: some View {
