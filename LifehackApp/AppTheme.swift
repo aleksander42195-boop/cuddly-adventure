@@ -26,12 +26,18 @@ enum AppTheme {
 
     static var background: Color { 
         // Fallback to system background if asset fails to load
-        Color("Background", bundle: .main) ?? Color(.systemBackground)
+        if let color = UIColor(named: "Background", in: .main, compatibleWith: nil) {
+            return Color(color)
+        }
+        return Color(.systemBackground)
     }
     static var cardBackground: Color { Color.white.opacity(0.08) }
     static var accent: Color { 
         // Fallback to blue if asset fails to load
-        Color("AccentColor", bundle: .main) ?? Color.blue
+        if let color = UIColor(named: "AccentColor", in: .main, compatibleWith: nil) {
+            return Color(color)
+        }
+        return Color.blue
     }
     static var accentGradient: LinearGradient {
         LinearGradient(
