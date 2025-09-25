@@ -9,17 +9,25 @@ final class AppState: ObservableObject {
     @Published var selectedTab: Tab = .today
     @Published var isOnboardingPresented: Bool = false
     @Published var hapticsEnabled: Bool = true
-    @AppStorage("user_birthdate") var birthdate: Date = ISO8601DateFormatter().date(from: "1990-01-01T00:00:00Z") ?? Date()
+    // iOS 17-compatible persistence: store birthdate as timestamp and expose a @Published Date for bindings
+    @AppStorage("user_birthdate_ts") private var birthdateTimestamp: Double = ISO8601DateFormatter().date(from: "1990-01-01T00:00:00Z")?.timeIntervalSince1970 ?? Date().timeIntervalSince1970
+    @Published var birthdate: Date = Date() {
+        didSet { birthdateTimestamp = birthdate.timeIntervalSince1970 }
+    }
     @Published var lastNightSleepHours: Double = 0
     @Published var todayMETHours: Double = 0
 
     // Today snapshot used by TodayView
     @Published var today: TodaySnapshot = .empty
 
-    let haptics = HapticsManager()
+    let haptics = HapticsManager.shared
     let healthService = HealthKitService()
 
-    init() { Task { await refreshFromHealthIfAvailable() } }
+    init() {
+        // Initialize published birthdate from persisted timestamp
+        birthdate = Date(timeIntervalSince1970: birthdateTimestamp)
+        Task { await refreshFromHealthIfAvailable() }
+    }
 
     @MainActor
     func refreshFromHealthIfAvailable() async {

@@ -1,4 +1,6 @@
+#if canImport(UIKit)
 import UIKit
+#endif
 #if canImport(CoreHaptics)
 import CoreHaptics
 #endif

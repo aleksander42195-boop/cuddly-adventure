@@ -44,8 +44,7 @@ struct TrendsView: View {
                         if hrv7.isEmpty {
                             Text("No data").foregroundStyle(.secondary)
                         } else {
-                            Chart(hrv7, id: \.
-date) { pt in
+                            Chart(hrv7, id: \.date) { pt in
                                 LineMark(
                                     x: .value("Date", pt.date, unit: .day),
                                     y: .value("HRV", pt.value)
@@ -61,12 +60,12 @@ date) { pt in
                                     RuleMark(x: .value("Today", last.date))
                                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
                                         .foregroundStyle(.secondary)
-                                    Annotation(position: .overlay, alignment: .topTrailing) {
-                                        Text(String(format: "%.0f ms", last.value))
-                                            .font(.caption2)
-                                            .padding(4)
-                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
-                                    }
+                                        .annotation(position: .overlay, alignment: .topTrailing) {
+                                            Text(String(format: "%.0f ms", last.value))
+                                                .font(.caption2)
+                                                .padding(4)
+                                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                                        }
                                 }
                             }
                             .frame(height: 160)
@@ -93,15 +92,18 @@ date) { pt in
                         if steps7.isEmpty {
                             Text("No data").foregroundStyle(.secondary)
                         } else {
-                            Chart(steps7, id: \.
-date) { pt in
+                            Chart(steps7, id: \.date) { pt in
                                 BarMark(
                                     x: .value("Date", pt.date, unit: .day),
                                     y: .value("Steps", pt.value)
                                 )
                                 .foregroundStyle(.blue.gradient)
                                 if let last = steps7.last, pt.date == last.date {
-                                    Annotation(position: .overlay, alignment: .topTrailing) {
+                                    BarMark(
+                                        x: .value("Date", pt.date, unit: .day),
+                                        y: .value("Steps", pt.value)
+                                    )
+                                    .annotation(position: .overlay, alignment: .topTrailing) {
                                         Text("\(Int(last.value))")
                                             .font(.caption2)
                                             .padding(4)
@@ -135,12 +137,13 @@ date) { pt in
                                     .interpolationMethod(.monotone)
                                     .foregroundStyle(.orange)
                                 if let last = series.last, pt.date == last.date {
-                                    Annotation(position: .overlay, alignment: .topTrailing) {
-                                        Text("\(Int(last.value)) bpm")
-                                            .font(.caption2)
-                                            .padding(4)
-                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
-                                    }
+                                    LineMark(x: .value("Date", pt.date, unit: .day), y: .value("RHR", pt.value))
+                                        .annotation(position: .overlay, alignment: .topTrailing) {
+                                            Text("\(Int(last.value)) bpm")
+                                                .font(.caption2)
+                                                .padding(4)
+                                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                                        }
                                 }
                             }
                             .frame(height: 160)
@@ -170,12 +173,13 @@ date) { pt in
                                 LineMark(x: .value("Date", pt.date, unit: .day), y: .value("Energy", pt.value))
                                     .foregroundStyle(.green)
                                 if let last = series.last, pt.date == last.date {
-                                    Annotation(position: .overlay, alignment: .topTrailing) {
-                                        Text("\(Int(last.value))")
-                                            .font(.caption2)
-                                            .padding(4)
-                                            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
-                                    }
+                                    LineMark(x: .value("Date", pt.date, unit: .day), y: .value("Energy", pt.value))
+                                        .annotation(position: .overlay, alignment: .topTrailing) {
+                                            Text("\(Int(last.value))")
+                                                .font(.caption2)
+                                                .padding(4)
+                                                .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 6))
+                                        }
                                 }
                             }
                             .frame(height: 160)

@@ -1,5 +1,8 @@
 import Foundation
 import UserNotifications
+#if canImport(UIKit)
+import UIKit
+#endif
 
 final class NotificationsManager: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationsManager()
@@ -17,6 +20,27 @@ final class NotificationsManager: NSObject, UNUserNotificationCenterDelegate {
     }
 
     func requestAuthorizationIfNeeded() {
+        // Set up notification categories first
+        let studyCategory = UNNotificationCategory(
+            identifier: "STUDY_NOTIFICATION",
+            actions: [
+                UNNotificationAction(identifier: "READ_NOW", title: "Read Now", options: .foreground),
+                UNNotificationAction(identifier: "BOOKMARK", title: "Bookmark", options: [])
+            ],
+            intentIdentifiers: []
+        )
+        
+        let reminderCategory = UNNotificationCategory(
+            identifier: "HEALTH_REMINDER",
+            actions: [
+                UNNotificationAction(identifier: "OPEN_APP", title: "Open App", options: .foreground),
+                UNNotificationAction(identifier: "DISMISS", title: "Dismiss", options: [])
+            ],
+            intentIdentifiers: []
+        )
+        
+        center.setNotificationCategories([studyCategory, reminderCategory])
+        
         center.getNotificationSettings { settings in
             guard settings.authorizationStatus != .authorized else { return }
             self.center.requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }

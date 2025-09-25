@@ -9,7 +9,7 @@ struct StarrySleepCard: View {
             // Simple star field
             LinearGradient(colors: [.black, .indigo], startPoint: .top, endPoint: .bottom)
                 .overlay(StarsLayer())
-                .clipShape(RoundedRectangle(cornerRadius: AppTheme.radius))
+                .clipShape(RoundedRectangle(cornerRadius: AppTheme.corner))
             VStack(alignment: .leading, spacing: 8) {
                 Text("Sleep")
                     .font(.headline)
@@ -25,7 +25,7 @@ struct StarrySleepCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(height: 140)
-        .overlay(RoundedRectangle(cornerRadius: AppTheme.radius).stroke(.white.opacity(0.1)))
+        .overlay(RoundedRectangle(cornerRadius: AppTheme.corner).stroke(.white.opacity(0.1)))
         .accessibilityLabel("Sleep card. Last night \(Int(hours)) hours. Zodiac \(zodiac.rawValue)")
     }
 
