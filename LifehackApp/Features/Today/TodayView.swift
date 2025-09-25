@@ -15,12 +15,12 @@ struct TodayView: View {
             VStack(spacing: theme.spacing) {
                 topControlsSection
                 healthPermissionSection
-                stressSection
+                metricsSection
                 hrvSection
                 studySection
-                sleepSection
                 activitySection
                 aiCoachSection
+                sleepSection
                 refreshButton
             }
             .padding()
@@ -40,13 +40,34 @@ struct TodayView: View {
                 }
             }
         }
-        // TODO: Fix sheet imports
-        // .sheet(isPresented: $showingHRVExplanation) {
-        //     HRVCameraExplanationView()
-        // }
-        // .sheet(isPresented: $showingChatGPTLogin) {
-        //     ChatGPTLoginView()
-        // }
+        .sheet(isPresented: $showingHRVExplanation) {
+            NavigationView {
+                HRVCameraView()
+                    .navigationTitle("HRV Camera")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingHRVExplanation = false
+                            }
+                        }
+                    }
+            }
+        }
+        .sheet(isPresented: $showingChatGPTLogin) {
+            NavigationView {
+                StreamingCoachView()
+                    .navigationTitle("AI Health Coach")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Done") {
+                                showingChatGPTLogin = false
+                            }
+                        }
+                    }
+            }
+        }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
             "Today metrics. Stress \(Int(app.today.stress * 100)) percent. " +
@@ -58,7 +79,6 @@ struct TodayView: View {
     
     private var topControlsSection: some View {
         HStack {
-            BatteryPaletteRing(value: app.today.battery)
             Spacer()
             
             HStack(spacing: 16) {
@@ -125,14 +145,29 @@ struct TodayView: View {
         }
     }
     
-    private var stressSection: some View {
+    private var metricsSection: some View {
         GlassCard {
-            VStack(spacing: AppTheme.spacing) {
-                StressGauge(stress: app.today.stress)
-                HStack(spacing: AppTheme.spacing) {
-                    MetricRing(title: "Energy", value: app.today.energy, systemImage: "flame")
-                    Spacer()
+            HStack(spacing: AppTheme.spacing) {
+                // Stress on the left
+                VStack {
+                    StressGauge(stress: app.today.stress, size: 100)
                 }
+                .frame(maxWidth: .infinity)
+                
+                // Battery in the center (bigger)
+                VStack(spacing: 4) {
+                    Text("Battery")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    BatteryPaletteRing(value: app.today.battery, size: 120)
+                }
+                .frame(maxWidth: .infinity)
+                
+                // Energy on the right
+                VStack {
+                    MetricRing(title: "Energy", value: app.today.energy, systemImage: "flame")
+                }
+                .frame(maxWidth: .infinity)
             }
         }
     }
@@ -208,10 +243,6 @@ struct TodayView: View {
         }
     }
     
-    private var sleepSection: some View {
-        StarrySleepCard(zodiac: Zodiac.from(date: app.birthdate), hours: app.lastNightSleepHours)
-    }
-    
     private var activitySection: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: AppTheme.spacingS) {
@@ -257,6 +288,54 @@ struct TodayView: View {
                     .buttonStyle(AppTheme.LiquidGlassButtonStyle())
                     
                     Spacer()
+                }
+            }
+        }
+    }
+    
+    private var sleepSection: some View {
+        GlassCard {
+            VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                HStack {
+                    Image(systemName: "moon.fill")
+                        .foregroundStyle(.blue)
+                    Text("Sleep")
+                        .font(.headline)
+                    Spacer()
+                }
+                
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Last Night")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("\(String(format: "%.1f", app.lastNightSleepHours)) hours")
+                            .font(.title2.monospacedDigit())
+                            .bold()
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing) {
+                        Text("Zodiac")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text(Zodiac.from(date: app.birthdate).rawValue)
+                            .font(.title3)
+                            .bold()
+                    }
+                }
+                
+                // Sleep score placeholder (you can enhance this later)
+                HStack {
+                    Text("Sleep Score")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text("Good") // Placeholder - can be calculated based on sleep hours
+                        .font(.subheadline)
+                        .bold()
+                        .foregroundStyle(.green)
                 }
             }
         }

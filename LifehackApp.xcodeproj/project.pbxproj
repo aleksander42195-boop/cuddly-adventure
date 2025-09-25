@@ -47,6 +47,8 @@
 		STUDYV000000000000001 /* StudiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDYV000000000000000 /* StudiesView.swift */; };
 		SETTGV000000000000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SETTGV000000000000000 /* SettingsView.swift */; };
 		PROFIV000000000000001 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PROFIV000000000000000 /* ProfileView.swift */; };
+		USERME000000000000001 /* UserMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = USERME000000000000000 /* UserMetricsView.swift */; };
+		PRIVAC000000000000001 /* PrivacySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRIVAC000000000000000 /* PrivacySettingsView.swift */; };
 		TRENDSV000000000000001 /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TRENDSV000000000000000 /* TrendsView.swift */; };
 		JOURNV000000000000001 /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JOURNV000000000000000 /* JournalView.swift */; };
 		NUTRIV000000000000001 /* NutritionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NUTRIV000000000000000 /* NutritionView.swift */; };
@@ -112,6 +114,8 @@
 		STUDYV000000000000000 /* StudiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Studies/StudiesView.swift; sourceTree = "<group>"; };
 		SETTGV000000000000000 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/SettingsView.swift; sourceTree = "<group>"; };
 		PROFIV000000000000000 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/ProfileView.swift; sourceTree = "<group>"; };
+		USERME000000000000000 /* UserMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/UserMetricsView.swift; sourceTree = "<group>"; };
+		PRIVAC000000000000000 /* PrivacySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/PrivacySettingsView.swift; sourceTree = "<group>"; };
 		TRENDSV000000000000000 /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Trends/TrendsView.swift; sourceTree = "<group>"; };
 		JOURNV000000000000000 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Journal/JournalView.swift; sourceTree = "<group>"; };
 		NUTRIV000000000000000 /* NutritionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Nutrition/NutritionView.swift; sourceTree = "<group>"; };
@@ -202,6 +206,8 @@
 				STUDYV000000000000000 /* StudiesView.swift */,
 				SETTGV000000000000000 /* SettingsView.swift */,
 				PROFIV000000000000000 /* ProfileView.swift */,
+				USERME000000000000000 /* UserMetricsView.swift */,
+				PRIVAC000000000000000 /* PrivacySettingsView.swift */,
 				TRENDSV000000000000000 /* TrendsView.swift */,
 				JOURNV000000000000000 /* JournalView.swift */,
 				NUTRIV000000000000000 /* NutritionView.swift */,
@@ -352,6 +358,8 @@
 				STUDYV000000000000001 /* StudiesView.swift in Sources */,
 				SETTGV000000000000001 /* SettingsView.swift in Sources */,
 				PROFIV000000000000001 /* ProfileView.swift in Sources */,
+				USERME000000000000001 /* UserMetricsView.swift in Sources */,
+				PRIVAC000000000000001 /* PrivacySettingsView.swift in Sources */,
 				TRENDSV000000000000001 /* TrendsView.swift in Sources */,
 				JOURNV000000000000001 /* JournalView.swift in Sources */,
 				NUTRIV000000000000001 /* NutritionView.swift in Sources */,
