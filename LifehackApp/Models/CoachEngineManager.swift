@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 @MainActor
 final class CoachEngineManager: ObservableObject {
@@ -35,6 +36,30 @@ final class CoachEngineManager: ObservableObject {
         self.responsesModel = store.string(forKey: SharedKeys.coachResponsesModel) ?? "gpt-4o-mini"
         self.chatModel = store.string(forKey: SharedKeys.coachChatModel) ?? "gpt-4o-mini"
         self.wristTipsEnabled = store.bool(forKey: SharedKeys.coachWristTipsEnabled)
+        
+        // Setup automatic state saving when app backgrounded
+        setupBackgroundSaving()
+    }
+    
+    private func setupBackgroundSaving() {
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.saveState()
+            }
+        }
+    }
+    
+    private func saveState() {
+        // Force synchronize all settings to ensure they're persisted
+        store.synchronize()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     /// Build an appropriate ChatService for the current engine configuration.

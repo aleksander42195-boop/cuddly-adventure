@@ -13,6 +13,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
+        // Initialize app lifecycle management
+        setupAppLifecycle()
+        
         // Initialize device manager
         let deviceManager = DeviceManager.shared
         
@@ -25,10 +28,73 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Notifications
         NotificationsManager.shared.configure()
-    NotificationsManager.shared.registerCategories()
+        NotificationsManager.shared.registerCategories()
         NotificationsManager.shared.requestAuthorizationIfNeeded()
 
         return true
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        // App moved to background - save critical state
+        print("App entering background - saving state")
+        AppBootstrap.saveAppState()
+    }
+    
+    func applicationWillResignActive(_ application: UIApplication) {
+        // App becoming inactive - prepare for possible termination
+        print("App will resign active - preparing for inactive")
+        AppBootstrap.cleanupActiveOperations()
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        // App became active - restore state if needed
+        print("App became active - restoring state")
+        AppBootstrap.restoreAppState()
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        // App will terminate - save critical state
+        print("App will terminate - performing final save")
+        saveForTermination()
+    }
+    
+    private func setupAppLifecycle() {
+        // Setup global configuration for app lifecycle
+        setupGlobalConfiguration()
+        setupExceptionHandling()
+    }
+    
+    private func setupGlobalConfiguration() {
+        // Configure global app settings
+        UserDefaults.standard.register(defaults: [
+            "app_initialized": true,
+            "first_launch": !UserDefaults.standard.bool(forKey: "has_launched_before")
+        ])
+        
+        // Mark that we've launched before
+        UserDefaults.standard.set(true, forKey: "has_launched_before")
+        UserDefaults.standard.synchronize()
+    }
+    
+    private func setupExceptionHandling() {
+        // Setup crash handling to prevent corruption
+        NSSetUncaughtExceptionHandler { exception in
+            print("Uncaught exception: \(exception)")
+            // Save critical state before potential crash
+            UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "app_last_crash")
+            UserDefaults.standard.synchronize()
+            AppGroup.defaults.synchronize()
+        }
+    }
+    
+    private func saveForTermination() {
+        // Perform final cleanup before termination
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: "app_last_termination")
+        UserDefaults.standard.synchronize()
+        AppGroup.defaults.synchronize()
+        
+        // Give the system time to save
+        Thread.sleep(forTimeInterval: 0.1)
     }
 
     // MARK: UISceneSession Lifecycle

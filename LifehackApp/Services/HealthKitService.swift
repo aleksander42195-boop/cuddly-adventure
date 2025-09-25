@@ -43,7 +43,9 @@ final class HealthKitService {
 
     init() {
 #if !targetEnvironment(simulator)
-        Task { await requestAuthorizationIfNeeded() }
+        Task { 
+            await requestAuthorizationIfNeeded() 
+        }
 #endif
     }
 

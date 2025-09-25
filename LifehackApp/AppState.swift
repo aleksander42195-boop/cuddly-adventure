@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import SwiftUI
+import UIKit
 
 @MainActor
 final class AppState: ObservableObject {
@@ -26,7 +27,64 @@ final class AppState: ObservableObject {
     init() {
         // Initialize published birthdate from persisted timestamp
         birthdate = Date(timeIntervalSince1970: birthdateTimestamp)
+        
+        // Restore app state
+        restorePersistedState()
+        
+        // Setup background refresh
+        setupBackgroundRefresh()
+        
         Task { await refreshFromHealthIfAvailable() }
+    }
+    
+    private func restorePersistedState() {
+        // Restore any critical app state that needs to persist across launches
+        if let savedTab = UserDefaults.standard.object(forKey: "selectedTab") as? String {
+            switch savedTab {
+            case "journal": selectedTab = .journal
+            case "trends": selectedTab = .trends
+            default: selectedTab = .today
+            }
+        }
+    }
+    
+    private func setupBackgroundRefresh() {
+        // Setup periodic state saving
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willResignActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.saveState()
+            }
+        }
+        
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.didEnterBackgroundNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.saveState()
+            }
+        }
+    }
+    
+    func saveState() {
+        // Save current state
+        let tabString: String
+        switch selectedTab {
+        case .today: tabString = "today"
+        case .journal: tabString = "journal"
+        case .trends: tabString = "trends"
+        }
+        UserDefaults.standard.set(tabString, forKey: "selectedTab")
+        UserDefaults.standard.synchronize()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     @MainActor
