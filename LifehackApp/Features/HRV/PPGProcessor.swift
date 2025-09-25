@@ -54,7 +54,11 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         if session.canAddOutput(output) { session.addOutput(output) }
 
         // Orientation/connection
-        output.connections.first?.videoOrientation = .portrait
+        if #available(iOS 17.0, *) {
+            output.connections.first?.videoRotationAngle = 0
+        } else {
+            output.connections.first?.videoOrientation = .portrait
+        }
 
         // Enable torch if desired
         applyTorchState()

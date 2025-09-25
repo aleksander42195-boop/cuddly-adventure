@@ -24,9 +24,15 @@ enum AppTheme {
 
     // MARK: - Colors (expects matching asset names; fallbacks included)
 
-    static var background: Color { Color("Background", bundle: .main).opacity(1) }
+    static var background: Color { 
+        // Fallback to system background if asset fails to load
+        Color("Background", bundle: .main) ?? Color(.systemBackground)
+    }
     static var cardBackground: Color { Color.white.opacity(0.08) }
-    static var accent: Color { Color("AccentColor", bundle: .main) }
+    static var accent: Color { 
+        // Fallback to blue if asset fails to load
+        Color("AccentColor", bundle: .main) ?? Color.blue
+    }
     static var accentGradient: LinearGradient {
         LinearGradient(
             colors: [accent, accent.opacity(0.5)],

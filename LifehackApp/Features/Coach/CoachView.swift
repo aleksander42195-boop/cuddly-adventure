@@ -76,7 +76,7 @@ struct CoachView: View {
                     }
                     .padding()
                 }
-                .onChange(of: messages.count) { _ in
+                .onChange(of: messages.count) {
                     if messages.indices.last != nil {
                         withAnimation(.easeInOut(duration: 0.2)) {
                             proxy.scrollTo(messages.indices.last!, anchor: .bottom)

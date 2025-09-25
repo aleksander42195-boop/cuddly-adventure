@@ -4,8 +4,15 @@ struct RootTabView: View {
     @StateObject private var appState = AppState()
 
     var body: some View {
-        ContentView()
-            .environmentObject(appState)
+        ZStack {
+            // Ensure we have a background
+            AppTheme.background
+                .ignoresSafeArea()
+            
+            ContentView()
+                .environmentObject(appState)
+        }
+        .appThemeTokens(AppTheme.tokens())
     }
 }
 
