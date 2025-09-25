@@ -108,4 +108,13 @@ final class AppState: ObservableObject {
         guard hapticsEnabled else { return }
         HapticsManager.shared.tap()
     }
+    
+    func successHaptic() {
+        guard hapticsEnabled else { return }
+        HapticsManager.shared.success()
+    }
+    
+    func requestNotificationPermission() async {
+        NotificationsManager.shared.requestAuthorizationIfNeeded()
+    }
 }
