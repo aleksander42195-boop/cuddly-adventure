@@ -7,14 +7,59 @@ struct TodayView: View {
     @EnvironmentObject var app: AppState
     @Environment(\.themeTokens) private var theme
     @State private var studyOfTheDay: Study? = nil
+    @State private var showingHRVExplanation = false
+    @State private var showingChatGPTLogin = false
 
     var body: some View {
         ScrollView {
             VStack(spacing: theme.spacing) {
-                // Top battery ring palette (left aligned)
+                // Top section with battery ring and controls
                 HStack {
                     BatteryPaletteRing(value: app.today.battery)
                     Spacer()
+                    
+                    // Camera and Settings buttons
+                    HStack(spacing: 16) {
+                        // Camera button
+                        Button {
+                            app.tapHaptic()
+                            showingHRVExplanation = true
+                        } label: {
+                            Image(systemName: "camera.fill")
+                                .font(.title2)
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .background(
+                                    LinearGradient(
+                                        colors: [.cyan, .blue],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .clipShape(Circle())
+                                .shadow(color: .cyan.opacity(0.3), radius: 8, x: 0, y: 4)
+                        }
+                        .accessibilityLabel("Learn about HRV Camera")
+                        
+                        // Settings cogwheel - golden sandy style
+                        NavigationLink(destination: SettingsView()) {
+                            Image(systemName: "gearshape.fill")
+                                .font(.title2)
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .background(
+                                    LinearGradient(
+                                        colors: [Color(red: 0.8, green: 0.6, blue: 0.2), Color(red: 0.9, green: 0.7, blue: 0.4)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                .clipShape(Circle())
+                                .shadow(color: Color(red: 0.8, green: 0.6, blue: 0.2).opacity(0.3), radius: 8, x: 0, y: 4)
+                        }
+                        .onTapGesture { app.tapHaptic() }
+                        .accessibilityLabel("Open Settings")
+                    }
                 }
                 .padding(.horizontal)
 
@@ -106,6 +151,52 @@ struct TodayView: View {
                     }
                 }
 
+                // AI Coach Menu Card
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        HStack {
+                            Image(systemName: "brain.head.profile")
+                                .font(.headline)
+                                .foregroundStyle(
+                                    LinearGradient(
+                                        colors: [.purple, .pink],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                            Text("AI Health Coach")
+                                .font(.headline)
+                            Spacer()
+                        }
+                        
+                        Text("Get personalized insights based on your health data")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        
+                        HStack {
+                            Button {
+                                app.tapHaptic()
+                                showingChatGPTLogin = true
+                            } label: {
+                                HStack {
+                                    Image(systemName: "message.fill")
+                                        .foregroundStyle(
+                                            LinearGradient(
+                                                colors: [.purple, .pink],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                    Text("Setup AI Coach")
+                                }
+                            }
+                            .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                            
+                            Spacer()
+                        }
+                    }
+                }
+
                 Button {
                     app.tapHaptic()
                     Task { await app.refreshFromHealthIfAvailable() }
@@ -132,15 +223,17 @@ struct TodayView: View {
         .navigationTitle("Today")
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                HStack(spacing: 12) {
-                    NavigationLink(destination: SettingsView()) {
-                        Image(systemName: "gearshape")
-                    }
-                    NavigationLink(destination: ProfileView()) {
-                        Image(systemName: "person.crop.circle")
-                    }
+                NavigationLink(destination: ProfileView()) {
+                    Image(systemName: "person.crop.circle")
+                        .foregroundStyle(theme.accent)
                 }
             }
+        }
+        .sheet(isPresented: $showingHRVExplanation) {
+            HRVCameraExplanationView()
+        }
+        .sheet(isPresented: $showingChatGPTLogin) {
+            ChatGPTLoginView()
         }
     }
 }
