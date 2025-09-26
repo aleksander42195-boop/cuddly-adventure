@@ -7,6 +7,7 @@ struct TodayView: View {
     @EnvironmentObject var app: AppState
     @Environment(\.themeTokens) private var theme
     @State private var studyOfTheDay: Study? = nil
+    @State private var studyError: String? = nil
     @State private var showingHRVExplanation = false
     @State private var showingChatGPTLogin = false
 
@@ -210,8 +211,8 @@ struct TodayView: View {
                             Text("\(s.authors) • \(s.journal) (\(s.year))")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            if let first = s.takeaways.first {
-                                Text(first)
+                            ForEach(Array(s.takeaways.prefix(3)).indices, id: \.self) { i in
+                                Text("• \(s.takeaways[i])")
                                     .font(.caption)
                             }
                         } else {
@@ -236,6 +237,18 @@ struct TodayView: View {
                         }
                         .buttonStyle(AppTheme.LiquidGlassButtonStyle())
                     }
+
+                    // Last updated + error
+                    HStack {
+                        if let last = DailyStudyService.shared.lastCachedDate {
+                            let rel = RelativeDateTimeFormatter()
+                            Text("Updated \(rel.localizedString(for: last, relativeTo: Date()))")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        if let err = studyError { Text(err).font(.caption2).foregroundStyle(.red) }
+                    }
                 }
                 .task { await reloadStudy(force: false) }
             }
@@ -243,13 +256,27 @@ struct TodayView: View {
     }
 
     private func reloadStudy(force: Bool) async {
+        studyError = nil
+        // Rotate topic by weekday or context
+        let weekday = Calendar.current.component(.weekday, from: Date())
+        let topic: DailyStudyService.Topic = {
+            switch weekday {
+            case 2: return .sleep      // Monday
+            case 3: return .stress     // Tuesday
+            case 4: return .nutrition  // Wednesday
+            default: return .hrv
+            }
+        }()
+
         if force {
-            if let remote = await DailyStudyService.shared.forceRefresh() {
+            if let remote = await DailyStudyService.shared.forceRefresh(preferred: topic) {
                 studyOfTheDay = remote
                 return
+            } else {
+                studyError = "Could not refresh"
             }
         } else {
-            if let remote = await DailyStudyService.shared.studyOfTheDay() {
+            if let remote = await DailyStudyService.shared.studyOfTheDay(preferred: topic) {
                 studyOfTheDay = remote
                 return
             }
