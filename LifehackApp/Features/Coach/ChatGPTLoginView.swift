@@ -80,9 +80,7 @@ struct ChatGPTLoginView: View {
                                     
                                     Spacer()
                                     
-                                    Button("Save Key") {
-                                        saveAPIKey()
-                                    }
+                                    Button("Save Key") { saveAPIKey() }
                                     .buttonStyle(AppTheme.LiquidGlassButtonStyle())
                                     .disabled(apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                                 }
@@ -163,13 +161,9 @@ struct ChatGPTLoginView: View {
         let trimmedKey = apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedKey.isEmpty else { return }
         
-        do {
-            try Secrets.shared.setOpenAIAPIKey(trimmedKey)
-            app.tapHaptic()
-            // Optionally dismiss or show success message
-        } catch {
-            print("Error saving API key: \(error)")
-        }
+        Secrets.shared.setOpenAIOverride(trimmedKey)
+        app.tapHaptic()
+        // Optionally dismiss or show success message
     }
 }
 

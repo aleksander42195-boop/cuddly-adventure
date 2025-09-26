@@ -62,17 +62,20 @@ struct TodayView: View {
             }
         }
         .sheet(isPresented: $showingChatGPTLogin) {
-            NavigationView {
-                StreamingCoachView()
-                    .navigationTitle("AI Health Coach")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingChatGPTLogin = false
+            // If no API key, present setup/login first; otherwise open chat directly
+            if Secrets.shared.openAIAPIKey == nil {
+                ChatGPTLoginView()
+            } else {
+                NavigationView {
+                    StreamingCoachView()
+                        .navigationTitle("AI Health Coach")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Done") { showingChatGPTLogin = false }
                             }
                         }
-                    }
+                }
             }
         }
         .accessibilityElement(children: .combine)
@@ -345,7 +348,7 @@ struct TodayView: View {
                         HStack {
                             Image(systemName: "message.fill")
                                 .foregroundStyle(.purple)
-                            Text("Setup AI Coach")
+                            Text(Secrets.shared.openAIAPIKey == nil ? "Setup AI Coach" : "Open AI Coach")
                         }
                     }
                     .buttonStyle(AppTheme.LiquidGlassButtonStyle())
