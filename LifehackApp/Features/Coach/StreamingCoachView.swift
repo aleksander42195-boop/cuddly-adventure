@@ -39,6 +39,12 @@ struct StreamingCoachView: View {
         output = ""
         tokenEstimate = 0
         isStreaming = true
+        // Preflight: ensure API key present for online engines
+        if engineManager.engine != .offlineHeuristics && Secrets.shared.openAIAPIKey == nil {
+            output = "No API key configured. Tap Setup AI Coach to add one."
+            isStreaming = false
+            return
+        }
         let service = engineManager.makeService()
         if let streamer = service as? StreamingChatService {
             do {
@@ -52,7 +58,7 @@ struct StreamingCoachView: View {
                     tokenEstimate = TokenCounter.estimateTokens(output)
                 }
             } catch {
-                output = "Feil: \(error.localizedDescription)"
+                output = detailedErrorMessage(error)
             }
         } else {
             // fallback: ikke-streamende service
@@ -64,10 +70,25 @@ struct StreamingCoachView: View {
                 output = text
                 tokenEstimate = TokenCounter.estimateTokens(text)
             } catch {
-                output = "Feil: \(error.localizedDescription)"
+                output = detailedErrorMessage(error)
             }
         }
         isStreaming = false
+    }
+
+    private func detailedErrorMessage(_ error: Error) -> String {
+        let ns = error as NSError
+        var parts: [String] = ["Error: \(ns.localizedDescription)"]
+        if ns.domain.contains("OpenAI"), ns.code != 0 {
+            parts.append("(code: \(ns.code))")
+        }
+        if let body = ns.userInfo["body"] as? String, !body.isEmpty {
+            let snippet = body.prefix(300)
+            parts.append("\nServer: \(snippet)")
+        }
+        if ns.code == 401 { parts.append("\nTip: Check that your API key is valid and not expired.") }
+        if ns.code == 429 { parts.append("\nTip: Rate limited. Try again later or use a proxy baseURL.") }
+        return parts.joined(separator: " ")
     }
 }
 

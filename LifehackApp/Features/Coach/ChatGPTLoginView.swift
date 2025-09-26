@@ -17,6 +17,7 @@ struct ChatGPTLoginView: View {
     @State private var apiKeyInput: String = ""
     @State private var showingSubscriptionInfo = false
     @State private var selectedPlan: SubscriptionPlan = .basic
+    @State private var connectionStatus: String? = nil
     
     private var hasAPIKey: Bool { Secrets.shared.openAIAPIKey != nil }
     
@@ -83,6 +84,16 @@ struct ChatGPTLoginView: View {
                                     Button("Save Key") { saveAPIKey() }
                                     .buttonStyle(AppTheme.LiquidGlassButtonStyle())
                                     .disabled(apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                                }
+                                if let status = connectionStatus {
+                                    Text(status)
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                                HStack {
+                                    Button("Test Connection") { Task { await testConnection() } }
+                                        .font(.caption)
+                                    Spacer()
                                 }
                             }
                         }
@@ -164,6 +175,28 @@ struct ChatGPTLoginView: View {
         Secrets.shared.setOpenAIOverride(trimmedKey)
         app.tapHaptic()
         // Optionally dismiss or show success message
+    }
+
+    private func testConnection() async {
+        connectionStatus = "Testing…"
+        let key = Secrets.shared.openAIAPIKey ?? apiKeyInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !key.isEmpty else { connectionStatus = "No key set"; return }
+        let base = engineManager.baseURL ?? URL(string: "https://api.openai.com")!
+        let url = base.appendingPathComponent("/v1/models")
+        var req = URLRequest(url: url)
+        req.httpMethod = "GET"
+        req.setValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        do {
+            let (_, resp) = try await URLSession.shared.data(for: req)
+            if let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) {
+                connectionStatus = "OK: Connected"
+            } else {
+                let code = (resp as? HTTPURLResponse)?.statusCode ?? -1
+                connectionStatus = "Failed (status: \(code))"
+            }
+        } catch {
+            connectionStatus = "Failed: \(error.localizedDescription)"
+        }
     }
 }
 
