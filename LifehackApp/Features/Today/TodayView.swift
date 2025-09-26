@@ -190,40 +190,72 @@ struct TodayView: View {
     
     private var studySection: some View {
         Group {
-            if let s = studyOfTheDay ?? StudyRecommender.shared.loadTodaysStudy() {
-                GlassCard {
-                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+            GlassCard {
+                VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                    HStack(spacing: 8) {
                         Text("Study of the day")
                             .font(.headline)
-                        
-                        Text(s.title)
-                            .font(.subheadline)
-                            .bold()
-                        
-                        Text("\(s.authors) • \(s.journal) (\(s.year))")
+                        Spacer()
+                        Label("Verified", systemImage: "checkmark.seal.fill")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
-                        
-                        if let first = s.takeaways.first { 
-                            Text(first)
-                                .font(.caption) 
-                        }
-                        
-                        HStack {
-                            if let url = s.url {
-                                Link("Open", destination: url)
-                                    .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                            .foregroundStyle(.green)
+                            .accessibilityLabel("Verified from PubMed")
+                    }
+
+                    Group {
+                        if let s = studyOfTheDay {
+                            Text(s.title)
+                                .font(.subheadline)
+                                .bold()
+                            Text("\(s.authors) • \(s.journal) (\(s.year))")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            if let first = s.takeaways.first {
+                                Text(first)
+                                    .font(.caption)
                             }
-                            
-                            Button(BookmarkStore.shared.isBookmarked(slug: s.slug) ? "Saved" : "Save") {
-                                BookmarkStore.shared.toggle(slug: s.slug)
-                            }
-                            .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                        } else {
+                            HStack { ProgressView().scaleEffect(0.8); Text("Loading...").font(.caption).foregroundStyle(.secondary) }
                         }
                     }
+
+                    HStack {
+                        if let s = studyOfTheDay, let url = s.url {
+                            Link("Open", destination: url)
+                                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                        }
+                        Button(BookmarkStore.shared.isBookmarked(slug: studyOfTheDay?.slug ?? "") ? "Saved" : "Save") {
+                            if let slug = studyOfTheDay?.slug { BookmarkStore.shared.toggle(slug: slug) }
+                        }
+                        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                        Spacer()
+                        Button {
+                            Task { await reloadStudy(force: true) }
+                        } label: {
+                            Label("Refresh Study", systemImage: "arrow.clockwise")
+                        }
+                        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                    }
                 }
+                .task { await reloadStudy(force: false) }
             }
         }
+    }
+
+    private func reloadStudy(force: Bool) async {
+        if force {
+            if let remote = await DailyStudyService.shared.forceRefresh() {
+                studyOfTheDay = remote
+                return
+            }
+        } else {
+            if let remote = await DailyStudyService.shared.studyOfTheDay() {
+                studyOfTheDay = remote
+                return
+            }
+        }
+        // Fallback to local recommender
+        studyOfTheDay = StudyRecommender.shared.selectStudy(for: app.today)
     }
     
     private var activitySection: some View {
