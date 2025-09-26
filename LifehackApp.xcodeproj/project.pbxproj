@@ -70,6 +70,8 @@
 		DEVFLG000000000000001 /* DeveloperFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEVFLG000000000000000 /* DeveloperFlags.swift */; };
 		SLPSVC000000000000001 /* SleepService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SLPSVC000000000000000 /* SleepService.swift */; };
 		STUDYREC000000000000001 /* StudyRecommender.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDYREC000000000000000 /* StudyRecommender.swift */; };
+		METCRDV000000000000001 /* MetricCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = METCRDV000000000000000 /* MetricCardView.swift */; };
+		DLYSTDY000000000000001 /* DailyStudyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DLYSTDY000000000000000 /* DailyStudyService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -137,6 +139,8 @@
 		DEVFLG000000000000000 /* DeveloperFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DeveloperFlags.swift; sourceTree = "<group>"; };
 		SLPSVC000000000000000 /* SleepService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SleepService.swift; sourceTree = "<group>"; };
 		STUDYREC000000000000000 /* StudyRecommender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/StudyRecommender.swift; sourceTree = "<group>"; };
+		METCRDV000000000000000 /* MetricCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/MetricCardView.swift; sourceTree = "<group>"; };
+		DLYSTDY000000000000000 /* DailyStudyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DailyStudyService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -229,7 +233,9 @@
 				DEVFLG000000000000000 /* DeveloperFlags.swift */,
 				SLPSVC000000000000000 /* SleepService.swift */,
 				OAIRESP000000000000000 /* OpenAIResponsesService.swift */,
+				DLYSTDY000000000000000 /* DailyStudyService.swift */,
 				OAICHAT000000000000000 /* OpenAIChatCompletionsService.swift */,
+				METCRDV000000000000000 /* MetricCardView.swift */,
 				A1234567890ABCDEF123456B /* AppDelegate.swift */,
 				A1234567890ABCDEF123456D /* SceneDelegate.swift */,
 				A1234567890ABCDEF123456F /* ViewController.swift */,
@@ -382,8 +388,10 @@
 				SLPSVC000000000000001 /* SleepService.swift in Sources */,
 				OAIRESP000000000000001 /* OpenAIResponsesService.swift in Sources */,
 				OAICHAT000000000000001 /* OpenAIChatCompletionsService.swift in Sources */,
+				DLYSTDY000000000000001 /* DailyStudyService.swift in Sources */,
 				BOOTST000000000000001 /* AppBootstrap.swift in Sources */,
 				METRICS000000000000001 /* MetricModels.swift in Sources */,
+				METCRDV000000000000001 /* MetricCardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
