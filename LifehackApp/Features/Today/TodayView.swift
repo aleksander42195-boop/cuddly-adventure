@@ -146,30 +146,13 @@ struct TodayView: View {
     }
     
     private var metricsSection: some View {
-        GlassCard {
-            HStack(spacing: AppTheme.spacing) {
-                // Stress on the left
-                VStack {
-                    StressGauge(stress: app.today.stress, size: 100)
-                }
-                .frame(maxWidth: .infinity)
-                
-                // Battery in the center (bigger)
-                VStack(spacing: 4) {
-                    Text("Battery")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    BatteryPaletteRing(value: app.today.battery, size: 120)
-                }
-                .frame(maxWidth: .infinity)
-                
-                // Energy on the right
-                VStack {
-                    MetricRing(title: "Energy", value: app.today.energy, systemImage: "flame")
-                }
-                .frame(maxWidth: .infinity)
-            }
-        }
+        MetricCardView(
+            energy: app.today.energy,
+            battery: app.today.battery,
+            stress: app.today.stress,
+            hrvSDNN: app.today.hrvSDNNms,
+            sleepHours: app.lastNightSleepHours
+        )
     }
     
     private var hrvSection: some View {
