@@ -25,9 +25,11 @@ struct TodayView: View {
                 sleepSection
                 refreshButton
             }
-            .padding()
-            // Limit width on compact devices (e.g., iPhone portrait) to avoid overly wide cards
-            .frame(maxWidth: (hSizeClass == .compact) ? 420 : 700, alignment: .center)
+            // Responsive padding: slightly larger on compact (e.g., iPhone/SE)
+            .padding(.horizontal, hSizeClass == .compact ? 20 : 24)
+            .padding(.vertical, 12)
+            // Limit width on compact to a tighter cap for better feel in portrait
+            .frame(maxWidth: (hSizeClass == .compact) ? 380 : 680, alignment: .center)
             .frame(maxWidth: .infinity)
         }
         .refreshable {
