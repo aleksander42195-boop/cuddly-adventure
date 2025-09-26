@@ -8,7 +8,8 @@ struct Study: Identifiable, Hashable, Codable {
         case general = "General HRV"
     }
 
-    let id = UUID()
+    // Stable identity derived from DOI/title via slug; not stored in JSON
+    var id: String { slug }
     let title: String
     let authors: String
     let journal: String
