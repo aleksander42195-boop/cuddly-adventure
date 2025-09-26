@@ -257,15 +257,28 @@ struct TodayView: View {
 
     private func reloadStudy(force: Bool) async {
         studyError = nil
-        // Rotate topic by weekday or context
-        let weekday = Calendar.current.component(.weekday, from: Date())
+        // Choose topic based on current health context
+        let hrv = app.today.hrvSDNNms
+        let stress = app.today.stress
+        let sleep = app.lastNightSleepHours
+        let energy = app.today.energy
+        let battery = app.today.battery
+
         let topic: DailyStudyService.Topic = {
-            switch weekday {
-            case 2: return .sleep      // Monday
-            case 3: return .stress     // Tuesday
-            case 4: return .nutrition  // Wednesday
-            default: return .hrv
+            // 1) High stress or low HRV => stress-focused literature
+            if (hrv > 0 && hrv < 20) || stress >= 0.66 {
+                return .stress
             }
+            // 2) Poor sleep (outside 7-9h) => sleep
+            if !(7.0...9.0).contains(sleep) && sleep > 0 {
+                return .sleep
+            }
+            // 3) Low energy or battery => general nutrition/wellness
+            if energy < 0.33 || battery < 0.33 {
+                return .nutrition
+            }
+            // 4) Default to HRV
+            return .hrv
         }()
 
         if force {
