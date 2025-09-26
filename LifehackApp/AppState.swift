@@ -23,6 +23,7 @@ final class AppState: ObservableObject {
 
     let haptics = HapticsManager.shared
     let healthService = HealthKitService()
+    private let syncService = HealthDataSyncService.shared
 
     init() {
         // Initialize published birthdate from persisted timestamp
@@ -33,6 +34,9 @@ final class AppState: ObservableObject {
         
         // Setup background refresh
         setupBackgroundRefresh()
+        
+        // Configure health data sync service
+        syncService.configure(with: self)
         
         Task { await refreshFromHealthIfAvailable() }
     }

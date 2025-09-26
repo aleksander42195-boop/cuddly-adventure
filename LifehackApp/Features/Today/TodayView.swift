@@ -342,14 +342,35 @@ struct TodayView: View {
     }
     
     private var refreshButton: some View {
-        Button {
-            app.tapHaptic()
-            Task { await app.refreshFromHealthIfAvailable() }
-        } label: {
-            Label("Refresh from Health", systemImage: "arrow.clockwise")
-                .frame(maxWidth: .infinity)
+        VStack(spacing: 8) {
+            // Sync status
+            HStack {
+                Text("Last sync:")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Spacer()
+                Text(app.lastSyncStatusText)
+                    .font(.caption)
+                    .foregroundStyle(app.isSyncing ? .blue : .secondary)
+            }
+            
+            // Manual sync button
+            Button {
+                app.tapHaptic()
+                app.triggerManualSync()
+            } label: {
+                HStack {
+                    if app.isSyncing {
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    }
+                    Label(app.isSyncing ? "Syncing..." : "Sync Health Data", systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+            .disabled(app.isSyncing)
         }
-        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
     }
 }
 

@@ -57,6 +57,14 @@
     <string>This app reads your activity, mindfulness and sleep data to display daily wellness metrics.</string>
     <key>NSHealthUpdateUsageDescription</key>
     <string>This app can write workout and mindfulness data to HealthKit to help track your wellness journey.</string>
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>background-app-refresh</string>
+    </array>
+    <key>BGTaskSchedulerPermittedIdentifiers</key>
+    <array>
+        <string>com.lifehack.LifehackApp.healthsync</string>
+    </array>
     <key>CFBundleIcons</key>
     <dict>
         <key>CFBundlePrimaryIcon</key>
