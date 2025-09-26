@@ -23,7 +23,20 @@ final class AppState: ObservableObject {
 
     let haptics = HapticsManager.shared
     let healthService = HealthKitService()
-    private let syncService = HealthDataSyncService.shared
+    // Manual sync state (UI bindings)
+    @Published var isSyncing: Bool = false
+    
+    // Last sync info (stored in UserDefaults by key "lastHealthSync")
+    var lastSyncDate: Date? {
+        UserDefaults.standard.object(forKey: "lastHealthSync") as? Date
+    }
+    
+    var lastSyncStatusText: String {
+        guard let date = lastSyncDate else { return "Never" }
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .short
+        return formatter.localizedString(for: date, relativeTo: Date())
+    }
 
     init() {
         // Initialize published birthdate from persisted timestamp
@@ -34,9 +47,6 @@ final class AppState: ObservableObject {
         
         // Setup background refresh
         setupBackgroundRefresh()
-        
-        // Configure health data sync service
-        syncService.configure(with: self)
         
         Task { await refreshFromHealthIfAvailable() }
     }
@@ -116,6 +126,22 @@ final class AppState: ObservableObject {
     func successHaptic() {
         guard hapticsEnabled else { return }
         HapticsManager.shared.success()
+    }
+    
+    // MARK: - Manual Sync Trigger (UI)
+    func triggerManualSync() {
+        guard !isSyncing else { return }
+        Task { await performManualSync() }
+    }
+    
+    @MainActor
+    private func performManualSync() async {
+        isSyncing = true
+        defer { isSyncing = false }
+        await refreshFromHealthIfAvailable()
+        UserDefaults.standard.set(Date(), forKey: "lastHealthSync")
+        UserDefaults.standard.synchronize()
+        successHaptic()
     }
     
     func requestNotificationPermission() async {
