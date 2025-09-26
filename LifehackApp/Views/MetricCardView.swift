@@ -43,10 +43,10 @@ struct MetricCardView: View {
             
             VStack(spacing: 20) {
                 HStack(spacing: 15) {
-                    MetricRing(progress: energy, label: "Energy", ringColor: hrvStatus.energyColor)
-                    MetricRing(progress: battery, label: "Battery", ringColor: hrvStatus.batteryColor)
-                    MetricRing(progress: stress, label: "Stress", ringColor: hrvStatus.stressColor)
-                    MetricRing(progress: sleepScore, label: "Sleep", ringColor: hrvStatus.sleepColor)
+                    MiniMetricRing(progress: energy, label: "Energy", ringColor: hrvStatus.energyColor)
+                    MiniMetricRing(progress: battery, label: "Battery", ringColor: hrvStatus.batteryColor)
+                    MiniMetricRing(progress: stress, label: "Stress", ringColor: hrvStatus.stressColor)
+                    MiniMetricRing(progress: sleepScore, label: "Sleep", ringColor: hrvStatus.sleepColor)
                 }
             }
             .padding()
@@ -94,7 +94,7 @@ enum HRVStatus {
     }
 }
 
-struct MetricRing: View {
+struct MiniMetricRing: View {
     let progress: Double
     let label: String
     let ringColor: Color
