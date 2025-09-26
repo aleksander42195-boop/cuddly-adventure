@@ -76,6 +76,8 @@ enum Keychain {
 enum Vault {
     static let openAIService = "Lifehack.OpenAI"
     static let openAIAccount = "apiKey"
+    static let proxyService = "Lifehack.Proxy"
+    static let proxyAccount = "accessToken"
 
     static func saveOpenAIKey(_ key: String) {
         try? Keychain.setString(key, service: openAIService, account: openAIAccount)
@@ -87,5 +89,17 @@ enum Vault {
 
     static func deleteOpenAIKey() {
         try? Keychain.delete(service: openAIService, account: openAIAccount)
+    }
+}
+
+extension Vault {
+    static func saveProxyAccessToken(_ token: String) {
+        try? Keychain.setString(token, service: proxyService, account: proxyAccount)
+    }
+    static func loadProxyAccessToken() -> String? {
+        (try? Keychain.getString(service: proxyService, account: proxyAccount)) ?? nil
+    }
+    static func deleteProxyAccessToken() {
+        try? Keychain.delete(service: proxyService, account: proxyAccount)
     }
 }

@@ -36,6 +36,16 @@ struct CoachEngineSettingsView: View {
                         Vault.saveOpenAIKey(tempAPIKey)
                     }
                 }
+
+                Section(header: Text("Managed Proxy")) {
+                    if engineManager.engine == .managedProxy {
+                        NavigationLink("Login / Configure", destination: ManagedProxyAuthView())
+                        if let url = Secrets.shared.proxyBaseURL { Text("Base: \(url.absoluteString)").font(.footnote) }
+                        Text(Secrets.shared.proxyAccessToken == nil ? "Status: signed out" : "Status: signed in").font(.footnote)
+                    } else {
+                        Text("Switch engine to Managed Proxy to configure.").font(.footnote).foregroundStyle(.secondary)
+                    }
+                }
             }
         }
         .navigationTitle("Coach Engine")
