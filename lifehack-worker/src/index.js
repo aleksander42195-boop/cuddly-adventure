@@ -2,6 +2,13 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    // Hello route for quick sanity check
+    if (url.pathname === '/' || url.pathname === '/hello') {
+      return new Response('Hello from Cloudflare Workers 🚀', {
+        headers: { 'content-type': 'text/plain' },
+      });
+    }
+
     if (url.pathname === '/oauth/start') {
       // TODO: Replace with real OAuth. For now, redirect back to app with a demo token.
       return Response.redirect('lifehackapp://oauth?token=DEMO_TOKEN', 302);
