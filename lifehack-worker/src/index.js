@@ -10,8 +10,54 @@ export default {
     }
 
     if (url.pathname === '/oauth/start') {
-      // TODO: Replace with real OAuth. For now, redirect back to app with a demo token.
-      return Response.redirect('lifehackapp://oauth?token=DEMO_TOKEN', 302);
+      // GitHub OAuth start: redirect to GitHub authorize with state and callback
+      const state = [...crypto.getRandomValues(new Uint8Array(16))].map(x => x.toString(16).padStart(2, '0')).join('');
+      const redirectUri = `${url.origin}/oauth/callback`;
+      const auth = new URL('https://github.com/login/oauth/authorize');
+      auth.searchParams.set('client_id', env.GITHUB_CLIENT_ID);
+      auth.searchParams.set('redirect_uri', redirectUri);
+      auth.searchParams.set('scope', 'read:user');
+      auth.searchParams.set('state', state);
+      const resp = Response.redirect(auth.toString(), 302);
+      resp.headers.set('Set-Cookie', `oauth_state=${state}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=600`);
+      return resp;
+    }
+
+    if (url.pathname === '/oauth/callback') {
+      const code = url.searchParams.get('code');
+      const state = url.searchParams.get('state');
+      const cookie = request.headers.get('Cookie') || '';
+      const match = cookie.match(/(?:^|; )oauth_state=([^;]+)/);
+      const savedState = match ? decodeURIComponent(match[1]) : null;
+      if (!code || !state || !savedState || state !== savedState) {
+        return new Response('Invalid OAuth state', { status: 400 });
+      }
+      const redirectUri = `${url.origin}/oauth/callback`;
+      // Exchange code for token
+      const tokenResp = await fetch('https://github.com/login/oauth/access_token', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', 'accept': 'application/json' },
+        body: JSON.stringify({
+          client_id: env.GITHUB_CLIENT_ID,
+          client_secret: env.GITHUB_CLIENT_SECRET,
+          code,
+          redirect_uri: redirectUri,
+        }),
+      });
+      if (!tokenResp.ok) {
+        const txt = await tokenResp.text();
+        return new Response(`Token exchange failed: ${txt}`, { status: 500 });
+      }
+      const data = await tokenResp.json();
+      const accessToken = data.access_token;
+      if (!accessToken) {
+        return new Response('No access token', { status: 500 });
+      }
+      // Redirect back to app with token (consider issuing your own JWT instead)
+      const appUrl = `lifehackapp://oauth?token=${encodeURIComponent(accessToken)}`;
+      const resp = Response.redirect(appUrl, 302);
+      resp.headers.append('Set-Cookie', 'oauth_state=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax');
+      return resp;
     }
 
     if (url.pathname === '/v1/chat/completions' && request.method === 'POST') {
