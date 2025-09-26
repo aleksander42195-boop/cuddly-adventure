@@ -1,7 +1,7 @@
 import Foundation
 
-struct Study: Identifiable, Hashable {
-    enum Category: String, CaseIterable, Hashable {
+struct Study: Identifiable, Hashable, Codable {
+    enum Category: String, CaseIterable, Hashable, Codable {
         case training = "Training"
         case breathing = "Breathing/Biofeedback"
         case methodology = "Methodology/Guidelines"
