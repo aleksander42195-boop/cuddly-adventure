@@ -6,6 +6,7 @@ import Charts
 struct TodayView: View {
     @EnvironmentObject var app: AppState
     @Environment(\.themeTokens) private var theme
+    @Environment(\.horizontalSizeClass) private var hSizeClass
     @State private var studyOfTheDay: Study? = nil
     @State private var studyError: String? = nil
     @State private var showingHRVExplanation = false
@@ -25,6 +26,9 @@ struct TodayView: View {
                 refreshButton
             }
             .padding()
+            // Limit width on compact devices (e.g., iPhone portrait) to avoid overly wide cards
+            .frame(maxWidth: (hSizeClass == .compact) ? 420 : 700, alignment: .center)
+            .frame(maxWidth: .infinity)
         }
         .refreshable {
             await app.refreshFromHealthIfAvailable()
