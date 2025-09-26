@@ -1,0 +1,6 @@
+name = "lifehack-proxy"
+main = "src/worker.ts"
+compatibility_date = "2024-01-01"
+
+[vars]
+# Add additional environment variables if needed

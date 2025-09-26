@@ -5,6 +5,7 @@ struct ManagedProxyAuthView: View {
     @State private var baseURL: String = Secrets.shared.proxyBaseURL?.absoluteString ?? ""
     @State private var token: String = Secrets.shared.proxyAccessToken ?? ""
     @State private var status: String? = nil
+    private let oauth = OAuthWebAuthCoordinator()
 
     var body: some View {
         NavigationStack {
@@ -24,11 +25,7 @@ struct ManagedProxyAuthView: View {
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                     HStack {
-                        Button("Simulate OAuth Login") {
-                            // Placeholder: implement real OAuth/WebAuth flow here
-                            token = "demo_access_token"
-                            status = "Signed in (demo token)"
-                        }
+                        Button("Login with Proxy (Web)") { startAuth() }
                         Spacer()
                         Button("Save Token") {
                             Secrets.shared.setProxyAccessToken(token)
@@ -40,6 +37,30 @@ struct ManagedProxyAuthView: View {
             }
             .navigationTitle("Managed Proxy Login")
             .toolbar { ToolbarItem(placement: .topBarTrailing) { Button("Done") { dismiss() } } }
+        }
+    }
+}
+
+private extension ManagedProxyAuthView {
+    func startAuth() {
+        guard let base = URL(string: baseURL) else { status = "Invalid base URL"; return }
+        // Expect your proxy to start OAuth at /oauth/start and redirect to lifehackapp://oauth?token=...
+        let url = base.appendingPathComponent("/oauth/start")
+        status = "Opening login…"
+        oauth.startAuth(authURL: url) { result in
+            switch result {
+            case .success(let callback):
+                if let comps = URLComponents(url: callback, resolvingAgainstBaseURL: false),
+                   let tokenItem = comps.queryItems?.first(where: { $0.name == "token" })?.value {
+                    self.token = tokenItem
+                    Secrets.shared.setProxyAccessToken(tokenItem)
+                    status = "Signed in"
+                } else {
+                    status = "Login finished, but no token found"
+                }
+            case .failure(let error):
+                status = "Login failed: \(error.localizedDescription)"
+            }
         }
     }
 }

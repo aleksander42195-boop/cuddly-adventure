@@ -65,6 +65,17 @@
     <array>
         <string>com.lifehack.LifehackApp.healthsync</string>
     </array>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>lifehackapp</string>
+            </array>
+            <key>CFBundleURLName</key>
+            <string>lifehackapp.oauth</string>
+        </dict>
+    </array>
     <key>CFBundleIcons</key>
     <dict>
         <key>CFBundlePrimaryIcon</key>
