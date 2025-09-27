@@ -24,6 +24,12 @@ struct CoachView: View {
             return SimpleMockChatService()
         case .offlineHeuristics:
             return OfflineHeuristicsService() // should be short-circuited earlier
+        case .managedProxy:
+            if let token = Secrets.shared.proxyAccessToken,
+               let base = Secrets.shared.proxyBaseURL {
+                return ManagedProxyService(config: .init(accessToken: token, baseURL: base, model: engineManager.chatModel))
+            }
+            return SimpleMockChatService()
         }
     }
     private var coachEngine: CoachEngine { engineManager.engine }
