@@ -92,3 +92,8 @@ Config/Signing.local.xcconfig
 # SwiftGen / Sourcery cache
 .stencilcache/
 .sourcerycache/
+
+# Cloudflare Worker local dev files
+lifehack-worker/.dev.vars
+lifehack-worker/.wrangler/
+lifehack-worker/node_modules/
