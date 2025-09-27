@@ -1,0 +1,18 @@
+  # Optional: set Worker secret if OPENAI_API_KEY repo secret is present
+  - name: Set OPENAI_API_KEY Worker secret (optional)
+    if: ${{ secrets.OPENAI_API_KEY != '' }}
+    uses: cloudflare/wrangler-action@v3
+    with:
+      apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      workingDirectory: lifehack-worker
+      # --text avoids interactive prompt; value comes from repo secret
+      command: secret put OPENAI_API_KEY --text ${{ secrets.OPENAI_API_KEY }}
+
+  - name: Deploy with Wrangler
+    uses: cloudflare/wrangler-action@v3
+    with:
+      apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      workingDirectory: lifehack-worker
+      command: deploy
