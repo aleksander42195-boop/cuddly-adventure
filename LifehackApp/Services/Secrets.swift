@@ -36,4 +36,25 @@ final class Secrets {
     var healthKitEnabledFlag: Bool {
         bool("HEALTHKIT_ENABLED")
     }
+
+    // Managed Proxy configuration
+    var proxyBaseURL: URL? {
+        if let s = string("PROXY_BASE_URL"), let u = URL(string: s) { return u }
+        if let s = AppGroup.defaults.string(forKey: "proxy_base_url"), let u = URL(string: s) { return u }
+        return nil
+    }
+
+    func setProxyBaseURL(_ urlString: String) {
+        AppGroup.defaults.set(urlString, forKey: "proxy_base_url")
+    }
+
+    var proxyAccessToken: String? {
+        Vault.loadProxyAccessToken()
+    }
+    func setProxyAccessToken(_ token: String) {
+        Vault.saveProxyAccessToken(token)
+    }
+    func clearProxyAccessToken() {
+        Vault.deleteProxyAccessToken()
+    }
 }

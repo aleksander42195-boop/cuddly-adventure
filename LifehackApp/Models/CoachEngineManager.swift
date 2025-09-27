@@ -67,6 +67,11 @@ final class CoachEngineManager: ObservableObject {
         switch engine {
         case .offlineHeuristics:
             return OfflineHeuristicsService()
+        case .managedProxy:
+            if let token = Secrets.shared.proxyAccessToken, let base = Secrets.shared.proxyBaseURL {
+                return ManagedProxyService(config: .init(accessToken: token, baseURL: base, model: chatModel))
+            }
+            return SimpleMockChatService()
         case .openAIResponses:
             if let key = Secrets.shared.openAIAPIKey {
                 return OpenAIResponsesService(

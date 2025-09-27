@@ -6,6 +6,7 @@ import Charts
 struct TodayView: View {
     @EnvironmentObject var app: AppState
     @Environment(\.themeTokens) private var theme
+    @Environment(\.horizontalSizeClass) private var hSizeClass
     @State private var studyOfTheDay: Study? = nil
     @State private var studyError: String? = nil
     @State private var showingHRVExplanation = false
@@ -24,7 +25,12 @@ struct TodayView: View {
                 sleepSection
                 refreshButton
             }
-            .padding()
+            // Responsive padding: slightly larger on compact (e.g., iPhone/SE)
+            .padding(.horizontal, hSizeClass == .compact ? 20 : 24)
+            .padding(.vertical, 12)
+            // Limit width on compact to a tighter cap for better feel in portrait
+            .frame(maxWidth: (hSizeClass == .compact) ? 380 : 680, alignment: .center)
+            .frame(maxWidth: .infinity)
         }
         .refreshable {
             await app.refreshFromHealthIfAvailable()
@@ -56,17 +62,20 @@ struct TodayView: View {
             }
         }
         .sheet(isPresented: $showingChatGPTLogin) {
-            NavigationView {
-                StreamingCoachView()
-                    .navigationTitle("AI Health Coach")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingChatGPTLogin = false
+            // If no API key, present setup/login first; otherwise open chat directly
+            if Secrets.shared.openAIAPIKey == nil {
+                ChatGPTLoginView()
+            } else {
+                NavigationView {
+                    StreamingCoachView()
+                        .navigationTitle("AI Health Coach")
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Done") { showingChatGPTLogin = false }
                             }
                         }
-                    }
+                }
             }
         }
         .accessibilityElement(children: .combine)
@@ -339,7 +348,7 @@ struct TodayView: View {
                         HStack {
                             Image(systemName: "message.fill")
                                 .foregroundStyle(.purple)
-                            Text("Setup AI Coach")
+                            Text(Secrets.shared.openAIAPIKey == nil ? "Setup AI Coach" : "Open AI Coach")
                         }
                     }
                     .buttonStyle(AppTheme.LiquidGlassButtonStyle())
