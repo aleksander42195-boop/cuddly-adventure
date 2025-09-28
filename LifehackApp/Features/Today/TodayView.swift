@@ -117,7 +117,10 @@ struct TodayView: View {
     private var settingsButton: some View {
         Button {
             app.tapHaptic()
-            withAnimation { app.selectedTab = .profile }
+            withAnimation {
+                app.pendingOpenSettings = true
+                app.selectedTab = .profile
+            }
         } label: {
             Image(systemName: "gearshape.fill")
                 .font(.title2)

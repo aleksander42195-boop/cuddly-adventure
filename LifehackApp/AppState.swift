@@ -8,6 +8,8 @@ final class AppState: ObservableObject {
     enum Tab: Hashable { case today, journal, trends, profile }
 
     @Published var selectedTab: Tab = .today
+    // Cross-tab intent routing (e.g., Today -> Profile -> Settings)
+    @Published var pendingOpenSettings: Bool = false
     @Published var isOnboardingPresented: Bool = false
     @Published var hapticsEnabled: Bool = true
     // iOS 17-compatible persistence: store birthdate as timestamp and expose a @Published Date for bindings

@@ -41,9 +41,11 @@ struct ContentView: View {
 
 private struct ProfileTab: View {
     @EnvironmentObject private var appState: AppState
+    @State private var navigateToSettings: Bool = false
     var body: some View {
         NavigationStack {
             ProfileView()
+                .background(navigationLink)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         NavigationLink(destination: SettingsView()) {
@@ -52,6 +54,20 @@ private struct ProfileTab: View {
                         .accessibilityLabel("Open Settings")
                     }
                 }
+                .onAppear { syncNavigationIntent() }
+                .onChange(of: appState.pendingOpenSettings) { _ in syncNavigationIntent() }
+        }
+    }
+
+    private var navigationLink: some View {
+        NavigationLink(isActive: $navigateToSettings) { SettingsView() } label: { EmptyView() }
+            .hidden()
+    }
+
+    private func syncNavigationIntent() {
+        if appState.pendingOpenSettings {
+            appState.pendingOpenSettings = false
+            navigateToSettings = true
         }
     }
 }

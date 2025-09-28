@@ -25,7 +25,7 @@ struct ManagedProxyAuthView: View {
                         .textInputAutocapitalization(.never)
                         .disableAutocorrection(true)
                     HStack {
-                        Button("Login with Proxy (Web)") { startAuth() }
+                        Button("Login with Proxy (Web)") { if DeveloperFlags.enableManagedProxy { startAuth() } else { status = "Managed Proxy disabled" } }
                         Spacer()
                         Button("Save Token") {
                             Secrets.shared.setProxyAccessToken(token)
@@ -43,6 +43,7 @@ struct ManagedProxyAuthView: View {
 
 private extension ManagedProxyAuthView {
     func startAuth() {
+        guard DeveloperFlags.enableManagedProxy else { status = "Managed Proxy disabled"; return }
         guard let base = URL(string: baseURL) else { status = "Invalid base URL"; return }
         // Expect your proxy to start OAuth at /oauth/start and redirect to lifehackapp://oauth?token=...
         let url = base.appendingPathComponent("/oauth/start")

@@ -1,12 +1,18 @@
 import Foundation
 
-public enum CoachEngine: String, CaseIterable, Identifiable, Codable {
+public enum CoachEngine: String, Identifiable, Codable {
     case openAIResponses = "OpenAI Responses"
     case openAIChatCompletions = "OpenAI Chat Completions"
     case managedProxy = "Managed Proxy"
     case offlineHeuristics = "Offline Heuristics"
 
     public var id: String { rawValue }
+
+    public static var allCases: [CoachEngine] {
+        var cases: [CoachEngine] = [.openAIResponses, .openAIChatCompletions, .offlineHeuristics]
+        if DeveloperFlags.enableManagedProxy { cases.insert(.managedProxy, at: 2) }
+        return cases
+    }
 
     var description: String {
         switch self {

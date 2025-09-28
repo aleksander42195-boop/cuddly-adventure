@@ -10,4 +10,9 @@ enum DeveloperFlags {
     static var verboseLogging: Bool {
         ProcessInfo.processInfo.environment["LIFEHACK_VERBOSE_LOGGING"] == "YES"
     }
+
+    // Feature flags
+    static var enableManagedProxy: Bool {
+        ProcessInfo.processInfo.environment["LIFEHACK_ENABLE_MANAGED_PROXY"] == "YES"
+    }
 }

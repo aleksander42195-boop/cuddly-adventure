@@ -25,7 +25,8 @@ struct CoachView: View {
         case .offlineHeuristics:
             return OfflineHeuristicsService() // should be short-circuited earlier
         case .managedProxy:
-            if let token = Secrets.shared.proxyAccessToken,
+            if DeveloperFlags.enableManagedProxy,
+               let token = Secrets.shared.proxyAccessToken,
                let base = Secrets.shared.proxyBaseURL {
                 return ManagedProxyService(config: .init(accessToken: token, baseURL: base, model: engineManager.chatModel))
             }

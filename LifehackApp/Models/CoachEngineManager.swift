@@ -68,8 +68,17 @@ final class CoachEngineManager: ObservableObject {
         case .offlineHeuristics:
             return OfflineHeuristicsService()
         case .managedProxy:
-            if let token = Secrets.shared.proxyAccessToken, let base = Secrets.shared.proxyBaseURL {
+            // Temporarily disable Managed Proxy unless explicitly enabled
+            if DeveloperFlags.enableManagedProxy,
+               let token = Secrets.shared.proxyAccessToken,
+               let base = Secrets.shared.proxyBaseURL {
                 return ManagedProxyService(config: .init(accessToken: token, baseURL: base, model: chatModel))
+            }
+            // Fallback to Responses if API key exists; else mock
+            if let key = Secrets.shared.openAIAPIKey {
+                return OpenAIResponsesService(
+                    config: .init(apiKey: key, model: responsesModel, baseURL: baseURL)
+                )
             }
             return SimpleMockChatService()
         case .openAIResponses:

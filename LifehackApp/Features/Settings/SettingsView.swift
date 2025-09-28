@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(HealthKit)
+import HealthKit
+#endif
 
 struct SettingsView: View {
     @EnvironmentObject private var engineManager: CoachEngineManager
@@ -11,6 +14,25 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: AppTheme.spacing) {
+                    // HealthKit Access
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Health").font(.headline)
+                            if app.isHealthAuthorized {
+                                HStack {
+                                    Image(systemName: "checkmark.seal.fill").foregroundStyle(.green)
+                                    Text("Tilgang til Health er gitt")
+                                        .foregroundStyle(.secondary)
+                                }
+                            } else {
+                                Button("Gi tilgang til Health") {
+                                    Task { await app.requestHealthAuthorization() }
+                                }
+                                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                            }
+                        }
+                    }
+
                     GlassCard {
                         VStack(alignment: .leading, spacing: AppTheme.spacingS) {
                             Text("Coach").font(.headline)
