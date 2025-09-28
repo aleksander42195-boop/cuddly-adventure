@@ -5,6 +5,9 @@ struct CoachView: View {
     @State private var messages: [ChatMessage] = []
     @State private var isSending = false
     @State private var apiKeyInput: String = ""
+    @State private var showKeySetup = false
+    @State private var lastHTTPStatus: Int? = nil
+    @State private var lastServerBody: String? = nil
     @EnvironmentObject private var engineManager: CoachEngineManager
     @EnvironmentObject private var app: AppState
 
@@ -17,6 +20,39 @@ struct CoachView: View {
 
     var body: some View {
         VStack {
+            if lastHTTPStatus == 401 {
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.yellow)
+                            Text("Authentication failed (invalid API key)")
+                                .font(.subheadline)
+                                .bold()
+                        }
+                        if let body = lastServerBody, !body.isEmpty {
+                            Text(body.prefix(300))
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                        }
+                        HStack {
+                            Button { showKeySetup = true } label: {
+                                Label("Update API Key", systemImage: "key.fill")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            Button {
+                                Secrets.shared.clearOpenAIOverride()
+                                lastHTTPStatus = nil
+                                lastServerBody = nil
+                                messages.append(.assistant("API key cleared. Open setup to add a new one."))
+                            } label: {
+                                Label("Clear Key", systemImage: "trash")
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                }
+                .padding([.horizontal, .top])
+            }
 
             if !hasAPIKey {
                 GlassCard {
@@ -90,6 +126,27 @@ struct CoachView: View {
             .padding()
         }
         .navigationTitle("Coach")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showKeySetup = true
+                } label: {
+                    Label("API Key", systemImage: "key.fill")
+                }
+            }
+        }
+        .sheet(isPresented: $showKeySetup) {
+            NavigationStack {
+                ChatGPTLoginView()
+                    .navigationTitle("AI Coach Setup")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Close") { showKeySetup = false }
+                        }
+                    }
+            }
+        }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Coach chat with \(messages.count) messages.")
     }
@@ -141,8 +198,12 @@ struct CoachView: View {
                     isSending = false
                 }
             } catch {
+                let ns = error as NSError
+                let body = ns.userInfo["body"] as? String
                 await MainActor.run {
-                    messages.append(.assistant("Feil: \(error.localizedDescription)"))
+                    lastHTTPStatus = ns.code
+                    lastServerBody = body
+                    messages.append(.assistant("Feil: \(ns.localizedDescription)"))
                     isSending = false
                 }
             }
