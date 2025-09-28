@@ -115,7 +115,10 @@ struct TodayView: View {
     }
     
     private var settingsButton: some View {
-        NavigationLink(destination: SettingsView()) {
+        Button {
+            app.tapHaptic()
+            withAnimation { app.selectedTab = .profile }
+        } label: {
             Image(systemName: "gearshape.fill")
                 .font(.title2)
                 .foregroundStyle(.white)
@@ -124,7 +127,6 @@ struct TodayView: View {
                 .clipShape(Circle())
                 .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
         }
-        .onTapGesture { app.tapHaptic() }
         .accessibilityLabel("Open Settings")
     }
     

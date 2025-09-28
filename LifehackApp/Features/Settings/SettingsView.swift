@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject private var engineManager: CoachEngineManager
+    @EnvironmentObject private var app: AppState
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
     @AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = true
     @State private var selectedIconKey: String? = AppIconManager.currentKey()
@@ -61,7 +62,12 @@ struct SettingsView: View {
             }
             .background(AppTheme.background.ignoresSafeArea())
             .navigationTitle("Innstillinger")
-            .onAppear { selectedIconKey = AppIconManager.currentKey() }
+            .onAppear {
+                selectedIconKey = AppIconManager.currentKey()
+                if !app.isHealthAuthorized {
+                    Task { await app.requestHealthAuthorization() }
+                }
+            }
         }
     }
 }

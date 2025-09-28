@@ -1,6 +1,12 @@
 name = "lifehack-worker"
 main = "src/index.js"
 compatibility_date = "2024-01-01"
+workers_dev = true
+
+# Persist routes so the zone mapping survives future deploys
+routes = [
+	{ pattern = "lifehack.no/*", zone_name = "lifehack.no" }
+]
 
 [vars]
 # Add any vars you need

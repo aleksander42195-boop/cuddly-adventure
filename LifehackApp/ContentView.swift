@@ -5,6 +5,9 @@ struct ContentView: View {
 
     var body: some View {
         TabView(selection: $appState.selectedTab) {
+            ProfileTab()
+                .tabItem { Label("Profile", systemImage: "person.crop.circle") }
+                .tag(AppState.Tab.profile)
             TodayView()
                 .tabItem {
                     ZStack(alignment: .topTrailing) {
@@ -34,4 +37,21 @@ struct ContentView: View {
     ContentView()
         .environmentObject(AppState())
         .environmentObject(CoachEngineManager())
+}
+
+private struct ProfileTab: View {
+    @EnvironmentObject private var appState: AppState
+    var body: some View {
+        NavigationStack {
+            ProfileView()
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        NavigationLink(destination: SettingsView()) {
+                            Image(systemName: "gearshape")
+                        }
+                        .accessibilityLabel("Open Settings")
+                    }
+                }
+        }
+    }
 }

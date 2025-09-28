@@ -5,6 +5,23 @@ struct ProfileView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacing) {
+                if !app.isHealthAuthorized {
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            HStack {
+                                Image(systemName: "heart.fill").foregroundStyle(.pink)
+                                Text("Health Access").font(.headline)
+                                Spacer()
+                            }
+                            Text("Allow Health access to personalize your profile and metrics.")
+                                .foregroundStyle(.secondary)
+                            Button("Enable Health Access") {
+                                Task { await app.requestHealthAuthorization() }
+                            }
+                            .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                        }
+                    }
+                }
                 GlassCard {
                     HStack(alignment: .center, spacing: AppTheme.spacing) {
                         Image(systemName: "person.circle.fill").font(.system(size: 72))

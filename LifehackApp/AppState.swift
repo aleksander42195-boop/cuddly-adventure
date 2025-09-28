@@ -5,7 +5,7 @@ import UIKit
 
 @MainActor
 final class AppState: ObservableObject {
-    enum Tab: Hashable { case today, journal, trends }
+    enum Tab: Hashable { case today, journal, trends, profile }
 
     @Published var selectedTab: Tab = .today
     @Published var isOnboardingPresented: Bool = false
@@ -57,6 +57,7 @@ final class AppState: ObservableObject {
             switch savedTab {
             case "journal": selectedTab = .journal
             case "trends": selectedTab = .trends
+            case "profile": selectedTab = .profile
             default: selectedTab = .today
             }
         }
@@ -92,6 +93,7 @@ final class AppState: ObservableObject {
         case .today: tabString = "today"
         case .journal: tabString = "journal"
         case .trends: tabString = "trends"
+        case .profile: tabString = "profile"
         }
         UserDefaults.standard.set(tabString, forKey: "selectedTab")
         UserDefaults.standard.synchronize()
