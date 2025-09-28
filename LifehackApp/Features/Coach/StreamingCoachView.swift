@@ -6,9 +6,43 @@ struct StreamingCoachView: View {
     @State private var output: String = ""
     @State private var tokenEstimate: Int = 0
     @State private var isStreaming = false
+    @State private var showKeySetup = false
+    @State private var lastHTTPStatus: Int? = nil
 
     var body: some View {
         VStack(spacing: 10) {
+            if lastHTTPStatus == 401 {
+                GlassCard {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.yellow)
+                            Text("Authentication failed (invalid API key)")
+                                .font(.subheadline)
+                                .bold()
+                        }
+                        Text("Your OpenAI API key was rejected. Update the key or clear it to switch back to setup.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        HStack {
+                            Button {
+                                showKeySetup = true
+                            } label: {
+                                Label("Update API Key", systemImage: "key.fill")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            
+                            Button {
+                                Secrets.shared.clearOpenAIOverride()
+                                lastHTTPStatus = nil
+                                output = "API key cleared. Open setup to add a new one."
+                            } label: {
+                                Label("Clear Key", systemImage: "trash")
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+                }
+            }
             ScrollView {
                 Text(output)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -33,6 +67,27 @@ struct StreamingCoachView: View {
         }
         .padding()
         .navigationTitle("Streaming Coach")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    showKeySetup = true
+                } label: {
+                    Label("API Key", systemImage: "key.fill")
+                }
+            }
+        }
+        .sheet(isPresented: $showKeySetup) {
+            NavigationStack {
+                ChatGPTLoginView()
+                    .navigationTitle("AI Coach Setup")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Close") { showKeySetup = false }
+                        }
+                    }
+            }
+        }
     }
 
     func ask() async {
@@ -58,7 +113,11 @@ struct StreamingCoachView: View {
                     tokenEstimate = TokenCounter.estimateTokens(output)
                 }
             } catch {
-                output = detailedErrorMessage(error)
+                let ns = error as NSError
+                await MainActor.run {
+                    lastHTTPStatus = ns.code
+                    output = detailedErrorMessage(error)
+                }
             }
         } else {
             // fallback: ikke-streamende service
@@ -67,10 +126,16 @@ struct StreamingCoachView: View {
                     .init(role: .system, content: "Du er Lifehack Coach – kort, vennlig, konkret."),
                     .init(role: .user, content: input)
                 ])
-                output = text
-                tokenEstimate = TokenCounter.estimateTokens(text)
+                await MainActor.run {
+                    output = text
+                    tokenEstimate = TokenCounter.estimateTokens(text)
+                }
             } catch {
-                output = detailedErrorMessage(error)
+                let ns = error as NSError
+                await MainActor.run {
+                    lastHTTPStatus = ns.code
+                    output = detailedErrorMessage(error)
+                }
             }
         }
         isStreaming = false

@@ -33,6 +33,9 @@ final class Secrets {
         Vault.deleteOpenAIKey()
     }
 
+    // Convenience to check if a user-provided key is set
+    var hasUserAPIKey: Bool { Vault.loadOpenAIKey() != nil }
+
     var healthKitEnabledFlag: Bool {
         bool("HEALTHKIT_ENABLED")
     }
