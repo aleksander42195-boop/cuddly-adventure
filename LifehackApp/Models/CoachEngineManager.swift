@@ -30,16 +30,16 @@ final class CoachEngineManager: ObservableObject {
     private enum Keys {}
 
     init() {
-        let raw = store.string(forKey: SharedKeys.coachEngineSelection) ?? CoachEngine.openAIResponses.rawValue
-        var initial = CoachEngine(rawValue: raw) ?? .openAIResponses
+    let raw = store.string(forKey: SharedKeys.coachEngineSelection) ?? CoachEngine.openAIChatCompletions.rawValue
+    var initial = CoachEngine(rawValue: raw) ?? .openAIChatCompletions
         if initial == .managedProxy && !DeveloperFlags.enableManagedProxy {
             initial = .openAIResponses
             store.set(initial.rawValue, forKey: SharedKeys.coachEngineSelection)
         }
         self.engine = initial
         self.baseURLString = store.string(forKey: SharedKeys.coachBaseURL) ?? ""
-        self.responsesModel = store.string(forKey: SharedKeys.coachResponsesModel) ?? "gpt-4o-mini"
-        self.chatModel = store.string(forKey: SharedKeys.coachChatModel) ?? "gpt-4o-mini"
+    self.responsesModel = store.string(forKey: SharedKeys.coachResponsesModel) ?? "gpt-4o-mini"
+    self.chatModel = store.string(forKey: SharedKeys.coachChatModel) ?? "gpt-4o-mini"
         self.wristTipsEnabled = store.bool(forKey: SharedKeys.coachWristTipsEnabled)
         
         // Setup automatic state saving when app backgrounded

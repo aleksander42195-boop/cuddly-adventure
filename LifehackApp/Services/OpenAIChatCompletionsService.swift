@@ -27,8 +27,11 @@ final class OpenAIChatCompletionsService: ChatService {
 
         let (data, resp) = try await URLSession.shared.data(for: req)
         guard let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-            throw NSError(domain: "OpenAIChatCompletionsService", code: 1, userInfo: [
-                NSLocalizedDescriptionKey: "Chat Completions API feilet"
+            let code = (resp as? HTTPURLResponse)?.statusCode ?? -1
+            let text = String(data: data, encoding: .utf8) ?? "<no body>"
+            throw NSError(domain: "OpenAIChatCompletionsService", code: code, userInfo: [
+                NSLocalizedDescriptionKey: "Chat Completions API failed (status: \(code))",
+                "body": text
             ])
         }
 
@@ -66,7 +69,8 @@ extension OpenAIChatCompletionsService: StreamingChatService {
                 do {
                     let (bytes, resp) = try await URLSession.shared.bytes(for: req)
                     guard let http = resp as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
-                        throw NSError(domain: "OpenAIChatCompletionsService", code: 2, userInfo: [NSLocalizedDescriptionKey: "HTTP error"])
+                        let code = (resp as? HTTPURLResponse)?.statusCode ?? -1
+                        throw NSError(domain: "OpenAIChatCompletionsService", code: code, userInfo: [NSLocalizedDescriptionKey: "HTTP error"])
                     }
                     for try await line in bytes.lines {
                         let str = String(line)
