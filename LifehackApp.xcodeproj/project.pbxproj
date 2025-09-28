@@ -72,6 +72,7 @@
 		STUDYREC000000000000001 /* StudyRecommender.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDYREC000000000000000 /* StudyRecommender.swift */; };
 		METCRDV000000000000001 /* MetricCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = METCRDV000000000000000 /* MetricCardView.swift */; };
 		DLYSTDY000000000000001 /* DailyStudyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DLYSTDY000000000000000 /* DailyStudyService.swift */; };
+		CHATGPTLOGIN0000000000001 /* ChatGPTLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHATGPTLOGIN0000000000000 /* ChatGPTLoginView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -141,6 +142,7 @@
 		STUDYREC000000000000000 /* StudyRecommender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/StudyRecommender.swift; sourceTree = "<group>"; };
 		METCRDV000000000000000 /* MetricCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/MetricCardView.swift; sourceTree = "<group>"; };
 		DLYSTDY000000000000000 /* DailyStudyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DailyStudyService.swift; sourceTree = "<group>"; };
+		CHATGPTLOGIN0000000000000 /* ChatGPTLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/ChatGPTLoginView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,6 +220,7 @@
 				COACHV000000000000000 /* CoachView.swift */,
 				COACHGV000000000000000 /* CoachingView.swift */,
 				STRMCV000000000000000 /* StreamingCoachView.swift */,
+				CHATGPTLOGIN0000000000000 /* ChatGPTLoginView.swift */,
 				COACHVM000000000000000 /* CoachVM.swift */,
 				COACHSET00000000000000 /* CoachEngineSettingsView.swift */,
 				HRVCAM000000000000000 /* HRVCameraView.swift */,
@@ -372,6 +375,7 @@
 				COACHV000000000000001 /* CoachView.swift in Sources */,
 				COACHGV000000000000001 /* CoachingView.swift in Sources */,
 				STRMCV000000000000001 /* StreamingCoachView.swift in Sources */,
+				CHATGPTLOGIN0000000000001 /* ChatGPTLoginView.swift in Sources */,
 				COACHVM000000000000001 /* CoachVM.swift in Sources */,
 				COACHSET00000000000001 /* CoachEngineSettingsView.swift in Sources */,
 				HRVCAM000000000000001 /* HRVCameraView.swift in Sources */,
