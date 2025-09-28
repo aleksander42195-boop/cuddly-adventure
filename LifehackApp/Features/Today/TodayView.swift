@@ -14,7 +14,7 @@ struct TodayView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: theme.spacing) {
+            VStack(spacing: AppTheme.spacing) {
                 topControlsSection
                 healthPermissionSection
                 metricsSection
@@ -62,9 +62,17 @@ struct TodayView: View {
             }
         }
         .sheet(isPresented: $showingChatGPTLogin) {
-            // If no API key, present setup/login first; otherwise open chat directly
+            // If no API key, present quick login; otherwise open chat directly
             if Secrets.shared.openAIAPIKey == nil {
-                ChatGPTLoginView()
+                NavigationView {
+                    ChatGPTLoginView()
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                Button("Done") { showingChatGPTLogin = false }
+                            }
+                        }
+                }
             } else {
                 NavigationView {
                     StreamingCoachView()

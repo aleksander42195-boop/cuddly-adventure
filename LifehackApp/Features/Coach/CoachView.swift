@@ -9,30 +9,8 @@ struct CoachView: View {
     @EnvironmentObject private var app: AppState
 
     private var hasAPIKey: Bool { Secrets.shared.openAIAPIKey != nil }
-    // Choose an online service based on engine; fallback to mock if misconfigured
-    private var onlineService: any ChatService {
-        switch engineManager.engine {
-        case .openAIResponses:
-            if let key = Secrets.shared.openAIAPIKey {
-                return OpenAIResponsesService(config: .init(apiKey: key, model: engineManager.responsesModel, baseURL: engineManager.baseURL))
-            }
-            return SimpleMockChatService()
-        case .openAIChatCompletions:
-            if let key = Secrets.shared.openAIAPIKey {
-                return OpenAIChatCompletionsService(config: .init(apiKey: key, model: engineManager.chatModel, baseURL: engineManager.baseURL))
-            }
-            return SimpleMockChatService()
-        case .offlineHeuristics:
-            return OfflineHeuristicsService() // should be short-circuited earlier
-        case .managedProxy:
-            if DeveloperFlags.enableManagedProxy,
-               let token = Secrets.shared.proxyAccessToken,
-               let base = Secrets.shared.proxyBaseURL {
-                return ManagedProxyService(config: .init(accessToken: token, baseURL: base, model: engineManager.chatModel))
-            }
-            return SimpleMockChatService()
-        }
-    }
+    // Obtain the appropriate chat service via the manager (handles feature flags and fallbacks)
+    private var onlineService: any ChatService { engineManager.makeService() }
     private var coachEngine: CoachEngine { engineManager.engine }
     private let spacingS: CGFloat = 12
     private let spacingXS: CGFloat = 6

@@ -73,12 +73,8 @@ final class CoachEngineManager: ObservableObject {
         case .offlineHeuristics:
             return OfflineHeuristicsService()
         case .managedProxy:
-            // Temporarily disable Managed Proxy unless explicitly enabled
-            if DeveloperFlags.enableManagedProxy,
-               let token = Secrets.shared.proxyAccessToken,
-               let base = Secrets.shared.proxyBaseURL {
-                return ManagedProxyService(config: .init(accessToken: token, baseURL: base, model: chatModel))
-            }
+            // Temporarily disabled: no direct ManagedProxyService usage to avoid build issues.
+            // When the domain & worker are ready, reintroduce the proxy-backed service here.
             // Fallback to Responses if API key exists; else mock
             if let key = Secrets.shared.openAIAPIKey {
                 return OpenAIResponsesService(

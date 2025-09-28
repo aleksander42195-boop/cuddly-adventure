@@ -40,7 +40,7 @@ struct CoachEngineSettingsView: View {
                 if DeveloperFlags.enableManagedProxy {
                     Section(header: Text("Managed Proxy")) {
                         if engineManager.engine == .managedProxy {
-                            NavigationLink("Login / Configure", destination: ManagedProxyAuthView())
+                            NavigationLink("Login / Configure", destination: ManagedProxyConfigInlineView())
                             if let url = Secrets.shared.proxyBaseURL { Text("Base: \(url.absoluteString)").font(.footnote) }
                             Text(Secrets.shared.proxyAccessToken == nil ? "Status: signed out" : "Status: signed in").font(.footnote)
                         } else {
@@ -55,3 +55,36 @@ struct CoachEngineSettingsView: View {
 }
 
 #Preview { CoachEngineSettingsView().environmentObject(CoachEngineManager()) }
+
+// Minimal inline configuration view to avoid referencing external ManagedProxyAuthView
+private struct ManagedProxyConfigInlineView: View {
+    @State private var baseURL: String = Secrets.shared.proxyBaseURL?.absoluteString ?? ""
+    @State private var token: String = Secrets.shared.proxyAccessToken ?? ""
+    @State private var status: String? = nil
+
+    var body: some View {
+        Form {
+            Section(header: Text("Proxy Server")) {
+                TextField("https://your-proxy.example", text: $baseURL)
+                    .keyboardType(.URL)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                Button("Save Base URL") {
+                    Secrets.shared.setProxyBaseURL(baseURL)
+                    status = "Saved base URL"
+                }
+            }
+            Section(header: Text("Sign In")) {
+                SecureField("Access token", text: $token)
+                    .textInputAutocapitalization(.never)
+                    .disableAutocorrection(true)
+                Button("Save Token") {
+                    Secrets.shared.setProxyAccessToken(token)
+                    status = "Saved access token"
+                }
+            }
+            if let status = status { Text(status).font(.footnote).foregroundStyle(.secondary) }
+        }
+        .navigationTitle("Managed Proxy")
+    }
+}
