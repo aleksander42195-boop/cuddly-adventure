@@ -43,6 +43,32 @@ struct StreamingCoachView: View {
                     }
                 }
             }
+            if lastHTTPStatus == 429 {
+                GlassCard {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "clock.badge.exclamationmark").foregroundStyle(.orange)
+                            Text("Rate limited (429)")
+                                .font(.subheadline)
+                                .bold()
+                        }
+                        Text("You’ve hit the rate limit. Please try again in a bit, or switch to the offline coach temporarily.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        HStack {
+                            Button {
+                                Task { await ask() }
+                            } label: { Label("Try Again", systemImage: "arrow.clockwise") }
+                            .buttonStyle(.borderedProminent)
+                            Button {
+                                engineManager.engine = .offlineHeuristics
+                                lastHTTPStatus = nil
+                                output = "Switched to offline coach."
+                            } label: { Label("Switch to Offline", systemImage: "brain") }
+                        }
+                    }
+                }
+            }
             ScrollView {
                 Text(output)
                     .frame(maxWidth: .infinity, alignment: .leading)

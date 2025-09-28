@@ -53,6 +53,34 @@ struct CoachView: View {
                 }
                 .padding([.horizontal, .top])
             }
+            if lastHTTPStatus == 429 {
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "clock.badge.exclamationmark").foregroundStyle(.orange)
+                            Text("Rate limited (429)")
+                                .font(.subheadline)
+                                .bold()
+                        }
+                        Text("You’ve hit the rate limit. Please try again shortly, or switch to the offline coach while you wait.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                        HStack {
+                            Button {
+                                triggerSend()
+                            } label: { Label("Try Again", systemImage: "arrow.clockwise") }
+                            .buttonStyle(.borderedProminent)
+                            Button {
+                                engineManager.engine = .offlineHeuristics
+                                lastHTTPStatus = nil
+                                lastServerBody = nil
+                                messages.append(.assistant("Switched to offline coach."))
+                            } label: { Label("Switch to Offline", systemImage: "brain") }
+                        }
+                    }
+                }
+                .padding([.horizontal, .top])
+            }
 
             if !hasAPIKey {
                 GlassCard {
