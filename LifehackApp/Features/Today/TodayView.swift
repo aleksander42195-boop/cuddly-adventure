@@ -14,23 +14,7 @@ struct TodayView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: AppTheme.spacing) {
-                topControlsSection
-                healthPermissionSection
-                metricsSection
-                hrvSection
-                studySection
-                activitySection
-                aiCoachSection
-                sleepSection
-                refreshButton
-            }
-            // Responsive padding: slightly larger on compact (e.g., iPhone/SE)
-            .padding(.horizontal, hSizeClass == .compact ? 20 : 24)
-            .padding(.vertical, 12)
-            // Limit width on compact to a tighter cap for better feel in portrait
-            .frame(maxWidth: (hSizeClass == .compact) ? 380 : 680, alignment: .center)
-            .frame(maxWidth: .infinity)
+            content
         }
         .refreshable {
             await app.refreshFromHealthIfAvailable()
@@ -62,29 +46,10 @@ struct TodayView: View {
             }
         }
         .sheet(isPresented: $showingChatGPTLogin) {
-            // If no API key, present quick login; otherwise open chat directly
-            if Secrets.shared.openAIAPIKey == nil {
-                NavigationView {
-                    ChatGPTLoginView()
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Done") { showingChatGPTLogin = false }
-                            }
-                        }
-                }
-            } else {
-                NavigationView {
-                    StreamingCoachView()
-                        .navigationTitle("AI Health Coach")
-                        .navigationBarTitleDisplayMode(.inline)
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Done") { showingChatGPTLogin = false }
-                            }
-                        }
-                }
-            }
+            CoachSheetRouter(
+                hasAPIKey: Secrets.shared.openAIAPIKey != nil,
+                onClose: { showingChatGPTLogin = false }
+            )
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
@@ -93,6 +58,28 @@ struct TodayView: View {
             "Battery \(Int(app.today.battery * 100)) percent. " +
             "HRV \(app.today.hrvLabel). Steps \(app.today.steps)."
         )
+    }
+    
+    // Extracted to reduce type-checker complexity in `body`
+    private var content: some View {
+        let isCompact = (hSizeClass == .compact)
+        return VStack(spacing: AppTheme.spacing) {
+            topControlsSection
+            healthPermissionSection
+            metricsSection
+            hrvSection
+            studySection
+            activitySection
+            aiCoachSection
+            sleepSection
+            refreshButton
+        }
+        // Responsive padding: slightly larger on compact (e.g., iPhone/SE)
+        .padding(.horizontal, isCompact ? 20 : 24)
+        .padding(.vertical, 12)
+        // Limit width on compact to a tighter cap for better feel in portrait
+        .frame(maxWidth: isCompact ? 380 : 680, alignment: .center)
+        .frame(maxWidth: .infinity)
     }
     
     private var topControlsSection: some View {
@@ -449,6 +436,33 @@ struct TodayView: View {
             }
             .buttonStyle(AppTheme.LiquidGlassButtonStyle())
             .disabled(app.isSyncing)
+        }
+    }
+}
+
+// Small router that chooses between AI coach setup and chat, keeping a single
+// .sheet content type to help the Swift type-checker.
+private struct CoachSheetRouter: View {
+    let hasAPIKey: Bool
+    let onClose: () -> Void
+    
+    var body: some View {
+        NavigationView {
+            Group {
+                if hasAPIKey {
+                    StreamingCoachView()
+                        .navigationTitle("AI Health Coach")
+                } else {
+                    ChatGPTLoginView()
+                        .navigationTitle("AI Coach Setup")
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") { onClose() }
+                }
+            }
         }
     }
 }

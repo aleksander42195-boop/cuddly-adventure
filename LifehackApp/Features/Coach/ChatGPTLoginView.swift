@@ -1,28 +1,5 @@
 import SwiftUI
-
-struct ChatGPTLoginView: View {
-    @State private var key: String = ""
-    @State private var saved: Bool = false
-    var body: some View {
-        Form {
-            Section(header: Text("OpenAI API Key")) {
-                SecureField("sk-...", text: $key)
-                    .textInputAutocapitalization(.never)
-                    .disableAutocorrection(true)
-                Button("Save Key") {
-                    let trimmed = key.trimmingCharacters(in: .whitespacesAndNewlines)
-                    if !trimmed.isEmpty { Secrets.shared.setOpenAIOverride(trimmed); saved = true }
-                }
-                if saved { Text("Saved").font(.footnote).foregroundStyle(.secondary) }
-            }
-        }
-        .navigationTitle("AI Coach Login")
-    }
-}
-
-#Preview {
-    NavigationView { ChatGPTLoginView() }
-}//
+///
 //  ChatGPTLoginView.swift
 //  LifehackApp
 //
