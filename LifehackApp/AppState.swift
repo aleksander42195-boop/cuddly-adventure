@@ -107,6 +107,9 @@ final class AppState: ObservableObject {
 
     @MainActor
     func refreshFromHealthIfAvailable() async {
+        if DeveloperFlags.verboseLogging {
+            print("[AppState] refreshFromHealthIfAvailable() called, current today: \(today)")
+        }
         let snap = await healthService.safeTodaySnapshot()
         today = snap
         NotificationsManager.shared.scheduleStudySuggestions(basedOn: snap)
@@ -114,10 +117,22 @@ final class AppState: ObservableObject {
         lastNightSleepHours = sleep
         let mets = (try? await healthService.todayMETHours()) ?? 0
         todayMETHours = mets
+        if DeveloperFlags.verboseLogging {
+            print("[AppState] refreshFromHealthIfAvailable() completed, new today: \(today), sleep: \(sleep)h, mets: \(mets)")
+        }
     }
 
-    var isHealthAuthorized: Bool { healthService.isAuthorized }
+    var isHealthAuthorized: Bool { 
+        let authorized = healthService.isAuthorized
+        if DeveloperFlags.verboseLogging {
+            print("[AppState] isHealthAuthorized -> \(authorized)")
+        }
+        return authorized
+    }
     func requestHealthAuthorization() async {
+        if DeveloperFlags.verboseLogging {
+            print("[AppState] requestHealthAuthorization() called")
+        }
         _ = try? await healthService.requestAuthorization()
         await refreshFromHealthIfAvailable()
     }

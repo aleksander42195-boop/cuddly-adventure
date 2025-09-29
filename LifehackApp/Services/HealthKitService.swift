@@ -46,6 +46,10 @@ final class HealthKitService {
         if let weight = HKObjectType.quantityType(forIdentifier: .bodyMass) { set.insert(weight) }
         if let mindful = HKObjectType.categoryType(forIdentifier: .mindfulSession) { set.insert(mindful) }
         if let sleep = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) { set.insert(sleep) }
+        
+        if DeveloperFlags.verboseLogging {
+            print("[HealthKit] readTypes includes \(set.count) types: \(set.map { $0.identifier }.joined(separator: ", "))")
+        }
         return set
     }
 
@@ -100,8 +104,15 @@ final class HealthKitService {
     // Convenience: return placeholder instead of throwing (UI-friendly)
     func safeTodaySnapshot() async -> TodaySnapshot {
         do {
-            return try await fetchTodaySnapshot() ?? .placeholder
+            let snapshot = try await fetchTodaySnapshot() ?? .placeholder
+            if DeveloperFlags.verboseLogging {
+                print("[HealthKit] safeTodaySnapshot() -> success: \(snapshot)")
+            }
+            return snapshot
         } catch {
+            if DeveloperFlags.verboseLogging {
+                print("[HealthKit] safeTodaySnapshot() -> error: \(error), returning placeholder")
+            }
             return .placeholder
         }
     }
@@ -304,12 +315,25 @@ final class HealthKitService {
         try await withCheckedThrowingContinuation { cont in
             let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
             let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: 1, sortDescriptors: [sort]) { _, results, error in
-                if let error = error { cont.resume(throwing: error); return }
-                guard let q = results?.first as? HKQuantitySample else {
+                if let error = error { 
+                    if DeveloperFlags.verboseLogging {
+                        print("[HealthKit] latestQuantity(\(type.identifier)) -> error: \(error)")
+                    }
+                    cont.resume(throwing: error)
+                    return 
+                }
+                guard let sample = results?.first as? HKQuantitySample else {
+                    if DeveloperFlags.verboseLogging {
+                        print("[HealthKit] latestQuantity(\(type.identifier)) -> no samples found, returning 0")
+                    }
                     cont.resume(returning: 0)
                     return
                 }
-                cont.resume(returning: q.quantity.doubleValue(for: unit))
+                let value = sample.quantity.doubleValue(for: unit)
+                if DeveloperFlags.verboseLogging {
+                    print("[HealthKit] latestQuantity(\(type.identifier)) -> found sample: \(value) \(unit), date: \(sample.endDate)")
+                }
+                cont.resume(returning: value)
             }
             self.store.execute(q)
         }
@@ -318,9 +342,19 @@ final class HealthKitService {
     private func sumQuantity(type: HKQuantityType, predicate: NSPredicate, unit: HKUnit) async throws -> Int {
         try await withCheckedThrowingContinuation { cont in
             let q = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
-                if let error = error { cont.resume(throwing: error); return }
+                if let error = error { 
+                    if DeveloperFlags.verboseLogging {
+                        print("[HealthKit] sumQuantity(\(type.identifier)) -> error: \(error)")
+                    }
+                    cont.resume(throwing: error)
+                    return 
+                }
                 let val = result?.sumQuantity()?.doubleValue(for: unit) ?? 0
-                cont.resume(returning: Int(val.rounded()))
+                let intVal = Int(val.rounded())
+                if DeveloperFlags.verboseLogging {
+                    print("[HealthKit] sumQuantity(\(type.identifier)) -> sum: \(intVal) \(unit)")
+                }
+                cont.resume(returning: intVal)
             }
             self.store.execute(q)
         }
