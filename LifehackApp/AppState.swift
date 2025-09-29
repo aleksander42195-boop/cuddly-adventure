@@ -130,10 +130,12 @@ final class AppState: ObservableObject {
         return authorized
     }
     func requestHealthAuthorization() async {
+        print("[AppState] requestHealthAuthorization() called - button pressed!")
         if DeveloperFlags.verboseLogging {
             print("[AppState] requestHealthAuthorization() called")
         }
-        _ = try? await healthService.requestAuthorization()
+        let result = try? await healthService.requestAuthorization()
+        print("[AppState] requestHealthAuthorization() result: \(result ?? false)")
         await refreshFromHealthIfAvailable()
     }
 
@@ -149,6 +151,7 @@ final class AppState: ObservableObject {
     
     // MARK: - Manual Sync Trigger (UI)
     func triggerManualSync() {
+        print("[AppState] triggerManualSync() called - button pressed!")
         guard !isSyncing else { return }
         Task { await performManualSync() }
     }
