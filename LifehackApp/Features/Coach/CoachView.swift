@@ -8,6 +8,9 @@ struct CoachView: View {
     @State private var showKeySetup = false
     @State private var lastHTTPStatus: Int? = nil
     @State private var lastServerBody: String? = nil
+    @State private var retryAfterSeconds: Int? = nil
+    @State private var cooldownRemaining: Int? = nil
+    @State private var pendingRetryPrompt: String? = nil
     @EnvironmentObject private var engineManager: CoachEngineManager
     @EnvironmentObject private var app: AppState
 
@@ -62,9 +65,15 @@ struct CoachView: View {
                                 .font(.subheadline)
                                 .bold()
                         }
-                        Text("You’ve hit the rate limit. Please try again shortly, or switch to the offline coach while you wait.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        if let remain = cooldownRemaining, remain > 0 {
+                            Text("Please wait \(remain)s before retry. It will auto-retry when ready.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("You’ve hit the rate limit. Please try again shortly, or switch to the offline coach while you wait.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                         HStack {
                             Button {
                                 triggerSend()
@@ -194,8 +203,15 @@ struct CoachView: View {
     }
 
     private func triggerSend() {
-        let text = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        var text = input.trimmingCharacters(in: .whitespacesAndNewlines)
+        if text.isEmpty, let pending = pendingRetryPrompt { text = pending }
         guard !text.isEmpty, !isSending else { return }
+        pendingRetryPrompt = text
+        // Clear previous error banners/state on a new attempt
+        lastHTTPStatus = nil
+        lastServerBody = nil
+        retryAfterSeconds = nil
+        cooldownRemaining = nil
         messages.append(.user(text))
         input = ""
         app.tapHaptic()
@@ -208,6 +224,7 @@ struct CoachView: View {
                     await MainActor.run {
                         messages.append(.assistant(replyText))
                         isSending = false
+                        pendingRetryPrompt = nil
                     }
                 } catch {
                     await MainActor.run {
@@ -224,6 +241,7 @@ struct CoachView: View {
                 await MainActor.run {
                     messages.append(.assistant(replyText))
                     isSending = false
+                    pendingRetryPrompt = nil
                 }
             } catch {
                 let ns = error as NSError
@@ -231,9 +249,31 @@ struct CoachView: View {
                 await MainActor.run {
                     lastHTTPStatus = ns.code
                     lastServerBody = body
+                    if ns.code == 429 {
+                        if let ra = ns.userInfo["retryAfter"] as? Double { retryAfterSeconds = Int(ceil(ra)) } else { retryAfterSeconds = 5 }
+                        cooldownRemaining = retryAfterSeconds
+                        startCooldownTimer()
+                    }
                     messages.append(.assistant("Feil: \(ns.localizedDescription)"))
                     isSending = false
                 }
+            }
+        }
+    }
+
+    private func startCooldownTimer() {
+        guard let start = retryAfterSeconds, start > 0 else { return }
+        Task { @MainActor in
+            var remain = start
+            while remain > 0 {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                remain -= 1
+                cooldownRemaining = remain
+            }
+            // Auto retry once cooldown ends with the last queued user message (if any)
+            if let prompt = pendingRetryPrompt {
+                input = prompt
+                triggerSend()
             }
         }
     }

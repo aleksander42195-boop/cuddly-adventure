@@ -8,6 +8,8 @@ struct StreamingCoachView: View {
     @State private var isStreaming = false
     @State private var showKeySetup = false
     @State private var lastHTTPStatus: Int? = nil
+    @State private var retryAfterSeconds: Int? = nil
+    @State private var cooldownRemaining: Int? = nil
 
     var body: some View {
         VStack(spacing: 10) {
@@ -52,9 +54,15 @@ struct StreamingCoachView: View {
                                 .font(.subheadline)
                                 .bold()
                         }
-                        Text("You’ve hit the rate limit. Please try again in a bit, or switch to the offline coach temporarily.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        if let remain = cooldownRemaining, remain > 0 {
+                            Text("Please wait \(remain)s before retry. It will auto-retry when ready.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("You’ve hit the rate limit. Please try again in a bit, or switch to the offline coach temporarily.")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
                         HStack {
                             Button {
                                 Task { await ask() }
@@ -142,6 +150,11 @@ struct StreamingCoachView: View {
                 let ns = error as NSError
                 await MainActor.run {
                     lastHTTPStatus = ns.code
+                    if ns.code == 429 {
+                        if let ra = ns.userInfo["retryAfter"] as? Double { retryAfterSeconds = Int(ceil(ra)) } else { retryAfterSeconds = 5 }
+                        cooldownRemaining = retryAfterSeconds
+                        startCooldownTimer()
+                    }
                     output = detailedErrorMessage(error)
                 }
             }
@@ -160,11 +173,32 @@ struct StreamingCoachView: View {
                 let ns = error as NSError
                 await MainActor.run {
                     lastHTTPStatus = ns.code
+                    if ns.code == 429 {
+                        if let ra = ns.userInfo["retryAfter"] as? Double { retryAfterSeconds = Int(ceil(ra)) } else { retryAfterSeconds = 5 }
+                        cooldownRemaining = retryAfterSeconds
+                        startCooldownTimer()
+                    }
                     output = detailedErrorMessage(error)
                 }
             }
         }
         isStreaming = false
+    }
+
+    private func startCooldownTimer() {
+        guard let start = retryAfterSeconds, start > 0 else { return }
+        Task { @MainActor in
+            var remain = start
+            while remain > 0 {
+                try? await Task.sleep(nanoseconds: 1_000_000_000)
+                remain -= 1
+                cooldownRemaining = remain
+            }
+            // Auto retry once cooldown ends if input remains
+            if let _ = retryAfterSeconds {
+                await ask()
+            }
+        }
     }
 
     private func detailedErrorMessage(_ error: Error) -> String {

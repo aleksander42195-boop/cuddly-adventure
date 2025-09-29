@@ -99,11 +99,13 @@ private extension OpenAIChatCompletionsService {
     func sendWithRetry(req: URLRequest, maxAttempts: Int = 3) async throws -> (Data, URLResponse) {
         var attempt = 0
         var lastError: Error?
+        var lastRetryAfter: Double? = nil
         while attempt < maxAttempts {
             do {
                 let (data, resp) = try await URLSession.shared.data(for: req)
                 if let http = resp as? HTTPURLResponse, http.statusCode == 429 {
                     let retryAfter = (http.value(forHTTPHeaderField: "Retry-After").flatMap { Double($0) }) ?? pow(2.0, Double(attempt))
+                    lastRetryAfter = retryAfter
                     let jitter = Double.random(in: 0...0.333)
                     let delay = max(0.5, retryAfter) + jitter
                     try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
@@ -116,17 +118,22 @@ private extension OpenAIChatCompletionsService {
                 attempt += 1
             }
         }
+        if let ra = lastRetryAfter {
+            throw NSError(domain: "OpenAIChatCompletionsService", code: 429, userInfo: [NSLocalizedDescriptionKey: "Rate limited (429)", "retryAfter": ra])
+        }
         throw lastError ?? NSError(domain: "OpenAIChatCompletionsService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Request failed after retries"])
     }
 
     func bytesWithRetry(req: URLRequest, maxAttempts: Int = 3) async throws -> (URLSession.AsyncBytes, URLResponse) {
         var attempt = 0
         var lastError: Error?
+        var lastRetryAfter: Double? = nil
         while attempt < maxAttempts {
             do {
                 let (bytes, resp) = try await URLSession.shared.bytes(for: req)
                 if let http = resp as? HTTPURLResponse, http.statusCode == 429 {
                     let retryAfter = (http.value(forHTTPHeaderField: "Retry-After").flatMap { Double($0) }) ?? pow(2.0, Double(attempt))
+                    lastRetryAfter = retryAfter
                     let jitter = Double.random(in: 0...0.333)
                     let delay = max(0.5, retryAfter) + jitter
                     try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
@@ -138,6 +145,9 @@ private extension OpenAIChatCompletionsService {
                 lastError = error
                 attempt += 1
             }
+        }
+        if let ra = lastRetryAfter {
+            throw NSError(domain: "OpenAIChatCompletionsService", code: 429, userInfo: [NSLocalizedDescriptionKey: "Rate limited (429)", "retryAfter": ra])
         }
         throw lastError ?? NSError(domain: "OpenAIChatCompletionsService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Streaming request failed after retries"])
     }

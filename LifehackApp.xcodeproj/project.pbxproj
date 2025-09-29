@@ -3,147 +3,212 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BOOTST000000000000001 /* AppBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BOOTST000000000000000 /* AppBootstrap.swift */; };
-		KEYCHN000000000000001 /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = KEYCHN000000000000000 /* Keychain.swift */; };
-		COACHENG000000000000001 /* CoachEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHENG000000000000000 /* CoachEngine.swift */; };
-		CHATMDL000000000000001 /* ChatModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHATMDL000000000000000 /* ChatModels.swift */; };
-		SHRKEYS000000000000001 /* SharedKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = SHRKEYS000000000000000 /* SharedKeys.swift */; };
-		APPGRUP000000000000001 /* AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPGRUP000000000000000 /* AppGroup.swift */; };
-		SECRTS000000000000001 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = SECRTS000000000000000 /* Secrets.swift */; };
-		CHATSVC000000000000001 /* ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHATSVC000000000000000 /* ChatService.swift */; };
-		OFFHEUR000000000000001 /* OfflineHeuristicsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OFFHEUR000000000000000 /* OfflineHeuristicsService.swift */; };
-		OAIRESP000000000000001 /* OpenAIResponsesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAIRESP000000000000000 /* OpenAIResponsesService.swift */; };
-		OAICHAT000000000000001 /* OpenAIChatCompletionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAICHAT000000000000000 /* OpenAIChatCompletionsService.swift */; };
 		A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234561 /* DeviceManager.swift */; };
 		A1234567890ABCDEF1234564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234565 /* Assets.xcassets */; };
-		A1234567890ABCDEF123456A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456B /* AppDelegate.swift */; };
-		A1234567890ABCDEF123456C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456D /* SceneDelegate.swift */; };
-		A1234567890ABCDEF123456E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF123456F /* ViewController.swift */; };
+		A1234567890ABCDEF123456A /* (null) in Sources */ = {isa = PBXBuildFile; };
 		A1MAIN000000000000000002 /* LifehackApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1MAIN000000000000000001 /* LifehackApp.swift */; };
-		HLTHKT000000000000000001 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = HLTHKT000000000000000000 /* HealthKit.framework */; };
-		COACH000000000000000001 /* CoachEngineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACH000000000000000000 /* CoachEngineManager.swift */; };
-		THEME000000000000000001 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = THEME000000000000000000 /* AppTheme.swift */; };
-		ROOTT000000000000000001 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ROOTT000000000000000000 /* RootTabView.swift */; };
-		STATE000000000000000001 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = STATE000000000000000000 /* AppState.swift */; };
+		ACTPYR000000000000001 /* Components/ActivityPyramid.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACTPYR000000000000000 /* Components/ActivityPyramid.swift */; };
+		APPGRUP000000000000001 /* Config/AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPGRUP000000000000000 /* Config/AppGroup.swift */; };
+		APPICON000000000000001 /* Utils/AppIconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPICON000000000000000 /* Utils/AppIconManager.swift */; };
+		BATTPAL000000000000001 /* Components/BatteryPaletteRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BATTPAL000000000000000 /* Components/BatteryPaletteRing.swift */; };
+		BKMKSTR000000000000001 /* Services/BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BKMKSTR000000000000000 /* Services/BookmarkStore.swift */; };
+		BOOTST000000000000001 /* AppBootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = BOOTST000000000000000 /* AppBootstrap.swift */; };
+		CHATGPTLOGIN0000000000001 /* Features/Coach/ChatGPTLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHATGPTLOGIN0000000000000 /* Features/Coach/ChatGPTLoginView.swift */; };
+		CHATMDL000000000000001 /* Models/ChatModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHATMDL000000000000000 /* Models/ChatModels.swift */; };
+		CHATSVC000000000000001 /* Services/ChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHATSVC000000000000000 /* Services/ChatService.swift */; };
 		CNTNT000000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CNTNT000000000000000000 /* ContentView.swift */; };
-		METRICS000000000000001 /* MetricModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = METRICS000000000000000 /* MetricModels.swift */; };
-		HLTHKIT000000000000001 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = HLTHKIT000000000000000 /* HealthKitService.swift */; };
-		NOTIF00000000000000001 /* NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTIF00000000000000000 /* NotificationsManager.swift */; };
-		HAPTCS000000000000001 /* HapticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = HAPTCS000000000000000 /* HapticsManager.swift */; };
-		STUDY00000000000000001 /* Study.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDY00000000000000000 /* Study.swift */; };
-		HRVSTUD000000000000001 /* HRVStudies.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVSTUD000000000000000 /* HRVStudies.swift */; };
-		BKMKSTR000000000000001 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BKMKSTR000000000000000 /* BookmarkStore.swift */; };
-		GLSCARD000000000000001 /* GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = GLSCARD000000000000000 /* GlassCard.swift */; };
-		STRGAUG000000000000001 /* StressGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = STRGAUG000000000000000 /* StressGauge.swift */; };
-		BATTPAL000000000000001 /* BatteryPaletteRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BATTPAL000000000000000 /* BatteryPaletteRing.swift */; };
-		STARSLP000000000000001 /* StarrySleepCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = STARSLP000000000000000 /* StarrySleepCard.swift */; };
-		ACTPYR000000000000001 /* ActivityPyramid.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACTPYR000000000000000 /* ActivityPyramid.swift */; };
-		METRNG000000000000001 /* MetricRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = METRNG000000000000000 /* MetricRing.swift */; };
-		TODAYV000000000000001 /* TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TODAYV000000000000000 /* TodayView.swift */; };
-		STUDYV000000000000001 /* StudiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDYV000000000000000 /* StudiesView.swift */; };
-		SETTGV000000000000001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SETTGV000000000000000 /* SettingsView.swift */; };
-		PROFIV000000000000001 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PROFIV000000000000000 /* ProfileView.swift */; };
-		USERME000000000000001 /* UserMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = USERME000000000000000 /* UserMetricsView.swift */; };
-		PRIVAC000000000000001 /* PrivacySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRIVAC000000000000000 /* PrivacySettingsView.swift */; };
-		TRENDSV000000000000001 /* TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TRENDSV000000000000000 /* TrendsView.swift */; };
-		JOURNV000000000000001 /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JOURNV000000000000000 /* JournalView.swift */; };
-		NUTRIV000000000000001 /* NutritionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NUTRIV000000000000000 /* NutritionView.swift */; };
-		COACHV000000000000001 /* CoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHV000000000000000 /* CoachView.swift */; };
-		COACHGV000000000000001 /* CoachingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHGV000000000000000 /* CoachingView.swift */; };
-		STRMCV000000000000001 /* StreamingCoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = STRMCV000000000000000 /* StreamingCoachView.swift */; };
-		COACHVM000000000000001 /* CoachVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHVM000000000000000 /* CoachVM.swift */; };
-		COACHSET00000000000001 /* CoachEngineSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHSET00000000000000 /* CoachEngineSettingsView.swift */; };
-		HRVCAM000000000000001 /* HRVCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVCAM000000000000000 /* HRVCameraView.swift */; };
-		PPGPROC000000000000001 /* PPGProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGPROC000000000000000 /* PPGProcessor.swift */; };
-		PPGDLG000000000000001 /* PPGProcessorDelegateAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGDLG000000000000000 /* PPGProcessorDelegateAdapter.swift */; };
-		APPICON000000000000001 /* AppIconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPICON000000000000000 /* AppIconManager.swift */; };
-		ZODIAC000000000000001 /* Zodiac.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZODIAC000000000000000 /* Zodiac.swift */; };
-		OAICHAT2000000000000001 /* OpenAIChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAICHAT2000000000000000 /* OpenAIChatService.swift */; };
-		OAICLIENT000000000001 /* OpenAIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAICLIENT000000000000 /* OpenAIClient.swift */; };
-		SSE0000000000000000001 /* SSE.swift in Sources */ = {isa = PBXBuildFile; fileRef = SSE0000000000000000000 /* SSE.swift */; };
-		TOKENCTR000000000000001 /* TokenCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = TOKENCTR000000000000000 /* TokenCounter.swift */; };
-		SECSTR000000000000001 /* SecureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = SECSTR000000000000000 /* SecureStore.swift */; };
-		DEVFLG000000000000001 /* DeveloperFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEVFLG000000000000000 /* DeveloperFlags.swift */; };
-		SLPSVC000000000000001 /* SleepService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SLPSVC000000000000000 /* SleepService.swift */; };
-		STUDYREC000000000000001 /* StudyRecommender.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDYREC000000000000000 /* StudyRecommender.swift */; };
-		METCRDV000000000000001 /* MetricCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = METCRDV000000000000000 /* MetricCardView.swift */; };
-		DLYSTDY000000000000001 /* DailyStudyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DLYSTDY000000000000000 /* DailyStudyService.swift */; };
-		CHATGPTLOGIN0000000000001 /* ChatGPTLoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CHATGPTLOGIN0000000000000 /* ChatGPTLoginView.swift */; };
+		COACH000000000000000001 /* Models/CoachEngineManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACH000000000000000000 /* Models/CoachEngineManager.swift */; };
+		COACHENG000000000000001 /* Models/CoachEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHENG000000000000000 /* Models/CoachEngine.swift */; };
+		COACHGV000000000000001 /* Features/Coach/CoachingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHGV000000000000000 /* Features/Coach/CoachingView.swift */; };
+		COACHSET00000000000001 /* Features/Settings/CoachEngineSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHSET00000000000000 /* Features/Settings/CoachEngineSettingsView.swift */; };
+		COACHV000000000000001 /* Features/Coach/CoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHV000000000000000 /* Features/Coach/CoachView.swift */; };
+		COACHVM000000000000001 /* Features/Coach/CoachVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHVM000000000000000 /* Features/Coach/CoachVM.swift */; };
+		DEVFLG000000000000001 /* Services/DeveloperFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEVFLG000000000000000 /* Services/DeveloperFlags.swift */; };
+		DLYSTDY000000000000001 /* Services/DailyStudyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DLYSTDY000000000000000 /* Services/DailyStudyService.swift */; };
+		FE96EA2A2E8999B80088BA9C /* LifehackWatchApp Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = FE96EA292E8999B80088BA9C /* LifehackWatchApp Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		GLSCARD000000000000001 /* Components/GlassCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = GLSCARD000000000000000 /* Components/GlassCard.swift */; };
+		HAPTCS000000000000001 /* Services/HapticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = HAPTCS000000000000000 /* Services/HapticsManager.swift */; };
+		HLTHKIT000000000000001 /* Services/HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = HLTHKIT000000000000000 /* Services/HealthKitService.swift */; };
+		HLTHKT000000000000000001 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = HLTHKT000000000000000000 /* HealthKit.framework */; };
+		HRVCAM000000000000001 /* Features/HRV/HRVCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVCAM000000000000000 /* Features/HRV/HRVCameraView.swift */; };
+		HRVSTUD000000000000001 /* Data/HRVStudies.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVSTUD000000000000000 /* Data/HRVStudies.swift */; };
+		JOURNV000000000000001 /* Features/Journal/JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = JOURNV000000000000000 /* Features/Journal/JournalView.swift */; };
+		KEYCHN000000000000001 /* Services/Security/Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = KEYCHN000000000000000 /* Services/Security/Keychain.swift */; };
+		METCRDV000000000000001 /* Views/MetricCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = METCRDV000000000000000 /* Views/MetricCardView.swift */; };
+		METRICS000000000000001 /* Models/MetricModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = METRICS000000000000000 /* Models/MetricModels.swift */; };
+		METRNG000000000000001 /* Components/MetricRing.swift in Sources */ = {isa = PBXBuildFile; fileRef = METRNG000000000000000 /* Components/MetricRing.swift */; };
+		NOTIF00000000000000001 /* Services/NotificationsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTIF00000000000000000 /* Services/NotificationsManager.swift */; };
+		NUTRIV000000000000001 /* Features/Nutrition/NutritionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NUTRIV000000000000000 /* Features/Nutrition/NutritionView.swift */; };
+		OAICHAT000000000000001 /* Services/OpenAIChatCompletionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAICHAT000000000000000 /* Services/OpenAIChatCompletionsService.swift */; };
+		OAICHAT2000000000000001 /* Services/OpenAIChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAICHAT2000000000000000 /* Services/OpenAIChatService.swift */; };
+		OAIRESP000000000000001 /* Services/OpenAIResponsesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAIRESP000000000000000 /* Services/OpenAIResponsesService.swift */; };
+		OFFHEUR000000000000001 /* Services/OfflineHeuristicsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OFFHEUR000000000000000 /* Services/OfflineHeuristicsService.swift */; };
+		PPGDLG000000000000001 /* Features/HRV/PPGProcessorDelegateAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */; };
+		PPGPROC000000000000001 /* Features/HRV/PPGProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */; };
+		PRIVAC000000000000001 /* Features/Profile/PrivacySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRIVAC000000000000000 /* Features/Profile/PrivacySettingsView.swift */; };
+		PROFIV000000000000001 /* Features/Profile/ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PROFIV000000000000000 /* Features/Profile/ProfileView.swift */; };
+		ROOTT000000000000000001 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ROOTT000000000000000000 /* RootTabView.swift */; };
+		SECRTS000000000000001 /* Services/Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = SECRTS000000000000000 /* Services/Secrets.swift */; };
+		SECSTR000000000000001 /* Services/SecureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = SECSTR000000000000000 /* Services/SecureStore.swift */; };
+		SETTGV000000000000001 /* Features/Settings/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SETTGV000000000000000 /* Features/Settings/SettingsView.swift */; };
+		SHRKEYS000000000000001 /* Config/SharedKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = SHRKEYS000000000000000 /* Config/SharedKeys.swift */; };
+		SLPSVC000000000000001 /* Services/SleepService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SLPSVC000000000000000 /* Services/SleepService.swift */; };
+		SSE0000000000000000001 /* Services/SSE.swift in Sources */ = {isa = PBXBuildFile; fileRef = SSE0000000000000000000 /* Services/SSE.swift */; };
+		STARSLP000000000000001 /* Components/StarrySleepCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = STARSLP000000000000000 /* Components/StarrySleepCard.swift */; };
+		STATE000000000000000001 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = STATE000000000000000000 /* AppState.swift */; };
+		STRGAUG000000000000001 /* Components/StressGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = STRGAUG000000000000000 /* Components/StressGauge.swift */; };
+		STRMCV000000000000001 /* Features/Coach/StreamingCoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = STRMCV000000000000000 /* Features/Coach/StreamingCoachView.swift */; };
+		STUDY00000000000000001 /* Models/Study.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDY00000000000000000 /* Models/Study.swift */; };
+		STUDYREC000000000000001 /* Services/StudyRecommender.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDYREC000000000000000 /* Services/StudyRecommender.swift */; };
+		STUDYV000000000000001 /* Features/Studies/StudiesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = STUDYV000000000000000 /* Features/Studies/StudiesView.swift */; };
+		THEME000000000000000001 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = THEME000000000000000000 /* AppTheme.swift */; };
+		TODAYV000000000000001 /* Features/Today/TodayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TODAYV000000000000000 /* Features/Today/TodayView.swift */; };
+		TOKENCTR000000000000001 /* Services/TokenCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = TOKENCTR000000000000000 /* Services/TokenCounter.swift */; };
+		TRENDSV000000000000001 /* Features/Trends/TrendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = TRENDSV000000000000000 /* Features/Trends/TrendsView.swift */; };
+		USERME000000000000001 /* Features/Profile/UserMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = USERME000000000000000 /* Features/Profile/UserMetricsView.swift */; };
+		ZODIAC000000000000001 /* Utils/Zodiac.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZODIAC000000000000000 /* Utils/Zodiac.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		FE96EA142E8999B80088BA9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1234567890ABCDEF1234578 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FE96EA062E8999B70088BA9C;
+			remoteInfo = LifehackWatchApp;
+		};
+		FE96EA1E2E8999B80088BA9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1234567890ABCDEF1234578 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FE96EA062E8999B70088BA9C;
+			remoteInfo = LifehackWatchApp;
+		};
+		FE96EA2B2E8999B80088BA9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1234567890ABCDEF1234578 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FE96EA282E8999B80088BA9C;
+			remoteInfo = "LifehackWatchApp Watch App";
+		};
+		FE96EA392E8999B90088BA9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1234567890ABCDEF1234578 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FE96EA282E8999B80088BA9C;
+			remoteInfo = "LifehackWatchApp Watch App";
+		};
+		FE96EA432E8999B90088BA9C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1234567890ABCDEF1234578 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FE96EA282E8999B80088BA9C;
+			remoteInfo = "LifehackWatchApp Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FE96EA4C2E8999B90088BA9C /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				FE96EA2A2E8999B80088BA9C /* LifehackWatchApp Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		BOOTST000000000000000 /* AppBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBootstrap.swift; sourceTree = "<group>"; };
-		COACHENG000000000000000 /* CoachEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CoachEngine.swift; sourceTree = "<group>"; };
-		CHATMDL000000000000000 /* ChatModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ChatModels.swift; sourceTree = "<group>"; };
-		SHRKEYS000000000000000 /* SharedKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config/SharedKeys.swift; sourceTree = "<group>"; };
-		APPGRUP000000000000000 /* AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config/AppGroup.swift; sourceTree = "<group>"; };
-		SECRTS000000000000000 /* Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Secrets.swift; sourceTree = "<group>"; };
-		CHATSVC000000000000000 /* ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ChatService.swift; sourceTree = "<group>"; };
-		KEYCHN000000000000000 /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Security/Keychain.swift; sourceTree = "<group>"; };
-		OFFHEUR000000000000000 /* OfflineHeuristicsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OfflineHeuristicsService.swift; sourceTree = "<group>"; };
-		OAIRESP000000000000000 /* OpenAIResponsesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIResponsesService.swift; sourceTree = "<group>"; };
-		OAICHAT000000000000000 /* OpenAIChatCompletionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIChatCompletionsService.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234561 /* DeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManager.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234565 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234568 /* LifehackApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LifehackApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1234567890ABCDEF1234569 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C0DEC0DEC0DEC0DEC0DEC0D1 /* Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Signing.xcconfig; sourceTree = SOURCE_ROOT; };
 		A1MAIN000000000000000001 /* LifehackApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LifehackApp.swift; sourceTree = "<group>"; };
-		COACH000000000000000000 /* CoachEngineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CoachEngineManager.swift; sourceTree = "<group>"; };
-		THEME000000000000000000 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
-		ROOTT000000000000000000 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
-		STATE000000000000000000 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		ACTPYR000000000000000 /* Components/ActivityPyramid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/ActivityPyramid.swift; sourceTree = "<group>"; };
+		APPGRUP000000000000000 /* Config/AppGroup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config/AppGroup.swift; sourceTree = "<group>"; };
+		APPICON000000000000000 /* Utils/AppIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/AppIconManager.swift; sourceTree = "<group>"; };
+		BATTPAL000000000000000 /* Components/BatteryPaletteRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/BatteryPaletteRing.swift; sourceTree = "<group>"; };
+		BKMKSTR000000000000000 /* Services/BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/BookmarkStore.swift; sourceTree = "<group>"; };
+		BOOTST000000000000000 /* AppBootstrap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBootstrap.swift; sourceTree = "<group>"; };
+		C0DEC0DEC0DEC0DEC0DEC0D1 /* Config/Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Signing.xcconfig; sourceTree = SOURCE_ROOT; };
+		CHATGPTLOGIN0000000000000 /* Features/Coach/ChatGPTLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/ChatGPTLoginView.swift; sourceTree = "<group>"; };
+		CHATMDL000000000000000 /* Models/ChatModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ChatModels.swift; sourceTree = "<group>"; };
+		CHATSVC000000000000000 /* Services/ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ChatService.swift; sourceTree = "<group>"; };
 		CNTNT000000000000000000 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		COACH000000000000000000 /* Models/CoachEngineManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CoachEngineManager.swift; sourceTree = "<group>"; };
+		COACHENG000000000000000 /* Models/CoachEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CoachEngine.swift; sourceTree = "<group>"; };
+		COACHGV000000000000000 /* Features/Coach/CoachingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachingView.swift; sourceTree = "<group>"; };
+		COACHSET00000000000000 /* Features/Settings/CoachEngineSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/CoachEngineSettingsView.swift; sourceTree = "<group>"; };
+		COACHV000000000000000 /* Features/Coach/CoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachView.swift; sourceTree = "<group>"; };
+		COACHVM000000000000000 /* Features/Coach/CoachVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachVM.swift; sourceTree = "<group>"; };
+		DEVFLG000000000000000 /* Services/DeveloperFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DeveloperFlags.swift; sourceTree = "<group>"; };
+		DLYSTDY000000000000000 /* Services/DailyStudyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DailyStudyService.swift; sourceTree = "<group>"; };
 		ENTITL000000000000000000 /* LifehackApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LifehackApp.entitlements; sourceTree = "<group>"; };
+		FE96EA072E8999B70088BA9C /* LifehackWatchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LifehackWatchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE96EA132E8999B80088BA9C /* LifehackWatchAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LifehackWatchAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE96EA1D2E8999B80088BA9C /* LifehackWatchAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LifehackWatchAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE96EA292E8999B80088BA9C /* LifehackWatchApp Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "LifehackWatchApp Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE96EA382E8999B90088BA9C /* LifehackWatchApp Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LifehackWatchApp Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE96EA422E8999B90088BA9C /* LifehackWatchApp Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "LifehackWatchApp Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		GLSCARD000000000000000 /* Components/GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/GlassCard.swift; sourceTree = "<group>"; };
+		HAPTCS000000000000000 /* Services/HapticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/HapticsManager.swift; sourceTree = "<group>"; };
+		HLTHKIT000000000000000 /* Services/HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/HealthKitService.swift; sourceTree = "<group>"; };
 		HLTHKT000000000000000000 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
-		METRICS000000000000000 /* MetricModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/MetricModels.swift; sourceTree = "<group>"; };
-		HLTHKIT000000000000000 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/HealthKitService.swift; sourceTree = "<group>"; };
-		NOTIF00000000000000000 /* NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/NotificationsManager.swift; sourceTree = "<group>"; };
-		HAPTCS000000000000000 /* HapticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/HapticsManager.swift; sourceTree = "<group>"; };
-		STUDY00000000000000000 /* Study.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Study.swift; sourceTree = "<group>"; };
-		HRVSTUD000000000000000 /* HRVStudies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/HRVStudies.swift; sourceTree = "<group>"; };
-		BKMKSTR000000000000000 /* BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/BookmarkStore.swift; sourceTree = "<group>"; };
-		GLSCARD000000000000000 /* GlassCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/GlassCard.swift; sourceTree = "<group>"; };
-		STRGAUG000000000000000 /* StressGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/StressGauge.swift; sourceTree = "<group>"; };
-		BATTPAL000000000000000 /* BatteryPaletteRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/BatteryPaletteRing.swift; sourceTree = "<group>"; };
-		STARSLP000000000000000 /* StarrySleepCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/StarrySleepCard.swift; sourceTree = "<group>"; };
-		ACTPYR000000000000000 /* ActivityPyramid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/ActivityPyramid.swift; sourceTree = "<group>"; };
-		METRNG000000000000000 /* MetricRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/MetricRing.swift; sourceTree = "<group>"; };
-		TODAYV000000000000000 /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Today/TodayView.swift; sourceTree = "<group>"; };
-		STUDYV000000000000000 /* StudiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Studies/StudiesView.swift; sourceTree = "<group>"; };
-		SETTGV000000000000000 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/SettingsView.swift; sourceTree = "<group>"; };
-		PROFIV000000000000000 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/ProfileView.swift; sourceTree = "<group>"; };
-		USERME000000000000000 /* UserMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/UserMetricsView.swift; sourceTree = "<group>"; };
-		PRIVAC000000000000000 /* PrivacySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/PrivacySettingsView.swift; sourceTree = "<group>"; };
-		TRENDSV000000000000000 /* TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Trends/TrendsView.swift; sourceTree = "<group>"; };
-		JOURNV000000000000000 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Journal/JournalView.swift; sourceTree = "<group>"; };
-		NUTRIV000000000000000 /* NutritionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Nutrition/NutritionView.swift; sourceTree = "<group>"; };
-		COACHV000000000000000 /* CoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachView.swift; sourceTree = "<group>"; };
-		COACHGV000000000000000 /* CoachingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachingView.swift; sourceTree = "<group>"; };
-		STRMCV000000000000000 /* StreamingCoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/StreamingCoachView.swift; sourceTree = "<group>"; };
-		COACHVM000000000000000 /* CoachVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachVM.swift; sourceTree = "<group>"; };
-		COACHSET00000000000000 /* CoachEngineSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/CoachEngineSettingsView.swift; sourceTree = "<group>"; };
-		HRVCAM000000000000000 /* HRVCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/HRVCameraView.swift; sourceTree = "<group>"; };
-		PPGPROC000000000000000 /* PPGProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessor.swift; sourceTree = "<group>"; };
-		PPGDLG000000000000000 /* PPGProcessorDelegateAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessorDelegateAdapter.swift; sourceTree = "<group>"; };
-		APPICON000000000000000 /* AppIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/AppIconManager.swift; sourceTree = "<group>"; };
-		ZODIAC000000000000000 /* Zodiac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/Zodiac.swift; sourceTree = "<group>"; };
-		OAICHAT2000000000000000 /* OpenAIChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIChatService.swift; sourceTree = "<group>"; };
-		OAICLIENT000000000000 /* OpenAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIClient.swift; sourceTree = "<group>"; };
-		SSE0000000000000000000 /* SSE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SSE.swift; sourceTree = "<group>"; };
-		TOKENCTR000000000000000 /* TokenCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/TokenCounter.swift; sourceTree = "<group>"; };
-		SECSTR000000000000000 /* SecureStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SecureStore.swift; sourceTree = "<group>"; };
-		DEVFLG000000000000000 /* DeveloperFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DeveloperFlags.swift; sourceTree = "<group>"; };
-		SLPSVC000000000000000 /* SleepService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SleepService.swift; sourceTree = "<group>"; };
-		STUDYREC000000000000000 /* StudyRecommender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/StudyRecommender.swift; sourceTree = "<group>"; };
-		METCRDV000000000000000 /* MetricCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/MetricCardView.swift; sourceTree = "<group>"; };
-		DLYSTDY000000000000000 /* DailyStudyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DailyStudyService.swift; sourceTree = "<group>"; };
-		CHATGPTLOGIN0000000000000 /* ChatGPTLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/ChatGPTLoginView.swift; sourceTree = "<group>"; };
+		HRVCAM000000000000000 /* Features/HRV/HRVCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/HRVCameraView.swift; sourceTree = "<group>"; };
+		HRVSTUD000000000000000 /* Data/HRVStudies.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Data/HRVStudies.swift; sourceTree = "<group>"; };
+		JOURNV000000000000000 /* Features/Journal/JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Journal/JournalView.swift; sourceTree = "<group>"; };
+		KEYCHN000000000000000 /* Services/Security/Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Security/Keychain.swift; sourceTree = "<group>"; };
+		METCRDV000000000000000 /* Views/MetricCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/MetricCardView.swift; sourceTree = "<group>"; };
+		METRICS000000000000000 /* Models/MetricModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/MetricModels.swift; sourceTree = "<group>"; };
+		METRNG000000000000000 /* Components/MetricRing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/MetricRing.swift; sourceTree = "<group>"; };
+		NOTIF00000000000000000 /* Services/NotificationsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/NotificationsManager.swift; sourceTree = "<group>"; };
+		NUTRIV000000000000000 /* Features/Nutrition/NutritionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Nutrition/NutritionView.swift; sourceTree = "<group>"; };
+		OAICHAT000000000000000 /* Services/OpenAIChatCompletionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIChatCompletionsService.swift; sourceTree = "<group>"; };
+		OAICHAT2000000000000000 /* Services/OpenAIChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIChatService.swift; sourceTree = "<group>"; };
+		OAICLIENT000000000000 /* Services/OpenAIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIClient.swift; sourceTree = "<group>"; };
+		OAIRESP000000000000000 /* Services/OpenAIResponsesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIResponsesService.swift; sourceTree = "<group>"; };
+		OFFHEUR000000000000000 /* Services/OfflineHeuristicsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OfflineHeuristicsService.swift; sourceTree = "<group>"; };
+		PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessorDelegateAdapter.swift; sourceTree = "<group>"; };
+		PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessor.swift; sourceTree = "<group>"; };
+		PRIVAC000000000000000 /* Features/Profile/PrivacySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/PrivacySettingsView.swift; sourceTree = "<group>"; };
+		PROFIV000000000000000 /* Features/Profile/ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/ProfileView.swift; sourceTree = "<group>"; };
+		ROOTT000000000000000000 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
+		SECRTS000000000000000 /* Services/Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Secrets.swift; sourceTree = "<group>"; };
+		SECSTR000000000000000 /* Services/SecureStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SecureStore.swift; sourceTree = "<group>"; };
+		SETTGV000000000000000 /* Features/Settings/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/SettingsView.swift; sourceTree = "<group>"; };
+		SHRKEYS000000000000000 /* Config/SharedKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config/SharedKeys.swift; sourceTree = "<group>"; };
+		SLPSVC000000000000000 /* Services/SleepService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SleepService.swift; sourceTree = "<group>"; };
+		SSE0000000000000000000 /* Services/SSE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SSE.swift; sourceTree = "<group>"; };
+		STARSLP000000000000000 /* Components/StarrySleepCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/StarrySleepCard.swift; sourceTree = "<group>"; };
+		STATE000000000000000000 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		STRGAUG000000000000000 /* Components/StressGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/StressGauge.swift; sourceTree = "<group>"; };
+		STRMCV000000000000000 /* Features/Coach/StreamingCoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/StreamingCoachView.swift; sourceTree = "<group>"; };
+		STUDY00000000000000000 /* Models/Study.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Study.swift; sourceTree = "<group>"; };
+		STUDYREC000000000000000 /* Services/StudyRecommender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/StudyRecommender.swift; sourceTree = "<group>"; };
+		STUDYV000000000000000 /* Features/Studies/StudiesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Studies/StudiesView.swift; sourceTree = "<group>"; };
+		THEME000000000000000000 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		TODAYV000000000000000 /* Features/Today/TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Today/TodayView.swift; sourceTree = "<group>"; };
+		TOKENCTR000000000000000 /* Services/TokenCounter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/TokenCounter.swift; sourceTree = "<group>"; };
+		TRENDSV000000000000000 /* Features/Trends/TrendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Trends/TrendsView.swift; sourceTree = "<group>"; };
+		USERME000000000000000 /* Features/Profile/UserMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/UserMetricsView.swift; sourceTree = "<group>"; };
+		ZODIAC000000000000000 /* Utils/Zodiac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/Zodiac.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		FE96EA082E8999B70088BA9C /* LifehackWatchApp */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LifehackWatchApp; sourceTree = "<group>"; };
+		FE96EA162E8999B80088BA9C /* LifehackWatchAppTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LifehackWatchAppTests; sourceTree = "<group>"; };
+		FE96EA202E8999B80088BA9C /* LifehackWatchAppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LifehackWatchAppUITests; sourceTree = "<group>"; };
+		FE96EA2D2E8999B80088BA9C /* LifehackWatchApp Watch App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "LifehackWatchApp Watch App"; sourceTree = "<group>"; };
+		FE96EA3B2E8999B90088BA9C /* LifehackWatchApp Watch AppTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "LifehackWatchApp Watch AppTests"; sourceTree = "<group>"; };
+		FE96EA452E8999B90088BA9C /* LifehackWatchApp Watch AppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "LifehackWatchApp Watch AppUITests"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A1234567890ABCDEF1234570 /* Frameworks */ = {
@@ -151,6 +216,48 @@
 			buildActionMask = 2147483647;
 			files = (
 				HLTHKT000000000000000001 /* HealthKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA042E8999B70088BA9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA102E8999B80088BA9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA1A2E8999B80088BA9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA262E8999B80088BA9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA352E8999B90088BA9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA3F2E8999B90088BA9C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,17 +269,15 @@
 			children = (
 				C0DEC0DEC0DEC0DEC0DEC0D2 /* Config */,
 				A1234567890ABCDEF1234572 /* LifehackApp */,
+				FE96EA082E8999B70088BA9C /* LifehackWatchApp */,
+				FE96EA162E8999B80088BA9C /* LifehackWatchAppTests */,
+				FE96EA202E8999B80088BA9C /* LifehackWatchAppUITests */,
+				FE96EA2D2E8999B80088BA9C /* LifehackWatchApp Watch App */,
+				FE96EA3B2E8999B90088BA9C /* LifehackWatchApp Watch AppTests */,
+				FE96EA452E8999B90088BA9C /* LifehackWatchApp Watch AppUITests */,
 				A1234567890ABCDEF1234573 /* Products */,
 				FRAMEWK000000000000000 /* Frameworks */,
 			);
-			sourceTree = "<group>";
-		};
-		C0DEC0DEC0DEC0DEC0DEC0D2 /* Config */ = {
-			isa = PBXGroup;
-			children = (
-				C0DEC0DEC0DEC0DEC0DEC0D1 /* Signing.xcconfig */,
-			);
-			path = Config;
 			sourceTree = "<group>";
 		};
 		A1234567890ABCDEF1234572 /* LifehackApp */ = {
@@ -180,68 +285,65 @@
 			children = (
 				A1MAIN000000000000000001 /* LifehackApp.swift */,
 				ENTITL000000000000000000 /* LifehackApp.entitlements */,
-				COACH000000000000000000 /* CoachEngineManager.swift */,
+				COACH000000000000000000 /* Models/CoachEngineManager.swift */,
 				THEME000000000000000000 /* AppTheme.swift */,
 				ROOTT000000000000000000 /* RootTabView.swift */,
 				STATE000000000000000000 /* AppState.swift */,
 				CNTNT000000000000000000 /* ContentView.swift */,
 				BOOTST000000000000000 /* AppBootstrap.swift */,
-				METRICS000000000000000 /* MetricModels.swift */,
-				COACHENG000000000000000 /* CoachEngine.swift */,
-				CHATMDL000000000000000 /* ChatModels.swift */,
-				CHATSVC000000000000000 /* ChatService.swift */,
-				SHRKEYS000000000000000 /* SharedKeys.swift */,
-				APPGRUP000000000000000 /* AppGroup.swift */,
-				SECRTS000000000000000 /* Secrets.swift */,
-				KEYCHN000000000000000 /* Keychain.swift */,
-				HAPTCS000000000000000 /* HapticsManager.swift */,
-				OFFHEUR000000000000000 /* OfflineHeuristicsService.swift */,
-				HLTHKIT000000000000000 /* HealthKitService.swift */,
-				NOTIF00000000000000000 /* NotificationsManager.swift */,
-				BKMKSTR000000000000000 /* BookmarkStore.swift */,
-				STUDY00000000000000000 /* Study.swift */,
-				HRVSTUD000000000000000 /* HRVStudies.swift */,
-				STUDYREC000000000000000 /* StudyRecommender.swift */,
-				GLSCARD000000000000000 /* GlassCard.swift */,
-				STRGAUG000000000000000 /* StressGauge.swift */,
-				BATTPAL000000000000000 /* BatteryPaletteRing.swift */,
-				STARSLP000000000000000 /* StarrySleepCard.swift */,
-				ACTPYR000000000000000 /* ActivityPyramid.swift */,
-				METRNG000000000000000 /* MetricRing.swift */,
-				TODAYV000000000000000 /* TodayView.swift */,
-				STUDYV000000000000000 /* StudiesView.swift */,
-				SETTGV000000000000000 /* SettingsView.swift */,
-				PROFIV000000000000000 /* ProfileView.swift */,
-				USERME000000000000000 /* UserMetricsView.swift */,
-				PRIVAC000000000000000 /* PrivacySettingsView.swift */,
-				TRENDSV000000000000000 /* TrendsView.swift */,
-				JOURNV000000000000000 /* JournalView.swift */,
-				NUTRIV000000000000000 /* NutritionView.swift */,
-				COACHV000000000000000 /* CoachView.swift */,
-				COACHGV000000000000000 /* CoachingView.swift */,
-				STRMCV000000000000000 /* StreamingCoachView.swift */,
-				CHATGPTLOGIN0000000000000 /* ChatGPTLoginView.swift */,
-				COACHVM000000000000000 /* CoachVM.swift */,
-				COACHSET00000000000000 /* CoachEngineSettingsView.swift */,
-				HRVCAM000000000000000 /* HRVCameraView.swift */,
-				PPGPROC000000000000000 /* PPGProcessor.swift */,
-				PPGDLG000000000000000 /* PPGProcessorDelegateAdapter.swift */,
-				APPICON000000000000000 /* AppIconManager.swift */,
-				ZODIAC000000000000000 /* Zodiac.swift */,
-				OAICHAT2000000000000000 /* OpenAIChatService.swift */,
-				OAICLIENT000000000000 /* OpenAIClient.swift */,
-				SSE0000000000000000000 /* SSE.swift */,
-				TOKENCTR000000000000000 /* TokenCounter.swift */,
-				SECSTR000000000000000 /* SecureStore.swift */,
-				DEVFLG000000000000000 /* DeveloperFlags.swift */,
-				SLPSVC000000000000000 /* SleepService.swift */,
-				OAIRESP000000000000000 /* OpenAIResponsesService.swift */,
-				DLYSTDY000000000000000 /* DailyStudyService.swift */,
-				OAICHAT000000000000000 /* OpenAIChatCompletionsService.swift */,
-				METCRDV000000000000000 /* MetricCardView.swift */,
-				A1234567890ABCDEF123456B /* AppDelegate.swift */,
-				A1234567890ABCDEF123456D /* SceneDelegate.swift */,
-				A1234567890ABCDEF123456F /* ViewController.swift */,
+				METRICS000000000000000 /* Models/MetricModels.swift */,
+				COACHENG000000000000000 /* Models/CoachEngine.swift */,
+				CHATMDL000000000000000 /* Models/ChatModels.swift */,
+				CHATSVC000000000000000 /* Services/ChatService.swift */,
+				SHRKEYS000000000000000 /* Config/SharedKeys.swift */,
+				APPGRUP000000000000000 /* Config/AppGroup.swift */,
+				SECRTS000000000000000 /* Services/Secrets.swift */,
+				KEYCHN000000000000000 /* Services/Security/Keychain.swift */,
+				HAPTCS000000000000000 /* Services/HapticsManager.swift */,
+				OFFHEUR000000000000000 /* Services/OfflineHeuristicsService.swift */,
+				HLTHKIT000000000000000 /* Services/HealthKitService.swift */,
+				NOTIF00000000000000000 /* Services/NotificationsManager.swift */,
+				BKMKSTR000000000000000 /* Services/BookmarkStore.swift */,
+				STUDY00000000000000000 /* Models/Study.swift */,
+				HRVSTUD000000000000000 /* Data/HRVStudies.swift */,
+				STUDYREC000000000000000 /* Services/StudyRecommender.swift */,
+				GLSCARD000000000000000 /* Components/GlassCard.swift */,
+				STRGAUG000000000000000 /* Components/StressGauge.swift */,
+				BATTPAL000000000000000 /* Components/BatteryPaletteRing.swift */,
+				STARSLP000000000000000 /* Components/StarrySleepCard.swift */,
+				ACTPYR000000000000000 /* Components/ActivityPyramid.swift */,
+				METRNG000000000000000 /* Components/MetricRing.swift */,
+				TODAYV000000000000000 /* Features/Today/TodayView.swift */,
+				STUDYV000000000000000 /* Features/Studies/StudiesView.swift */,
+				SETTGV000000000000000 /* Features/Settings/SettingsView.swift */,
+				PROFIV000000000000000 /* Features/Profile/ProfileView.swift */,
+				USERME000000000000000 /* Features/Profile/UserMetricsView.swift */,
+				PRIVAC000000000000000 /* Features/Profile/PrivacySettingsView.swift */,
+				TRENDSV000000000000000 /* Features/Trends/TrendsView.swift */,
+				JOURNV000000000000000 /* Features/Journal/JournalView.swift */,
+				NUTRIV000000000000000 /* Features/Nutrition/NutritionView.swift */,
+				COACHV000000000000000 /* Features/Coach/CoachView.swift */,
+				COACHGV000000000000000 /* Features/Coach/CoachingView.swift */,
+				STRMCV000000000000000 /* Features/Coach/StreamingCoachView.swift */,
+				CHATGPTLOGIN0000000000000 /* Features/Coach/ChatGPTLoginView.swift */,
+				COACHVM000000000000000 /* Features/Coach/CoachVM.swift */,
+				COACHSET00000000000000 /* Features/Settings/CoachEngineSettingsView.swift */,
+				HRVCAM000000000000000 /* Features/HRV/HRVCameraView.swift */,
+				PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */,
+				PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */,
+				APPICON000000000000000 /* Utils/AppIconManager.swift */,
+				ZODIAC000000000000000 /* Utils/Zodiac.swift */,
+				OAICHAT2000000000000000 /* Services/OpenAIChatService.swift */,
+				OAICLIENT000000000000 /* Services/OpenAIClient.swift */,
+				SSE0000000000000000000 /* Services/SSE.swift */,
+				TOKENCTR000000000000000 /* Services/TokenCounter.swift */,
+				SECSTR000000000000000 /* Services/SecureStore.swift */,
+				DEVFLG000000000000000 /* Services/DeveloperFlags.swift */,
+				SLPSVC000000000000000 /* Services/SleepService.swift */,
+				OAIRESP000000000000000 /* Services/OpenAIResponsesService.swift */,
+				DLYSTDY000000000000000 /* Services/DailyStudyService.swift */,
+				OAICHAT000000000000000 /* Services/OpenAIChatCompletionsService.swift */,
+				METCRDV000000000000000 /* Views/MetricCardView.swift */,
 				A1234567890ABCDEF1234561 /* DeviceManager.swift */,
 				A1234567890ABCDEF1234565 /* Assets.xcassets */,
 				A1234567890ABCDEF1234569 /* Info.plist */,
@@ -253,8 +355,22 @@
 			isa = PBXGroup;
 			children = (
 				A1234567890ABCDEF1234568 /* LifehackApp.app */,
+				FE96EA072E8999B70088BA9C /* LifehackWatchApp.app */,
+				FE96EA132E8999B80088BA9C /* LifehackWatchAppTests.xctest */,
+				FE96EA1D2E8999B80088BA9C /* LifehackWatchAppUITests.xctest */,
+				FE96EA292E8999B80088BA9C /* LifehackWatchApp Watch App.app */,
+				FE96EA382E8999B90088BA9C /* LifehackWatchApp Watch AppTests.xctest */,
+				FE96EA422E8999B90088BA9C /* LifehackWatchApp Watch AppUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		C0DEC0DEC0DEC0DEC0DEC0D2 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				C0DEC0DEC0DEC0DEC0DEC0D1 /* Config/Signing.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		FRAMEWK000000000000000 /* Frameworks */ = {
@@ -285,6 +401,144 @@
 			productReference = A1234567890ABCDEF1234568 /* LifehackApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		FE96EA062E8999B70088BA9C /* LifehackWatchApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE96EA582E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchApp" */;
+			buildPhases = (
+				FE96EA032E8999B70088BA9C /* Sources */,
+				FE96EA042E8999B70088BA9C /* Frameworks */,
+				FE96EA052E8999B70088BA9C /* Resources */,
+				FE96EA4C2E8999B90088BA9C /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FE96EA2C2E8999B80088BA9C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FE96EA082E8999B70088BA9C /* LifehackWatchApp */,
+			);
+			name = LifehackWatchApp;
+			packageProductDependencies = (
+			);
+			productName = LifehackWatchApp;
+			productReference = FE96EA072E8999B70088BA9C /* LifehackWatchApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FE96EA122E8999B80088BA9C /* LifehackWatchAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE96EA592E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchAppTests" */;
+			buildPhases = (
+				FE96EA0F2E8999B80088BA9C /* Sources */,
+				FE96EA102E8999B80088BA9C /* Frameworks */,
+				FE96EA112E8999B80088BA9C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FE96EA152E8999B80088BA9C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FE96EA162E8999B80088BA9C /* LifehackWatchAppTests */,
+			);
+			name = LifehackWatchAppTests;
+			packageProductDependencies = (
+			);
+			productName = LifehackWatchAppTests;
+			productReference = FE96EA132E8999B80088BA9C /* LifehackWatchAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		FE96EA1C2E8999B80088BA9C /* LifehackWatchAppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE96EA5A2E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchAppUITests" */;
+			buildPhases = (
+				FE96EA192E8999B80088BA9C /* Sources */,
+				FE96EA1A2E8999B80088BA9C /* Frameworks */,
+				FE96EA1B2E8999B80088BA9C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FE96EA1F2E8999B80088BA9C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FE96EA202E8999B80088BA9C /* LifehackWatchAppUITests */,
+			);
+			name = LifehackWatchAppUITests;
+			packageProductDependencies = (
+			);
+			productName = LifehackWatchAppUITests;
+			productReference = FE96EA1D2E8999B80088BA9C /* LifehackWatchAppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE96EA572E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchApp Watch App" */;
+			buildPhases = (
+				FE96EA252E8999B80088BA9C /* Sources */,
+				FE96EA262E8999B80088BA9C /* Frameworks */,
+				FE96EA272E8999B80088BA9C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				FE96EA2D2E8999B80088BA9C /* LifehackWatchApp Watch App */,
+			);
+			name = "LifehackWatchApp Watch App";
+			packageProductDependencies = (
+			);
+			productName = "LifehackWatchApp Watch App";
+			productReference = FE96EA292E8999B80088BA9C /* LifehackWatchApp Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FE96EA372E8999B90088BA9C /* LifehackWatchApp Watch AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE96EA5B2E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchApp Watch AppTests" */;
+			buildPhases = (
+				FE96EA342E8999B90088BA9C /* Sources */,
+				FE96EA352E8999B90088BA9C /* Frameworks */,
+				FE96EA362E8999B90088BA9C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FE96EA3A2E8999B90088BA9C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FE96EA3B2E8999B90088BA9C /* LifehackWatchApp Watch AppTests */,
+			);
+			name = "LifehackWatchApp Watch AppTests";
+			packageProductDependencies = (
+			);
+			productName = "LifehackWatchApp Watch AppTests";
+			productReference = FE96EA382E8999B90088BA9C /* LifehackWatchApp Watch AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		FE96EA412E8999B90088BA9C /* LifehackWatchApp Watch AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FE96EA5C2E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchApp Watch AppUITests" */;
+			buildPhases = (
+				FE96EA3E2E8999B90088BA9C /* Sources */,
+				FE96EA3F2E8999B90088BA9C /* Frameworks */,
+				FE96EA402E8999B90088BA9C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				FE96EA442E8999B90088BA9C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				FE96EA452E8999B90088BA9C /* LifehackWatchApp Watch AppUITests */,
+			);
+			name = "LifehackWatchApp Watch AppUITests";
+			packageProductDependencies = (
+			);
+			productName = "LifehackWatchApp Watch AppUITests";
+			productReference = FE96EA422E8999B90088BA9C /* LifehackWatchApp Watch AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -292,11 +546,33 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1500;
+				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					A1234567890ABCDEF1234574 = {
 						CreatedOnToolsVersion = 15.0;
+					};
+					FE96EA062E8999B70088BA9C = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
+					FE96EA122E8999B80088BA9C = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = FE96EA062E8999B70088BA9C;
+					};
+					FE96EA1C2E8999B80088BA9C = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = FE96EA062E8999B70088BA9C;
+					};
+					FE96EA282E8999B80088BA9C = {
+						CreatedOnToolsVersion = 26.0.1;
+					};
+					FE96EA372E8999B90088BA9C = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = FE96EA282E8999B80088BA9C;
+					};
+					FE96EA412E8999B90088BA9C = {
+						CreatedOnToolsVersion = 26.0.1;
+						TestTargetID = FE96EA282E8999B80088BA9C;
 					};
 				};
 			};
@@ -314,6 +590,12 @@
 			projectRoot = "";
 			targets = (
 				A1234567890ABCDEF1234574 /* LifehackApp */,
+				FE96EA062E8999B70088BA9C /* LifehackWatchApp */,
+				FE96EA122E8999B80088BA9C /* LifehackWatchAppTests */,
+				FE96EA1C2E8999B80088BA9C /* LifehackWatchAppUITests */,
+				FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */,
+				FE96EA372E8999B90088BA9C /* LifehackWatchApp Watch AppTests */,
+				FE96EA412E8999B90088BA9C /* LifehackWatchApp Watch AppUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -327,6 +609,48 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		FE96EA052E8999B70088BA9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA112E8999B80088BA9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA1B2E8999B80088BA9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA272E8999B80088BA9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA362E8999B90088BA9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA402E8999B90088BA9C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -335,71 +659,140 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */,
-				A1234567890ABCDEF123456A /* AppDelegate.swift in Sources */,
+				A1234567890ABCDEF123456A /* (null) in Sources */,
 				A1MAIN000000000000000002 /* LifehackApp.swift in Sources */,
-				COACH000000000000000001 /* CoachEngineManager.swift in Sources */,
+				COACH000000000000000001 /* Models/CoachEngineManager.swift in Sources */,
 				THEME000000000000000001 /* AppTheme.swift in Sources */,
 				ROOTT000000000000000001 /* RootTabView.swift in Sources */,
 				STATE000000000000000001 /* AppState.swift in Sources */,
 				CNTNT000000000000000001 /* ContentView.swift in Sources */,
-				COACHENG000000000000001 /* CoachEngine.swift in Sources */,
-				CHATMDL000000000000001 /* ChatModels.swift in Sources */,
-				CHATSVC000000000000001 /* ChatService.swift in Sources */,
-				SHRKEYS000000000000001 /* SharedKeys.swift in Sources */,
-				APPGRUP000000000000001 /* AppGroup.swift in Sources */,
-				SECRTS000000000000001 /* Secrets.swift in Sources */,
-				KEYCHN000000000000001 /* Keychain.swift in Sources */,
-				HAPTCS000000000000001 /* HapticsManager.swift in Sources */,
-				OFFHEUR000000000000001 /* OfflineHeuristicsService.swift in Sources */,
-				HLTHKIT000000000000001 /* HealthKitService.swift in Sources */,
-				NOTIF00000000000000001 /* NotificationsManager.swift in Sources */,
-				BKMKSTR000000000000001 /* BookmarkStore.swift in Sources */,
-				STUDY00000000000000001 /* Study.swift in Sources */,
-				HRVSTUD000000000000001 /* HRVStudies.swift in Sources */,
-				STUDYREC000000000000001 /* StudyRecommender.swift in Sources */,
-				GLSCARD000000000000001 /* GlassCard.swift in Sources */,
-				STRGAUG000000000000001 /* StressGauge.swift in Sources */,
-				BATTPAL000000000000001 /* BatteryPaletteRing.swift in Sources */,
-				STARSLP000000000000001 /* StarrySleepCard.swift in Sources */,
-				ACTPYR000000000000001 /* ActivityPyramid.swift in Sources */,
-				METRNG000000000000001 /* MetricRing.swift in Sources */,
-				TODAYV000000000000001 /* TodayView.swift in Sources */,
-				STUDYV000000000000001 /* StudiesView.swift in Sources */,
-				SETTGV000000000000001 /* SettingsView.swift in Sources */,
-				PROFIV000000000000001 /* ProfileView.swift in Sources */,
-				USERME000000000000001 /* UserMetricsView.swift in Sources */,
-				PRIVAC000000000000001 /* PrivacySettingsView.swift in Sources */,
-				TRENDSV000000000000001 /* TrendsView.swift in Sources */,
-				JOURNV000000000000001 /* JournalView.swift in Sources */,
-				NUTRIV000000000000001 /* NutritionView.swift in Sources */,
-				COACHV000000000000001 /* CoachView.swift in Sources */,
-				COACHGV000000000000001 /* CoachingView.swift in Sources */,
-				STRMCV000000000000001 /* StreamingCoachView.swift in Sources */,
-				CHATGPTLOGIN0000000000001 /* ChatGPTLoginView.swift in Sources */,
-				COACHVM000000000000001 /* CoachVM.swift in Sources */,
-				COACHSET00000000000001 /* CoachEngineSettingsView.swift in Sources */,
-				HRVCAM000000000000001 /* HRVCameraView.swift in Sources */,
-				PPGPROC000000000000001 /* PPGProcessor.swift in Sources */,
-				PPGDLG000000000000001 /* PPGProcessorDelegateAdapter.swift in Sources */,
-				APPICON000000000000001 /* AppIconManager.swift in Sources */,
-				ZODIAC000000000000001 /* Zodiac.swift in Sources */,
-				OAICHAT2000000000000001 /* OpenAIChatService.swift in Sources */,
-				OAICLIENT000000000000001 /* OpenAIClient.swift in Sources */,
-				SSE0000000000000000001 /* SSE.swift in Sources */,
-				TOKENCTR000000000000001 /* TokenCounter.swift in Sources */,
-				SECSTR000000000000001 /* SecureStore.swift in Sources */,
-				DEVFLG000000000000001 /* DeveloperFlags.swift in Sources */,
-				SLPSVC000000000000001 /* SleepService.swift in Sources */,
-				OAIRESP000000000000001 /* OpenAIResponsesService.swift in Sources */,
-				OAICHAT000000000000001 /* OpenAIChatCompletionsService.swift in Sources */,
-				DLYSTDY000000000000001 /* DailyStudyService.swift in Sources */,
+				COACHENG000000000000001 /* Models/CoachEngine.swift in Sources */,
+				CHATMDL000000000000001 /* Models/ChatModels.swift in Sources */,
+				CHATSVC000000000000001 /* Services/ChatService.swift in Sources */,
+				SHRKEYS000000000000001 /* Config/SharedKeys.swift in Sources */,
+				APPGRUP000000000000001 /* Config/AppGroup.swift in Sources */,
+				SECRTS000000000000001 /* Services/Secrets.swift in Sources */,
+				KEYCHN000000000000001 /* Services/Security/Keychain.swift in Sources */,
+				HAPTCS000000000000001 /* Services/HapticsManager.swift in Sources */,
+				OFFHEUR000000000000001 /* Services/OfflineHeuristicsService.swift in Sources */,
+				HLTHKIT000000000000001 /* Services/HealthKitService.swift in Sources */,
+				NOTIF00000000000000001 /* Services/NotificationsManager.swift in Sources */,
+				BKMKSTR000000000000001 /* Services/BookmarkStore.swift in Sources */,
+				STUDY00000000000000001 /* Models/Study.swift in Sources */,
+				HRVSTUD000000000000001 /* Data/HRVStudies.swift in Sources */,
+				STUDYREC000000000000001 /* Services/StudyRecommender.swift in Sources */,
+				GLSCARD000000000000001 /* Components/GlassCard.swift in Sources */,
+				STRGAUG000000000000001 /* Components/StressGauge.swift in Sources */,
+				BATTPAL000000000000001 /* Components/BatteryPaletteRing.swift in Sources */,
+				STARSLP000000000000001 /* Components/StarrySleepCard.swift in Sources */,
+				ACTPYR000000000000001 /* Components/ActivityPyramid.swift in Sources */,
+				METRNG000000000000001 /* Components/MetricRing.swift in Sources */,
+				TODAYV000000000000001 /* Features/Today/TodayView.swift in Sources */,
+				STUDYV000000000000001 /* Features/Studies/StudiesView.swift in Sources */,
+				SETTGV000000000000001 /* Features/Settings/SettingsView.swift in Sources */,
+				PROFIV000000000000001 /* Features/Profile/ProfileView.swift in Sources */,
+				USERME000000000000001 /* Features/Profile/UserMetricsView.swift in Sources */,
+				PRIVAC000000000000001 /* Features/Profile/PrivacySettingsView.swift in Sources */,
+				TRENDSV000000000000001 /* Features/Trends/TrendsView.swift in Sources */,
+				JOURNV000000000000001 /* Features/Journal/JournalView.swift in Sources */,
+				NUTRIV000000000000001 /* Features/Nutrition/NutritionView.swift in Sources */,
+				COACHV000000000000001 /* Features/Coach/CoachView.swift in Sources */,
+				COACHGV000000000000001 /* Features/Coach/CoachingView.swift in Sources */,
+				STRMCV000000000000001 /* Features/Coach/StreamingCoachView.swift in Sources */,
+				CHATGPTLOGIN0000000000001 /* Features/Coach/ChatGPTLoginView.swift in Sources */,
+				COACHVM000000000000001 /* Features/Coach/CoachVM.swift in Sources */,
+				COACHSET00000000000001 /* Features/Settings/CoachEngineSettingsView.swift in Sources */,
+				HRVCAM000000000000001 /* Features/HRV/HRVCameraView.swift in Sources */,
+				PPGPROC000000000000001 /* Features/HRV/PPGProcessor.swift in Sources */,
+				PPGDLG000000000000001 /* Features/HRV/PPGProcessorDelegateAdapter.swift in Sources */,
+				APPICON000000000000001 /* Utils/AppIconManager.swift in Sources */,
+				ZODIAC000000000000001 /* Utils/Zodiac.swift in Sources */,
+				OAICHAT2000000000000001 /* Services/OpenAIChatService.swift in Sources */,
+				SSE0000000000000000001 /* Services/SSE.swift in Sources */,
+				TOKENCTR000000000000001 /* Services/TokenCounter.swift in Sources */,
+				SECSTR000000000000001 /* Services/SecureStore.swift in Sources */,
+				DEVFLG000000000000001 /* Services/DeveloperFlags.swift in Sources */,
+				SLPSVC000000000000001 /* Services/SleepService.swift in Sources */,
+				OAIRESP000000000000001 /* Services/OpenAIResponsesService.swift in Sources */,
+				OAICHAT000000000000001 /* Services/OpenAIChatCompletionsService.swift in Sources */,
+				DLYSTDY000000000000001 /* Services/DailyStudyService.swift in Sources */,
 				BOOTST000000000000001 /* AppBootstrap.swift in Sources */,
-				METRICS000000000000001 /* MetricModels.swift in Sources */,
-				METCRDV000000000000001 /* MetricCardView.swift in Sources */,
+				METRICS000000000000001 /* Models/MetricModels.swift in Sources */,
+				METCRDV000000000000001 /* Views/MetricCardView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA032E8999B70088BA9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA0F2E8999B80088BA9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA192E8999B80088BA9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA252E8999B80088BA9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA342E8999B90088BA9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FE96EA3E2E8999B90088BA9C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		FE96EA152E8999B80088BA9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FE96EA062E8999B70088BA9C /* LifehackWatchApp */;
+			targetProxy = FE96EA142E8999B80088BA9C /* PBXContainerItemProxy */;
+		};
+		FE96EA1F2E8999B80088BA9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FE96EA062E8999B70088BA9C /* LifehackWatchApp */;
+			targetProxy = FE96EA1E2E8999B80088BA9C /* PBXContainerItemProxy */;
+		};
+		FE96EA2C2E8999B80088BA9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */;
+			targetProxy = FE96EA2B2E8999B80088BA9C /* PBXContainerItemProxy */;
+		};
+		FE96EA3A2E8999B90088BA9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */;
+			targetProxy = FE96EA392E8999B90088BA9C /* PBXContainerItemProxy */;
+		};
+		FE96EA442E8999B90088BA9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */;
+			targetProxy = FE96EA432E8999B90088BA9C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		A1234567890ABCDEF1234580 /* Debug */ = {
@@ -524,9 +917,9 @@
 		A1234567890ABCDEF1234582 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1 /* Signing.xcconfig */;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1;
 				CODE_SIGN_ENTITLEMENTS = LifehackApp/LifehackApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -535,7 +928,6 @@
 				INFOPLIST_FILE = LifehackApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				// Using SwiftUI App lifecycle; no main storyboard
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -559,9 +951,9 @@
 		A1234567890ABCDEF1234583 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1 /* Signing.xcconfig */;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1;
 				CODE_SIGN_ENTITLEMENTS = LifehackApp/LifehackApp.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -570,7 +962,6 @@
 				INFOPLIST_FILE = LifehackApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				// Using SwiftUI App lifecycle; no main storyboard
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -591,6 +982,320 @@
 			};
 			name = Release;
 		};
+		FE96EA4A2E8999B90088BA9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = LifehackWatchApp;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = lifehackinfinity.no.LifehackWatchApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		FE96EA4B2E8999B90088BA9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = LifehackWatchApp;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = lifehackinfinity.no.LifehackWatchApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		FE96EA4D2E8999B90088BA9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = lifehackinfinity.no.LifehackWatchAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LifehackWatchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LifehackWatchApp";
+			};
+			name = Debug;
+		};
+		FE96EA4E2E8999B90088BA9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = lifehackinfinity.no.LifehackWatchAppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LifehackWatchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LifehackWatchApp";
+			};
+			name = Release;
+		};
+		FE96EA4F2E8999B90088BA9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = lifehackinfinity.no.LifehackWatchAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = LifehackWatchApp;
+			};
+			name = Debug;
+		};
+		FE96EA502E8999B90088BA9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = lifehackinfinity.no.LifehackWatchAppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = LifehackWatchApp;
+			};
+			name = Release;
+		};
+		FE96EA512E8999B90088BA9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = LifehackWatchApp;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = lifehackinfinity.no.LifehackWatchApp;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = lifehackinfinity.no.LifehackWatchApp.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		FE96EA522E8999B90088BA9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				BASE_CONFIGURATION_REFERENCE = C0DEC0DEC0DEC0DEC0DEC0D1;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = LifehackWatchApp;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = lifehackinfinity.no.LifehackWatchApp;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = lifehackinfinity.no.LifehackWatchApp.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		FE96EA532E8999B90088BA9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "lifehackinfinity.no.LifehackWatchApp-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LifehackWatchApp Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LifehackWatchApp Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		FE96EA542E8999B90088BA9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "lifehackinfinity.no.LifehackWatchApp-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LifehackWatchApp Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LifehackWatchApp Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
+		FE96EA552E8999B90088BA9C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "lifehackinfinity.no.LifehackWatchApp-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "LifehackWatchApp Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Debug;
+		};
+		FE96EA562E8999B90088BA9C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = CTQ236WDL9;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "lifehackinfinity.no.LifehackWatchApp-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "LifehackWatchApp Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 26.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -608,6 +1313,60 @@
 			buildConfigurations = (
 				A1234567890ABCDEF1234580 /* Debug */,
 				A1234567890ABCDEF1234581 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE96EA572E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchApp Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE96EA512E8999B90088BA9C /* Debug */,
+				FE96EA522E8999B90088BA9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE96EA582E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE96EA4A2E8999B90088BA9C /* Debug */,
+				FE96EA4B2E8999B90088BA9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE96EA592E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE96EA4D2E8999B90088BA9C /* Debug */,
+				FE96EA4E2E8999B90088BA9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE96EA5A2E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchAppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE96EA4F2E8999B90088BA9C /* Debug */,
+				FE96EA502E8999B90088BA9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE96EA5B2E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchApp Watch AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE96EA532E8999B90088BA9C /* Debug */,
+				FE96EA542E8999B90088BA9C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FE96EA5C2E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchApp Watch AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE96EA552E8999B90088BA9C /* Debug */,
+				FE96EA562E8999B90088BA9C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
