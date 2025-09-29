@@ -409,6 +409,28 @@ struct TodayView: View {
     
     private var refreshButton: some View {
         VStack(spacing: 8) {
+            // Debug information when verbose logging is enabled
+            if DeveloperFlags.verboseLogging {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Debug Info:")
+                        .font(.caption.bold())
+                        .foregroundStyle(.orange)
+                    Text("HealthKit Enabled: \(Secrets.shared.healthKitEnabledFlag)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text("Health Authorized: \(app.isHealthAuthorized)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text("Current Metrics: stress=\(app.today.stressPercent)% energy=\(app.today.energyPercent)% battery=\(app.today.batteryPercent)%")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text("HRV: \(app.today.hrvSDNNms, specifier: "%.1f")ms, RHR: \(app.today.restingHR, specifier: "%.0f")bpm, Steps: \(app.today.steps)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.bottom, 8)
+            }
+            
             // Sync status
             HStack {
                 Text("Last sync:")
