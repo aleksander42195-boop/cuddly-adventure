@@ -30,11 +30,19 @@ final class HealthKitService {
         let value: Double
     }
 
+    // Gate via Secrets: allow disabling HealthKit reads at runtime
+    private var isHealthKitEnabled: Bool {
+        Secrets.shared.healthKitEnabledFlag
+    }
+
     private var readTypes: Set<HKSampleType> {
         var set: Set<HKSampleType> = []
         if let steps = HKObjectType.quantityType(forIdentifier: .stepCount) { set.insert(steps) }
         if let active = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) { set.insert(active) }
         if let energy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) { set.insert(energy) }
+        // Critical for Today metrics
+        if let hrv = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) { set.insert(hrv) }
+        if let rhr = HKObjectType.quantityType(forIdentifier: .restingHeartRate) { set.insert(rhr) }
         if let weight = HKObjectType.quantityType(forIdentifier: .bodyMass) { set.insert(weight) }
         if let mindful = HKObjectType.categoryType(forIdentifier: .mindfulSession) { set.insert(mindful) }
         if let sleep = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) { set.insert(sleep) }
@@ -43,27 +51,33 @@ final class HealthKitService {
 
     init() {
 #if !targetEnvironment(simulator)
-        Task { 
-            await requestAuthorizationIfNeeded() 
+        Task {
+            await requestAuthorizationIfNeeded()
         }
 #endif
     }
 
     private func requestAuthorizationIfNeeded() async {
-        guard HKHealthStore.isHealthDataAvailable() else { return }
+        guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { return }
         do {
             try await store.requestAuthorization(toShare: [], read: readTypes)
-            isAuthorized = true
+            isAuthorized = computeAuthorizationStatus()
+            if DeveloperFlags.verboseLogging {
+                print("[HealthKit] requestAuthorizationIfNeeded -> isAuthorized=\(isAuthorized)")
+            }
         } catch {
             print("[HealthKit] Authorization failed: \(error)")
         }
     }
 
     func requestAuthorization() async throws -> Bool {
-        guard HKHealthStore.isHealthDataAvailable() else { return false }
+        guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { return false }
         try await store.requestAuthorization(toShare: [], read: readTypes)
-        isAuthorized = true
-        return true
+        isAuthorized = computeAuthorizationStatus()
+        if DeveloperFlags.verboseLogging {
+            print("[HealthKit] requestAuthorization() -> isAuthorized=\(isAuthorized)")
+        }
+        return isAuthorized
     }
 
     func fetchTodaySnapshot() async throws -> TodaySnapshot? {
@@ -76,6 +90,9 @@ final class HealthKitService {
 
         let (hrv, rest, steps) = try await (hrvMs, resting, stepsTotal)
         let heur = deriveHeuristics(hrvMs: hrv, restingHR: rest, steps: steps)
+        if DeveloperFlags.verboseLogging {
+            print("[HealthKit] TodaySnapshot hrv=\(hrv)ms rhr=\(rest)bpm steps=\(steps) -> stress=\(heur.stress), energy=\(heur.energy), battery=\(heur.battery)")
+        }
         return TodaySnapshot(stress: heur.stress, energy: heur.energy, battery: heur.battery,
                              hrvSDNNms: hrv, restingHR: rest, steps: steps)
     }
@@ -239,6 +256,26 @@ final class HealthKitService {
     }
 
     // MARK: Queries
+    private func computeAuthorizationStatus() -> Bool {
+        guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { return false }
+        // For our Today metrics, consider authorized if at least one key type is authorized for reading
+        var anyAuthorized = false
+        let keys: [HKObjectType?] = [
+            HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN),
+            HKObjectType.quantityType(forIdentifier: .restingHeartRate),
+            HKObjectType.quantityType(forIdentifier: .stepCount),
+            HKObjectType.categoryType(forIdentifier: .sleepAnalysis)
+        ]
+        for key in keys.compactMap({ $0 }) {
+            let status = store.authorizationStatus(for: key)
+            if status == .sharingAuthorized { anyAuthorized = true }
+            if DeveloperFlags.verboseLogging {
+                print("[HealthKit] authorizationStatus(\(key.identifier)) = \(status.rawValue)")
+            }
+        }
+        return anyAuthorized
+    }
+
     private func latestSDNN(in range: ClosedRange<Date>) async throws -> Double {
         guard let type = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) else {
             throw HealthKitServiceError.notAvailable
