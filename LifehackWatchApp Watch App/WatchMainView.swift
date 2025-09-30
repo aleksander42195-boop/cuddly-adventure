@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct WatchMainView: View {
-    @EnvironmentObject private var vm: WatchChatViewModel
-    
     var body: some View {
         TabView {
             // Training View
@@ -12,10 +10,10 @@ struct WatchMainView: View {
                 }
                 .tag(0)
             
-            // Chat View
-            WatchChatView()
+            // Settings View
+            WatchTrainingSettingsView()
                 .tabItem {
-                    Label("Coach", systemImage: "message.fill")
+                    Label("Settings", systemImage: "gearshape.fill")
                 }
                 .tag(1)
         }
@@ -25,5 +23,4 @@ struct WatchMainView: View {
 
 #Preview {
     WatchMainView()
-        .environmentObject(WatchChatViewModel(engine: ChatServiceAdapter()))
 }

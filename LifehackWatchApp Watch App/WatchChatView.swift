@@ -19,7 +19,7 @@ struct WatchChatView: View {
                     .padding(.horizontal, 6)
                     .padding(.top, 4)
                 }
-                .onChange(of: vm.messages.count) { _ in
+                .onChange(of: vm.messages.count) {
                     if let lastId = vm.messages.last?.id {
                         withAnimation {
                             proxy.scrollTo(lastId, anchor: .bottom)

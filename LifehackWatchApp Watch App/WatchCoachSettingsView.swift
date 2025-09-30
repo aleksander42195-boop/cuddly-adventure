@@ -15,11 +15,11 @@ struct WatchCoachSettingsView: View {
             }
             Toggle("Coach-tips på håndleddet", isOn: $wristTipsEnabled)
         }
-        .onChange(of: engineRaw) { newValue in
-            AppGroup.defaults.set(newValue, forKey: SharedKeys.coachEngineSelection)
+        .onChange(of: engineRaw) {
+            AppGroup.defaults.set(engineRaw, forKey: SharedKeys.coachEngineSelection)
         }
-        .onChange(of: wristTipsEnabled) { newValue in
-            AppGroup.defaults.set(newValue, forKey: SharedKeys.coachWristTipsEnabled)
+        .onChange(of: wristTipsEnabled) {
+            AppGroup.defaults.set(wristTipsEnabled, forKey: SharedKeys.coachWristTipsEnabled)
         }
         .navigationTitle("Coach Engine")
     }

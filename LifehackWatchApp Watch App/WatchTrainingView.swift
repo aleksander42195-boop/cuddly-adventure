@@ -2,127 +2,183 @@ import SwiftUI
 import WatchKit
 
 struct WatchTrainingView: View {
-    @State private var isTrainingActive = false
-    @State private var trainingDuration: TimeInterval = 0
-    @State private var timer: Timer?
-    @State private var showingEnd = false
-    
-    private let trainingTips = [
-        "Keep your wrist relaxed during HRV measurements",
-        "Breathe naturally - don't force your breath",
-        "Stay still for accurate heart rate readings", 
-        "Focus on your current sensations",
-        "Let your body guide the intensity",
-        "Recovery is as important as the work"
-    ]
+    @StateObject private var trainingManager = WatchTrainingManager.shared
+    @State private var selectedTrainingType: TrainingType = .aerobic
     
     var body: some View {
-        VStack(spacing: 8) {
-            if !isTrainingActive {
-                startScreen
-            } else {
-                activeTrainingScreen
-            }
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .onDisappear {
-            stopTraining()
+        if trainingManager.isTrainingActive {
+            activeTrainingView
+        } else {
+            trainingSelectionView
         }
     }
     
-    private var startScreen: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "heart.fill")
-                .font(.largeTitle)
-                .foregroundColor(.red)
-                .symbolEffect(.pulse)
-            
-            Text("HRV Training")
-                .font(.headline)
-                .multilineTextAlignment(.center)
-            
-            Text("Tap to start your mindful training session")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-            
-            Button("Start Training") {
-                startTraining()
-            }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.regular)
-        }
-        .padding()
-    }
-    
-    private var activeTrainingScreen: some View {
-        VStack(spacing: 8) {
-            // Timer display
-            Text(formatDuration(trainingDuration))
-                .font(.title2.monospacedDigit())
-                .foregroundColor(.green)
-            
-            // Heart rate indicator
-            HStack {
-                Image(systemName: "heart.fill")
-                    .foregroundColor(.red)
-                    .symbolEffect(.pulse, isActive: isTrainingActive)
+    private var trainingSelectionView: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                Text("Training")
+                    .font(.headline)
+                    .foregroundColor(.white)
                 
-                Text("Training Active")
-                    .font(.caption)
+                // Training Type Selection
+                VStack(spacing: 8) {
+                    Text("Select Training Type")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
+                    ForEach(TrainingType.allCases) { type in
+                        Button(action: {
+                            selectedTrainingType = type
+                            trainingManager.startTraining(type: type)
+                        }) {
+                            HStack {
+                                Image(systemName: type.systemImage)
+                                    .foregroundColor(type.color)
+                                    .frame(width: 20)
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(type.rawValue)
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                    Text(type.description)
+                                        .font(.caption2)
+                                        .foregroundColor(.gray)
+                                }
+                                
+                                Spacer()
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(8)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                
+                // HRV Status
+                VStack(spacing: 4) {
+                    Text("Current HRV")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
+                    Text("\(Int(trainingManager.currentHRV)) ms")
+                        .font(.title3)
+                        .foregroundColor(.cyan)
+                }
+                .padding()
+                .background(Color.black.opacity(0.3))
+                .cornerRadius(8)
+            }
+            .padding()
+        }
+    }
+    
+    private var activeTrainingView: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                // Training Type Header
+                if let currentType = trainingManager.currentTrainingType {
+                    HStack {
+                        Image(systemName: currentType.systemImage)
+                            .foregroundColor(currentType.color)
+                        Text(currentType.rawValue)
+                            .font(.headline)
+                            .foregroundColor(.white)
+                    }
+                }
+                
+                // Training Duration
+                Text(formatDuration(trainingManager.trainingDuration))
+                    .font(.largeTitle.monospacedDigit())
+                    .foregroundColor(.cyan)
+                
+                // Current Zone Display
+                VStack(spacing: 8) {
+                    Text("Training Zone")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
+                    Text("Zone \(trainingManager.currentZone.rawValue)")
+                        .font(.title2)
+                        .foregroundColor(trainingManager.currentZone.color)
+                    
+                    Text(trainingManager.currentZone.name)
+                        .font(.caption)
+                        .foregroundColor(.white)
+                }
+                .padding()
+                .background(trainingManager.currentZone.color.opacity(0.2))
+                .cornerRadius(12)
+                
+                // Heart Rate
+                VStack(spacing: 4) {
+                    HStack {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
+                        Text("Heart Rate")
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Text("\(trainingManager.currentHeartRate) BPM")
+                        .font(.title3)
+                        .foregroundColor(.white)
+                    
+                    // HR Zone Range
+                    let hrRange = trainingManager.currentZone.hrRange(basedOnHRV: trainingManager.currentHRV)
+                    Text("\(hrRange.lowerBound)-\(hrRange.upperBound) BPM")
+                        .font(.caption2)
+                        .foregroundColor(.gray)
+                }
+                .padding()
+                .background(Color.black.opacity(0.3))
+                .cornerRadius(8)
+                
+                // Zone Visualization
+                zoneVisualization
+                
+                // End Training Button
+                Button("End Training") {
+                    trainingManager.endTraining()
+                }
+                .foregroundColor(.red)
+                .padding()
+                .background(Color.black.opacity(0.3))
+                .cornerRadius(8)
+            }
+            .padding()
+        }
+    }
+    
+    private var zoneVisualization: some View {
+        VStack(spacing: 4) {
+            Text("Training Zones")
+                .font(.caption)
+                .foregroundColor(.gray)
+            
+            HStack(spacing: 2) {
+                ForEach(TrainingZone.allCases, id: \.rawValue) { zone in
+                    Rectangle()
+                        .fill(zone == trainingManager.currentZone ? zone.color : zone.color.opacity(0.3))
+                        .frame(height: zone == trainingManager.currentZone ? 20 : 15)
+                        .cornerRadius(2)
+                }
             }
             
-            // Random training tip
-            if let tip = trainingTips.randomElement() {
-                Text(tip)
+            HStack {
+                Text("Z1")
                     .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 4)
+                    .foregroundColor(.gray)
+                Spacer()
+                Text("Z5")
+                    .font(.caption2)
+                    .foregroundColor(.gray)
             }
-            
-            // End training button
-            Button("End Training") {
-                showingEnd = true
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(.orange)
-            .controlSize(.small)
         }
         .padding()
-        .alert("End Training?", isPresented: $showingEnd) {
-            Button("Cancel", role: .cancel) { }
-            Button("End", role: .destructive) {
-                stopTraining()
-            }
-        } message: {
-            Text("Your training session will be saved.")
-        }
-    }
-    
-    private func startTraining() {
-        isTrainingActive = true
-        trainingDuration = 0
-        
-        // Haptic feedback
-        WKInterfaceDevice.current().play(.start)
-        
-        // Start timer
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            trainingDuration += 1
-        }
-    }
-    
-    private func stopTraining() {
-        isTrainingActive = false
-        timer?.invalidate()
-        timer = nil
-        
-        // Haptic feedback
-        WKInterfaceDevice.current().play(.stop)
-        
-        // Could save training session here
-        // saveTrainingSession(duration: trainingDuration)
+        .background(Color.black.opacity(0.2))
+        .cornerRadius(8)
     }
     
     private func formatDuration(_ duration: TimeInterval) -> String {
