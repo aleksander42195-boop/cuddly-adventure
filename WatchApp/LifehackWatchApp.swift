@@ -6,7 +6,7 @@ struct LifehackWatchApp: App {
 
     var body: some Scene {
         WindowGroup {
-            WatchChatView()
+            WatchMainView()
                 .environmentObject(vm)
         }
     }

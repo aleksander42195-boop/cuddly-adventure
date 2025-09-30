@@ -66,6 +66,7 @@ struct TodayView: View {
         return VStack(spacing: AppTheme.spacing) {
             topControlsSection
             healthPermissionSection
+            trainingModeSection
             metricsSection
             hrvSection
             studySection
@@ -153,6 +154,10 @@ struct TodayView: View {
                 }
             }
         }
+    }
+    
+    private var trainingModeSection: some View {
+        TrainingModeView()
     }
     
     private var metricsSection: some View {

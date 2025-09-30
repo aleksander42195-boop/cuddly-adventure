@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		20FA2181014C2E399B0B82FE /* TrainingModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE2045021D09CC11FC49CAE /* TrainingModeManager.swift */; };
+		48876FC3B14FCEA8DECEA5E6 /* TrainingModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F0E1948E2C8E175C8A1F18 /* TrainingModeView.swift */; };
 		A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234561 /* DeviceManager.swift */; };
 		A1234567890ABCDEF1234564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234565 /* Assets.xcassets */; };
 		A1234567890ABCDEF123456A /* (null) in Sources */ = {isa = PBXBuildFile; };
@@ -126,6 +128,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		27B863F682D6AE68B535A27E /* WatchTrainingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchTrainingView.swift; path = WatchApp/Views/WatchTrainingView.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234561 /* DeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceManager.swift; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234565 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A1234567890ABCDEF1234568 /* LifehackApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LifehackApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -148,8 +151,11 @@
 		COACHSET00000000000000 /* Features/Settings/CoachEngineSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/CoachEngineSettingsView.swift; sourceTree = "<group>"; };
 		COACHV000000000000000 /* Features/Coach/CoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachView.swift; sourceTree = "<group>"; };
 		COACHVM000000000000000 /* Features/Coach/CoachVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachVM.swift; sourceTree = "<group>"; };
+		D4F0E1948E2C8E175C8A1F18 /* TrainingModeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TrainingModeView.swift; path = Features/Today/TrainingModeView.swift; sourceTree = "<group>"; };
+		DEE2045021D09CC11FC49CAE /* TrainingModeManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = TrainingModeManager.swift; path = Services/TrainingModeManager.swift; sourceTree = "<group>"; };
 		DEVFLG000000000000000 /* Services/DeveloperFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DeveloperFlags.swift; sourceTree = "<group>"; };
 		DLYSTDY000000000000000 /* Services/DailyStudyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DailyStudyService.swift; sourceTree = "<group>"; };
+		EC72B61ACA7EE3471855EC1D /* WatchMainView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchMainView.swift; path = WatchApp/Views/WatchMainView.swift; sourceTree = "<group>"; };
 		ENTITL000000000000000000 /* LifehackApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = LifehackApp.entitlements; sourceTree = "<group>"; };
 		FE96EA072E8999B70088BA9C /* LifehackWatchApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = LifehackWatchApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE96EA132E8999B80088BA9C /* LifehackWatchAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LifehackWatchAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -264,6 +270,39 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0A47C018F241F5599A38A40F /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				8D4B9A5559D6D015E011D646 /* Today */,
+			);
+			name = Features;
+			sourceTree = "<group>";
+		};
+		486350AE56C43B2C74504140 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				27B863F682D6AE68B535A27E /* WatchTrainingView.swift */,
+				EC72B61ACA7EE3471855EC1D /* WatchMainView.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		5196B96392308B29266F97C9 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				DEE2045021D09CC11FC49CAE /* TrainingModeManager.swift */,
+			);
+			name = Services;
+			sourceTree = "<group>";
+		};
+		8D4B9A5559D6D015E011D646 /* Today */ = {
+			isa = PBXGroup;
+			children = (
+				D4F0E1948E2C8E175C8A1F18 /* TrainingModeView.swift */,
+			);
+			name = Today;
+			sourceTree = "<group>";
+		};
 		A1234567890ABCDEF1234571 = {
 			isa = PBXGroup;
 			children = (
@@ -277,6 +316,7 @@
 				FE96EA452E8999B90088BA9C /* LifehackWatchApp Watch AppUITests */,
 				A1234567890ABCDEF1234573 /* Products */,
 				FRAMEWK000000000000000 /* Frameworks */,
+				D8B465936C4B7934E824CA9E /* WatchApp */,
 			);
 			sourceTree = "<group>";
 		};
@@ -347,6 +387,8 @@
 				A1234567890ABCDEF1234561 /* DeviceManager.swift */,
 				A1234567890ABCDEF1234565 /* Assets.xcassets */,
 				A1234567890ABCDEF1234569 /* Info.plist */,
+				5196B96392308B29266F97C9 /* Services */,
+				0A47C018F241F5599A38A40F /* Features */,
 			);
 			path = LifehackApp;
 			sourceTree = "<group>";
@@ -371,6 +413,14 @@
 				C0DEC0DEC0DEC0DEC0DEC0D1 /* Config/Signing.xcconfig */,
 			);
 			path = Config;
+			sourceTree = "<group>";
+		};
+		D8B465936C4B7934E824CA9E /* WatchApp */ = {
+			isa = PBXGroup;
+			children = (
+				486350AE56C43B2C74504140 /* Views */,
+			);
+			name = WatchApp;
 			sourceTree = "<group>";
 		};
 		FRAMEWK000000000000000 /* Frameworks */ = {
@@ -419,8 +469,6 @@
 				FE96EA082E8999B70088BA9C /* LifehackWatchApp */,
 			);
 			name = LifehackWatchApp;
-			packageProductDependencies = (
-			);
 			productName = LifehackWatchApp;
 			productReference = FE96EA072E8999B70088BA9C /* LifehackWatchApp.app */;
 			productType = "com.apple.product-type.application";
@@ -442,8 +490,6 @@
 				FE96EA162E8999B80088BA9C /* LifehackWatchAppTests */,
 			);
 			name = LifehackWatchAppTests;
-			packageProductDependencies = (
-			);
 			productName = LifehackWatchAppTests;
 			productReference = FE96EA132E8999B80088BA9C /* LifehackWatchAppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -465,8 +511,6 @@
 				FE96EA202E8999B80088BA9C /* LifehackWatchAppUITests */,
 			);
 			name = LifehackWatchAppUITests;
-			packageProductDependencies = (
-			);
 			productName = LifehackWatchAppUITests;
 			productReference = FE96EA1D2E8999B80088BA9C /* LifehackWatchAppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -487,8 +531,6 @@
 				FE96EA2D2E8999B80088BA9C /* LifehackWatchApp Watch App */,
 			);
 			name = "LifehackWatchApp Watch App";
-			packageProductDependencies = (
-			);
 			productName = "LifehackWatchApp Watch App";
 			productReference = FE96EA292E8999B80088BA9C /* LifehackWatchApp Watch App.app */;
 			productType = "com.apple.product-type.application";
@@ -510,8 +552,6 @@
 				FE96EA3B2E8999B90088BA9C /* LifehackWatchApp Watch AppTests */,
 			);
 			name = "LifehackWatchApp Watch AppTests";
-			packageProductDependencies = (
-			);
 			productName = "LifehackWatchApp Watch AppTests";
 			productReference = FE96EA382E8999B90088BA9C /* LifehackWatchApp Watch AppTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -533,8 +573,6 @@
 				FE96EA452E8999B90088BA9C /* LifehackWatchApp Watch AppUITests */,
 			);
 			name = "LifehackWatchApp Watch AppUITests";
-			packageProductDependencies = (
-			);
 			productName = "LifehackWatchApp Watch AppUITests";
 			productReference = FE96EA422E8999B90088BA9C /* LifehackWatchApp Watch AppUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -719,6 +757,8 @@
 				BOOTST000000000000001 /* AppBootstrap.swift in Sources */,
 				METRICS000000000000001 /* Models/MetricModels.swift in Sources */,
 				METCRDV000000000000001 /* Views/MetricCardView.swift in Sources */,
+				20FA2181014C2E399B0B82FE /* TrainingModeManager.swift in Sources */,
+				48876FC3B14FCEA8DECEA5E6 /* TrainingModeView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1014,7 +1054,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-                WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
 			};
 			name = Debug;
 		};
@@ -1050,7 +1090,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-                WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				WATCHOS_DEPLOYMENT_TARGET = 11.0;
 			};
 			name = Release;
 		};
