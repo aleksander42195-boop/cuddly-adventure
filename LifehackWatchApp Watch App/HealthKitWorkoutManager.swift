@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 import HealthKit
 
 final class HealthKitWorkoutManager: NSObject, ObservableObject {
