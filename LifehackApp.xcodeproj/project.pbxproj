@@ -13,6 +13,7 @@
 		48876FC3B14FCEA8DECEA5E6 /* TrainingModeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4F0E1948E2C8E175C8A1F18 /* TrainingModeView.swift */; };
 		725BC253AEDADCA2AAD53524 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 58FD356210ADF0E52F5C5185 /* Assets.xcassets */; };
 		7511470DCDE6665E3B065C3E /* WatchTrainingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BA9657AA20F355529EE0579 /* WatchTrainingManager.swift */; };
+		HKWKOUTSRC000000000000001 /* HealthKitWorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = HKWKOUT000000000000000001 /* HealthKitWorkoutManager.swift */; };
 		8BEC48C1C1E288D53F05A1C0 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F767BE6313CC1893316F50 /* Secrets.swift */; };
 		A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234561 /* DeviceManager.swift */; };
 		A1234567890ABCDEF1234564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234565 /* Assets.xcassets */; };
@@ -159,6 +160,7 @@
 		C0DEC0DEC0DEC0DEC0DEC0D1 /* Config/Signing.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Config/Signing.xcconfig; sourceTree = SOURCE_ROOT; };
 		C3F767BE6313CC1893316F50 /* Secrets.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Secrets.swift; path = "LifehackWatchApp Watch App/Secrets.swift"; sourceTree = "<group>"; };
 		C8354E68B506DA9EFD5F7E27 /* ContentView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = "LifehackWatchApp Watch App/ContentView.swift"; sourceTree = "<group>"; };
+		HKWKOUT000000000000000001 /* HealthKitWorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HealthKitWorkoutManager.swift; path = "LifehackWatchApp Watch App/HealthKitWorkoutManager.swift"; sourceTree = "<group>"; };
 		CHATGPTLOGIN0000000000000 /* Features/Coach/ChatGPTLoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/ChatGPTLoginView.swift; sourceTree = "<group>"; };
 		CHATMDL000000000000000 /* Models/ChatModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ChatModels.swift; sourceTree = "<group>"; };
 		CHATSVC000000000000000 /* Services/ChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ChatService.swift; sourceTree = "<group>"; };
@@ -228,7 +230,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		FE96EA082E8999B70088BA9C /* LifehackWatchApp */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LifehackWatchApp; sourceTree = "<group>"; };
 		FE96EA162E8999B80088BA9C /* LifehackWatchAppTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LifehackWatchAppTests; sourceTree = "<group>"; };
 		FE96EA202E8999B80088BA9C /* LifehackWatchAppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LifehackWatchAppUITests; sourceTree = "<group>"; };
 		FE96EA2D2E8999B80088BA9C /* LifehackWatchApp Watch App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "LifehackWatchApp Watch App"; sourceTree = "<group>"; };
@@ -249,6 +250,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				HLTHKT000000000000000001 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,7 +330,6 @@
 			children = (
 				C0DEC0DEC0DEC0DEC0DEC0D2 /* Config */,
 				A1234567890ABCDEF1234572 /* LifehackApp */,
-				FE96EA082E8999B70088BA9C /* LifehackWatchApp */,
 				FE96EA162E8999B80088BA9C /* LifehackWatchAppTests */,
 				FE96EA202E8999B80088BA9C /* LifehackWatchAppUITests */,
 				FE96EA2D2E8999B80088BA9C /* LifehackWatchApp Watch App */,
@@ -344,6 +345,7 @@
 				1BA9657AA20F355529EE0579 /* WatchTrainingManager.swift */,
 				888DA0823E1205A091F40983 /* WatchTrainingSettingsView.swift */,
 				C3F767BE6313CC1893316F50 /* Secrets.swift */,
+				HKWKOUT000000000000000001 /* HealthKitWorkoutManager.swift */,
 				58FD356210ADF0E52F5C5185 /* Assets.xcassets */,
 				FEE134A4ACCC55ED4F29BE17 /* Secrets.plist */,
 			);
@@ -494,9 +496,6 @@
 			);
 			dependencies = (
 				FE96EA2C2E8999B80088BA9C /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				FE96EA082E8999B70088BA9C /* LifehackWatchApp */,
 			);
 			name = LifehackWatchApp;
 			productName = LifehackWatchApp;
@@ -827,6 +826,7 @@
 				7511470DCDE6665E3B065C3E /* WatchTrainingManager.swift in Sources */,
 				F17F2511A0B6323ED6D64439 /* WatchTrainingSettingsView.swift in Sources */,
 				8BEC48C1C1E288D53F05A1C0 /* Secrets.swift in Sources */,
+				HKWKOUTSRC000000000000001 /* HealthKitWorkoutManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
