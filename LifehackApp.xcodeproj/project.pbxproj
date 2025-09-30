@@ -702,8 +702,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				725BC253AEDADCA2AAD53524 /* Assets.xcassets in Resources */,
-				E73F44C196803FD3029F7D73 /* Secrets.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -819,14 +817,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2634027E32689F2395DC5E1E /* LifehackWatchAppApp.swift in Sources */,
-				45C13E03D88703D97630FBF0 /* ContentView.swift in Sources */,
-				E76BF6D744988C4C4FF3B51D /* WatchMainView.swift in Sources */,
-				D21A88BF8AEBC415F8B5292F /* WatchTrainingView.swift in Sources */,
-				7511470DCDE6665E3B065C3E /* WatchTrainingManager.swift in Sources */,
-				F17F2511A0B6323ED6D64439 /* WatchTrainingSettingsView.swift in Sources */,
-				8BEC48C1C1E288D53F05A1C0 /* Secrets.swift in Sources */,
-				HKWKOUTSRC000000000000001 /* HealthKitWorkoutManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
