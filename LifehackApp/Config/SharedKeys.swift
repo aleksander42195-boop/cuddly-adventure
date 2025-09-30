@@ -6,4 +6,5 @@ enum SharedKeys {
     static let coachBaseURL = "coach.baseURL"                      // String
     static let coachResponsesModel = "coach.responsesModel"        // String
     static let coachChatModel = "coach.chatModel"                  // String
+    static let hrvLastKnownMs = "training.hrv.lastKnownMs"         // Double (milliseconds)
 }

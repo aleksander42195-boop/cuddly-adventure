@@ -2,6 +2,7 @@ import Foundation
 import Combine
 import WatchKit
 import SwiftUI
+import HealthKit
 
 enum TrainingType: String, CaseIterable, Identifiable {
     case recovery = "Recovery"
@@ -88,16 +89,31 @@ class WatchTrainingManager: ObservableObject {
     @Published var currentZone: TrainingZone = .zone1
     @Published var currentHeartRate: Int = 0
     @Published var trainingDuration: TimeInterval = 0
-    @Published var currentHRV: Double = 50.0 // Default HRV value
+    @Published var currentHRV: Double = 50.0 { // Default HRV value
+        didSet {
+            AppGroup.defaults.set(currentHRV, forKey: SharedKeys.hrvLastKnownMs)
+        }
+    }
+    @Published var isLiveHRActive: Bool = false
     
     private var timer: Timer?
     private var trainingStartTime: Date?
     private var hapticManager = HapticsManager()
     private var lastZone: TrainingZone = .zone1
+    private let hkManager = HealthKitWorkoutManager()
+    private var useHealthKit: Bool {
+        Secrets.shared.healthKitEnabledFlag && HKHealthStore.isHealthDataAvailable()
+    }
     
     static let shared = WatchTrainingManager()
     
-    private init() {}
+    private init() {
+        // Load persisted HRV if available
+        let saved = AppGroup.defaults.double(forKey: SharedKeys.hrvLastKnownMs)
+        if saved > 0 {
+            currentHRV = saved
+        }
+    }
     
     func startTraining(type: TrainingType) {
         guard !isTrainingActive else { return }
@@ -110,6 +126,27 @@ class WatchTrainingManager: ObservableObject {
         // Start monitoring
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             self?.updateTrainingMetrics()
+        }
+
+        if useHealthKit {
+            hkManager.requestAuthorization { [weak self] ok in
+                guard let self = self else { return }
+                if ok {
+                    self.hkManager.onHeartRate = { [weak self] hr in
+                        guard let self = self else { return }
+                        self.currentHeartRate = hr
+                        self.updateTrainingZone()
+                        if !self.isLiveHRActive { self.isLiveHRActive = true }
+                    }
+                    // Fetch latest HRV automatically
+                    self.hkManager.fetchLatestHRV { [weak self] ms in
+                        if let ms { self?.currentHRV = ms }
+                    }
+                    self.hkManager.startWorkout(activity: self.activityType(for: type))
+                } else {
+                    print("[WatchTraining] HealthKit authorization denied; falling back to simulation")
+                }
+            }
         }
         
         // Initial haptic feedback
@@ -136,6 +173,11 @@ class WatchTrainingManager: ObservableObject {
         
         // End haptic feedback
         hapticManager.playStop()
+
+        if useHealthKit {
+            hkManager.endWorkout()
+        }
+        isLiveHRActive = false
         
         print("[WatchTraining] Ended \(type) training. Duration: \(formatDuration(duration))")
     }
@@ -145,8 +187,11 @@ class WatchTrainingManager: ObservableObject {
         
         trainingDuration = Date().timeIntervalSince(startTime)
         
-        // Simulate heart rate monitoring (in real app, get from HealthKit)
-        simulateHeartRateUpdate()
+        // Update HR: HealthKit stream updates currentHeartRate as it arrives.
+        // If HK isn't in use or hasn't provided data yet, simulate as fallback.
+        if !useHealthKit {
+            simulateHeartRateUpdate()
+        }
         
         // Update training zone based on current HR and HRV
         updateTrainingZone()
@@ -158,6 +203,16 @@ class WatchTrainingManager: ObservableObject {
         let baseHR = 70
         let variability = Int.random(in: -10...30)
         currentHeartRate = baseHR + variability
+    }
+
+    private func activityType(for type: TrainingType) -> HKWorkoutActivityType {
+        switch type {
+        case .recovery: return .mindAndBody
+        case .aerobic: return .other
+        case .threshold: return .highIntensityIntervalTraining
+        case .vo2max: return .running
+        case .neuromuscular: return .functionalStrengthTraining
+        }
     }
     
     private func updateTrainingZone() {

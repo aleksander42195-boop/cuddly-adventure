@@ -119,6 +119,13 @@ struct WatchTrainingView: View {
                         Text("Heart Rate")
                             .font(.caption)
                             .foregroundColor(.gray)
+                        Spacer()
+                        Text(trainingManager.isLiveHRActive ? "Live" : "Simulated")
+                            .font(.caption2)
+                            .foregroundColor(trainingManager.isLiveHRActive ? .green : .yellow)
+                            .padding(3)
+                            .background((trainingManager.isLiveHRActive ? Color.green.opacity(0.2) : Color.yellow.opacity(0.2)))
+                            .cornerRadius(4)
                     }
                     
                     Text("\(trainingManager.currentHeartRate) BPM")
