@@ -181,4 +181,16 @@ final class AppState: ObservableObject {
     func requestNotificationPermission() async {
         NotificationsManager.shared.requestAuthorizationIfNeeded()
     }
+
+    // MARK: - Deep links
+    func openHealthApp() {
+        guard let url = URL(string: "x-apple-health://") else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+
+    func openAppSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
+    }
 }

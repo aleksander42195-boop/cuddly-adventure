@@ -35,6 +35,14 @@ final class HealthKitService {
         Secrets.shared.healthKitEnabledFlag
     }
 
+    // Minimal share types to improve authorization status detection.
+    // Requesting share for workouts/mindfulness lets us reliably query status via HealthKit APIs.
+    private var shareTypes: Set<HKSampleType> {
+        var set: Set<HKSampleType> = [HKObjectType.workoutType()]
+        if let mindful = HKObjectType.categoryType(forIdentifier: .mindfulSession) { set.insert(mindful) }
+        return set
+    }
+
     private var readTypes: Set<HKSampleType> {
         var set: Set<HKSampleType> = []
         if let steps = HKObjectType.quantityType(forIdentifier: .stepCount) { set.insert(steps) }
@@ -64,8 +72,8 @@ final class HealthKitService {
     private func requestAuthorizationIfNeeded() async {
         guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { return }
         do {
-            try await store.requestAuthorization(toShare: [], read: readTypes)
-            isAuthorized = computeAuthorizationStatus()
+            try await store.requestAuthorization(toShare: shareTypes, read: readTypes)
+            await updateAuthorizationStatus()
             if DeveloperFlags.verboseLogging {
                 print("[HealthKit] requestAuthorizationIfNeeded -> isAuthorized=\(isAuthorized)")
             }
@@ -76,12 +84,31 @@ final class HealthKitService {
 
     func requestAuthorization() async throws -> Bool {
         guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { return false }
-        try await store.requestAuthorization(toShare: [], read: readTypes)
-        isAuthorized = computeAuthorizationStatus()
+        try await store.requestAuthorization(toShare: shareTypes, read: readTypes)
+        await updateAuthorizationStatus()
         if DeveloperFlags.verboseLogging {
             print("[HealthKit] requestAuthorization() -> isAuthorized=\(isAuthorized)")
         }
         return isAuthorized
+    }
+
+    @MainActor
+    private func updateAuthorizationStatus() async {
+        guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { self.isAuthorized = false; return }
+        do {
+            let status = try await store.getRequestStatusForAuthorization(toShare: shareTypes, read: readTypes)
+            switch status {
+            case .shouldRequest:
+                self.isAuthorized = computeAuthorizationStatus()
+            case .unknown, .unnecessary:
+                self.isAuthorized = true
+            @unknown default:
+                self.isAuthorized = computeAuthorizationStatus()
+            }
+        } catch {
+            if DeveloperFlags.verboseLogging { print("[HealthKit] getRequestStatusForAuthorization error: \(error)") }
+            self.isAuthorized = computeAuthorizationStatus()
+        }
     }
 
     func fetchTodaySnapshot() async throws -> TodaySnapshot? {
@@ -498,7 +525,7 @@ final class HealthKitService {
 }
 #else
 final class HealthKitService {
-    private(set) var isAuthorized: Bool = false
+                await updateAuthorizationStatus()
     func requestAuthorization() async throws -> Bool { false }
     func fetchTodaySnapshot() async throws -> TodaySnapshot? { .placeholder }
     func safeTodaySnapshot() async -> TodaySnapshot { .placeholder }

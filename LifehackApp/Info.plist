@@ -46,6 +46,11 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>x-apple-health</string>
+		<string>App-prefs</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict/>
 	<key>UIBackgroundModes</key>

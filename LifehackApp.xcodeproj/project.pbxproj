@@ -87,20 +87,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		FE96EA142E8999B80088BA9C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1234567890ABCDEF1234578 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = FE96EA062E8999B70088BA9C;
-			remoteInfo = LifehackWatchApp;
-		};
-		FE96EA1E2E8999B80088BA9C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A1234567890ABCDEF1234578 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = FE96EA062E8999B70088BA9C;
-			remoteInfo = LifehackWatchApp;
-		};
 		FE96EA2B2E8999B80088BA9C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A1234567890ABCDEF1234578 /* Project object */;
@@ -122,22 +108,9 @@
 			remoteGlobalIDString = FE96EA282E8999B80088BA9C;
 			remoteInfo = "LifehackWatchApp Watch App";
 		};
+/* Begin PBXContainerItemProxy section */
+/* iOS Watch container proxies removed */
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		FE96EA4C2E8999B90088BA9C /* Embed Watch Content */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
-			dstSubfolderSpec = 16;
-			files = (
-				FE96EA2A2E8999B80088BA9C /* LifehackWatchApp Watch App.app in Embed Watch Content */,
-			);
-			name = "Embed Watch Content";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		1AC2ED0CD3CA46A8B7C03D01 /* WatchMainView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchMainView.swift; path = "LifehackWatchApp Watch App/WatchMainView.swift"; sourceTree = "<group>"; };
 		1BA9657AA20F355529EE0579 /* WatchTrainingManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchTrainingManager.swift; path = "LifehackWatchApp Watch App/WatchTrainingManager.swift"; sourceTree = "<group>"; };
@@ -428,7 +401,6 @@
 			isa = PBXGroup;
 			children = (
 				A1234567890ABCDEF1234568 /* LifehackApp.app */,
-				FE96EA072E8999B70088BA9C /* LifehackWatchApp.app */,
 				FE96EA132E8999B80088BA9C /* LifehackWatchAppTests.xctest */,
 				FE96EA1D2E8999B80088BA9C /* LifehackWatchAppUITests.xctest */,
 				FE96EA292E8999B80088BA9C /* LifehackWatchApp Watch App.app */,
@@ -484,24 +456,6 @@
 			productReference = A1234567890ABCDEF1234568 /* LifehackApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		FE96EA062E8999B70088BA9C /* LifehackWatchApp */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = FE96EA582E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchApp" */;
-			buildPhases = (
-				FE96EA032E8999B70088BA9C /* Sources */,
-				FE96EA042E8999B70088BA9C /* Frameworks */,
-				FE96EA052E8999B70088BA9C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				FE96EA2C2E8999B80088BA9C /* PBXTargetDependency */,
-			);
-			name = LifehackWatchApp;
-			productName = LifehackWatchApp;
-			productReference = FE96EA072E8999B70088BA9C /* LifehackWatchApp.app */;
-			productType = "com.apple.product-type.application";
-		};
 		FE96EA122E8999B80088BA9C /* LifehackWatchAppTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FE96EA592E8999B90088BA9C /* Build configuration list for PBXNativeTarget "LifehackWatchAppTests" */;
@@ -513,7 +467,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				FE96EA152E8999B80088BA9C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				FE96EA162E8999B80088BA9C /* LifehackWatchAppTests */,
@@ -534,7 +487,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				FE96EA1F2E8999B80088BA9C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				FE96EA202E8999B80088BA9C /* LifehackWatchAppUITests */,
@@ -619,16 +571,13 @@
 					A1234567890ABCDEF1234574 = {
 						CreatedOnToolsVersion = 15.0;
 					};
-					FE96EA062E8999B70088BA9C = {
-						CreatedOnToolsVersion = 26.0.1;
-					};
 					FE96EA122E8999B80088BA9C = {
 						CreatedOnToolsVersion = 26.0.1;
-						TestTargetID = FE96EA062E8999B70088BA9C;
+						/* TestTargetID removed: container target deleted */
 					};
 					FE96EA1C2E8999B80088BA9C = {
 						CreatedOnToolsVersion = 26.0.1;
-						TestTargetID = FE96EA062E8999B70088BA9C;
+						/* TestTargetID removed: container target deleted */
 					};
 					FE96EA282E8999B80088BA9C = {
 						CreatedOnToolsVersion = 26.0.1;
@@ -657,7 +606,6 @@
 			projectRoot = "";
 			targets = (
 				A1234567890ABCDEF1234574 /* LifehackApp */,
-				FE96EA062E8999B70088BA9C /* LifehackWatchApp */,
 				FE96EA122E8999B80088BA9C /* LifehackWatchAppTests */,
 				FE96EA1C2E8999B80088BA9C /* LifehackWatchAppUITests */,
 				FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */,
@@ -837,21 +785,7 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		FE96EA152E8999B80088BA9C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = FE96EA062E8999B70088BA9C /* LifehackWatchApp */;
-			targetProxy = FE96EA142E8999B80088BA9C /* PBXContainerItemProxy */;
-		};
-		FE96EA1F2E8999B80088BA9C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = FE96EA062E8999B70088BA9C /* LifehackWatchApp */;
-			targetProxy = FE96EA1E2E8999B80088BA9C /* PBXContainerItemProxy */;
-		};
-		FE96EA2C2E8999B80088BA9C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */;
-			targetProxy = FE96EA2B2E8999B80088BA9C /* PBXContainerItemProxy */;
-		};
+		/* Removed TargetDependency entries for deleted LifehackWatchApp container */
 		FE96EA3A2E8999B90088BA9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */;
@@ -1164,7 +1098,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LifehackWatchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LifehackWatchApp";
+				/* TEST_HOST removed: iOS container no longer exists */
 			};
 			name = Debug;
 		};
@@ -1186,7 +1120,7 @@
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/LifehackWatchApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LifehackWatchApp";
+				/* TEST_HOST removed: iOS container no longer exists */
 			};
 			name = Release;
 		};

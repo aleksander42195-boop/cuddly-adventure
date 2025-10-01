@@ -43,6 +43,13 @@ struct SettingsView: View {
 
                     GlassCard {
                         VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Connected Apps").font(.headline)
+                            NavigationLink("Manage Connections") { ConnectedAppsView() }
+                        }
+                    }
+
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
                             Text("Coach").font(.headline)
                             NavigationLink("Coach Engine") { CoachEngineSettingsView() }
                             NavigationLink("HRV Studies") { StudiesView() }
