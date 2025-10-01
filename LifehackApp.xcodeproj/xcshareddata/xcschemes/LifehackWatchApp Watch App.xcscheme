@@ -21,20 +21,6 @@
                ReferencedContainer = "container:LifehackApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FE96EA062E8999B70088BA9C"
-               BuildableName = "LifehackWatchApp.app"
-               BlueprintName = "LifehackWatchApp"
-               ReferencedContainer = "container:LifehackApp.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
