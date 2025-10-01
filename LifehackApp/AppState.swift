@@ -19,6 +19,7 @@ final class AppState: ObservableObject {
     }
     @Published var lastNightSleepHours: Double = 0
     @Published var todayMETHours: Double = 0
+    @Published var latestHRVDate: Date? = nil
 
     // Today snapshot used by TodayView
     @Published var today: TodaySnapshot = .empty
@@ -38,6 +39,15 @@ final class AppState: ObservableObject {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .short
         return formatter.localizedString(for: date, relativeTo: Date())
+    }
+
+    // Human-readable data age for HRV (e.g., "HRV last measured 2 days ago")
+    var hrvDataAgeText: String {
+        guard let date = latestHRVDate else { return "No HRV data" }
+        let rel = RelativeDateTimeFormatter()
+        rel.unitsStyle = .full
+        let relative = rel.localizedString(for: date, relativeTo: Date())
+        return "HRV last measured " + relative.replacingOccurrences(of: "from now", with: "ago")
     }
 
     init() {
@@ -117,6 +127,8 @@ final class AppState: ObservableObject {
         lastNightSleepHours = sleep
         let mets = (try? await healthService.todayMETHours()) ?? 0
         todayMETHours = mets
+        // Capture latest HRV sample timestamp for UX hinting (used in TodayView)
+        latestHRVDate = await healthService.latestHRVSampleDate(daysBack: 30)
         if DeveloperFlags.verboseLogging {
             print("[AppState] refreshFromHealthIfAvailable() completed, new today: \(today), sleep: \(sleep)h, mets: \(mets)")
         }

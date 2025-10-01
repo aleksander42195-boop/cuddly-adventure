@@ -37,7 +37,9 @@ final class Secrets {
     var hasUserAPIKey: Bool { Vault.loadOpenAIKey() != nil }
 
     var healthKitEnabledFlag: Bool {
-        bool("HEALTHKIT_ENABLED")
+        // Default to true if the key is missing so HealthKit works out of the box
+        if let v = dict["HEALTHKIT_ENABLED"] as? Bool { return v }
+        return true
     }
 
     // Managed Proxy configuration

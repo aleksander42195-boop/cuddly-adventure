@@ -92,7 +92,13 @@ final class HealthKitService {
         async let resting = latestRestingHR(in: range)
         async let stepsTotal = sumSteps(in: range)
 
-        let (hrv, rest, steps) = try await (hrvMs, resting, stepsTotal)
+        var (hrv, rest, steps) = try await (hrvMs, resting, stepsTotal)
+
+    // Fallbacks for days with no samples
+    let hrvRecent: Double? = (try? await latestSDNNRecent(daysBack: 7)) ?? nil
+    if hrv <= 0, let v = hrvRecent, v > 0 { hrv = v }
+    let rhrRecent: Double? = (try? await latestRestingHRRecent(daysBack: 7)) ?? nil
+    if rest <= 0, let v = rhrRecent, v > 0 { rest = v }
         let heur = deriveHeuristics(hrvMs: hrv, restingHR: rest, steps: steps)
         if DeveloperFlags.verboseLogging {
             print("[HealthKit] TodaySnapshot hrv=\(hrv)ms rhr=\(rest)bpm steps=\(steps) -> stress=\(heur.stress), energy=\(heur.energy), battery=\(heur.battery)")
@@ -104,6 +110,9 @@ final class HealthKitService {
     // Convenience: return placeholder instead of throwing (UI-friendly)
     func safeTodaySnapshot() async -> TodaySnapshot {
         do {
+            if HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled {
+                isAuthorized = computeAuthorizationStatus()
+            }
             let snapshot = try await fetchTodaySnapshot() ?? .placeholder
             if DeveloperFlags.verboseLogging {
                 print("[HealthKit] safeTodaySnapshot() -> success: \(snapshot)")
@@ -295,12 +304,34 @@ final class HealthKitService {
         return try await latestQuantity(type: type, predicate: .defaultPredicate(for: range), unit: unit)
     }
 
+    private func latestSDNNRecent(daysBack: Int) async throws -> Double? {
+        guard let type = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        let unit = HKUnit.secondUnit(with: .milli)
+        let end = Date()
+        let start = calendar.date(byAdding: .day, value: -max(1, daysBack), to: end) ?? Date.distantPast
+        let pred = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictEndDate)
+        return try await latestQuantityOptional(type: type, predicate: pred, unit: unit)
+    }
+
     private func latestRestingHR(in range: ClosedRange<Date>) async throws -> Double {
         guard let type = HKObjectType.quantityType(forIdentifier: .restingHeartRate) else {
             throw HealthKitServiceError.notAvailable
         }
         let unit = HKUnit(from: "count/min")
         return try await latestQuantity(type: type, predicate: .defaultPredicate(for: range), unit: unit)
+    }
+
+    private func latestRestingHRRecent(daysBack: Int) async throws -> Double? {
+        guard let type = HKObjectType.quantityType(forIdentifier: .restingHeartRate) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        let unit = HKUnit(from: "count/min")
+        let end = Date()
+        let start = calendar.date(byAdding: .day, value: -max(1, daysBack), to: end) ?? Date.distantPast
+        let pred = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictEndDate)
+        return try await latestQuantityOptional(type: type, predicate: pred, unit: unit)
     }
 
     private func sumSteps(in range: ClosedRange<Date>) async throws -> Int {
@@ -333,6 +364,28 @@ final class HealthKitService {
                 if DeveloperFlags.verboseLogging {
                     print("[HealthKit] latestQuantity(\(type.identifier)) -> found sample: \(value) \(unit), date: \(sample.endDate)")
                 }
+                cont.resume(returning: value)
+            }
+            self.store.execute(q)
+        }
+    }
+
+    private func latestQuantityOptional(type: HKQuantityType, predicate: NSPredicate, unit: HKUnit) async throws -> Double? {
+        try await withCheckedThrowingContinuation { cont in
+            let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: 1, sortDescriptors: [sort]) { _, results, error in
+                if let error = error {
+                    if DeveloperFlags.verboseLogging {
+                        print("[HealthKit] latestQuantityOptional(\(type.identifier)) -> error: \(error)")
+                    }
+                    cont.resume(returning: nil)
+                    return
+                }
+                guard let sample = results?.first as? HKQuantitySample else {
+                    cont.resume(returning: nil)
+                    return
+                }
+                let value = sample.quantity.doubleValue(for: unit)
                 cont.resume(returning: value)
             }
             self.store.execute(q)
@@ -399,6 +452,49 @@ final class HealthKitService {
         // MET-hours approx = kcal / kg
         return kcal / kg
     }
+
+    // MARK: - Metadata helpers
+    /// Returns the endDate of the most recent HRV (SDNN) sample, optional daysBack window.
+    func latestHRVSampleDate(daysBack: Int? = nil) async -> Date? {
+        guard isAuthorized else { return nil }
+        guard let type = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) else { return nil }
+        let end = Date()
+        let pred: NSPredicate? = {
+            if let days = daysBack, days > 0 {
+                let start = calendar.date(byAdding: .day, value: -days, to: end) ?? Date.distantPast
+                return HKQuery.predicateForSamples(withStart: start, end: end, options: .strictEndDate)
+            }
+            return nil
+        }()
+        return await latestSampleDate(sampleType: type, predicate: pred)
+    }
+
+    /// Returns a compact authorization breakdown for core types used by the app.
+    func authorizationBreakdown() -> [(name: String, authorized: Bool)] {
+        guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { return [] }
+        let pairs: [(String, HKObjectType?)] = [
+            ("HRV", HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN)),
+            ("Resting HR", HKObjectType.quantityType(forIdentifier: .restingHeartRate)),
+            ("Steps", HKObjectType.quantityType(forIdentifier: .stepCount)),
+            ("Sleep", HKObjectType.categoryType(forIdentifier: .sleepAnalysis))
+        ]
+        return pairs.compactMap { (name, type) in
+            guard let t = type else { return nil }
+            let status = store.authorizationStatus(for: t)
+            return (name: name, authorized: status == .sharingAuthorized)
+        }
+    }
+
+    private func latestSampleDate(sampleType: HKSampleType, predicate: NSPredicate?) async -> Date? {
+        await withCheckedContinuation { cont in
+            let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)
+            let q = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 1, sortDescriptors: [sort]) { _, results, _ in
+                let date = results?.first?.endDate
+                cont.resume(returning: date)
+            }
+            self.store.execute(q)
+        }
+    }
 }
 #else
 final class HealthKitService {
@@ -413,5 +509,7 @@ final class HealthKitService {
     func energyProxyDaily(days: Int) async -> [HealthDataPoint] { [] }
     func rollingAverage(_ series: [HealthDataPoint], window: Int) -> [HealthDataPoint] { series }
     func lastNightSleepHours() async throws -> Double { 0 }
+    func latestHRVSampleDate(daysBack: Int? = nil) async -> Date? { nil }
+    func authorizationBreakdown() -> [(name: String, authorized: Bool)] { [] }
 }
 #endif

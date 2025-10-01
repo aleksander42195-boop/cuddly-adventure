@@ -24,6 +24,14 @@ struct SettingsView: View {
                                     Text("Tilgang til Health er gitt")
                                         .foregroundStyle(.secondary)
                                 }
+                                // Permissions status line
+                                let statuses = app.healthService.authorizationBreakdown()
+                                if !statuses.isEmpty {
+                                    let summary = statuses.map { "\($0.name): \($0.authorized ? "✅" : "❌")" }.joined(separator: " · ")
+                                    Text(summary)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
                             } else {
                                 Button("Gi tilgang til Health") {
                                     Task { await app.requestHealthAuthorization() }
