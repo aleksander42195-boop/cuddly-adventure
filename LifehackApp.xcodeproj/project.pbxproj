@@ -1102,6 +1102,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
@@ -1141,6 +1142,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WATCHOS_DEPLOYMENT_TARGET = 11.0;
+				SKIP_INSTALL = YES;
 			};
 			name = Release;
 		};
@@ -1246,7 +1248,7 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app reads heart rate to drive live training zones during workouts.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app writes workout sessions to your Health data.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = lifehackinfinity.no.LifehackWatchApp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lifehack.LifehackApp;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
