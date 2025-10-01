@@ -35,8 +35,8 @@ final class HealthKitWorkoutManager: NSObject, ObservableObject {
 
         do {
             session = try HKWorkoutSession(healthStore: healthStore, configuration: config)
-            // On watchOS, HKWorkoutSession doesn't expose a device property in this context. Pass nil to use current.
-            builder = session.map { _ in HKLiveWorkoutBuilder(healthStore: healthStore, configuration: config, device: nil) }
+            // On watchOS, obtain the builder from the workout session to avoid unavailable initializers.
+            builder = session?.associatedWorkoutBuilder()
 
             builder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: config)
 
