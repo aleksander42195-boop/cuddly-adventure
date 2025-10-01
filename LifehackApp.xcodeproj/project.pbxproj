@@ -473,6 +473,7 @@
 				A1234567890ABCDEF1234576 /* Sources */,
 				A1234567890ABCDEF1234570 /* Frameworks */,
 				A1234567890ABCDEF1234577 /* Resources */,
+				FE96EA4C2E8999B90088BA9C /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
@@ -490,7 +491,6 @@
 				FE96EA032E8999B70088BA9C /* Sources */,
 				FE96EA042E8999B70088BA9C /* Frameworks */,
 				FE96EA052E8999B70088BA9C /* Resources */,
-				FE96EA4C2E8999B90088BA9C /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
@@ -1285,7 +1285,7 @@
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "This app reads heart rate to drive live training zones during workouts.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "This app writes workout sessions to your Health data.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = lifehackinfinity.no.LifehackWatchApp;
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.lifehack.LifehackApp;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
