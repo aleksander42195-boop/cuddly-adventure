@@ -13,38 +13,27 @@
             buildForProfiling = "YES"
             buildForArchiving = "YES"
             buildForAnalyzing = "YES">
-            <AutocreatedTestPlanReference>
-            </AutocreatedTestPlanReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A1234567890ABCDEF1234574"
-               BuildableName = "LifehackApp.app"
-               BlueprintName = "LifehackApp"
+               BlueprintIdentifier = "FE96EA282E8999B80088BA9C"
+               BuildableName = "LifehackWatchApp Watch App.app"
+               BlueprintName = "LifehackWatchApp Watch App"
                ReferencedContainer = "container:LifehackApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
       shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      enableAddressSanitizer = "YES"
-      enableASanStackUseAfterReturn = "YES"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -55,26 +44,26 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A1234567890ABCDEF1234574"
-            BuildableName = "LifehackApp.app"
-            BlueprintName = "LifehackApp"
+            BlueprintIdentifier = "FE96EA282E8999B80088BA9C"
+            BuildableName = "LifehackWatchApp Watch App.app"
+            BlueprintName = "LifehackWatchApp Watch App"
             ReferencedContainer = "container:LifehackApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      savedToolIdentifier = "App Launch"
+      savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
       <BuildableProductRunnable
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A1234567890ABCDEF1234574"
-            BuildableName = "LifehackApp.app"
-            BlueprintName = "LifehackApp"
+            BlueprintIdentifier = "FE96EA282E8999B80088BA9C"
+            BuildableName = "LifehackWatchApp Watch App.app"
+            BlueprintName = "LifehackWatchApp Watch App"
             ReferencedContainer = "container:LifehackApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -83,7 +72,7 @@
       buildConfiguration = "Debug">
    </AnalyzeAction>
    <ArchiveAction
-      buildConfiguration = "Debug"
+      buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>
