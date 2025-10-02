@@ -525,7 +525,7 @@ final class HealthKitService {
 }
 #else
 final class HealthKitService {
-                await updateAuthorizationStatus()
+    private(set) var isAuthorized: Bool = false
     func requestAuthorization() async throws -> Bool { false }
     func fetchTodaySnapshot() async throws -> TodaySnapshot? { .placeholder }
     func safeTodaySnapshot() async -> TodaySnapshot { .placeholder }
@@ -533,6 +533,7 @@ final class HealthKitService {
     func hrvDailyAverage(days: Int) async throws -> [HealthDataPoint] { [] }
     func stepsDailyTotal(days: Int) async throws -> [HealthDataPoint] { [] }
     func restingHRDailyAverage(days: Int) async throws -> [HealthDataPoint] { [] }
+    func todayMETHours() async throws -> Double { 0 }
     func energyProxyDaily(days: Int) async -> [HealthDataPoint] { [] }
     func rollingAverage(_ series: [HealthDataPoint], window: Int) -> [HealthDataPoint] { series }
     func lastNightSleepHours() async throws -> Double { 0 }
