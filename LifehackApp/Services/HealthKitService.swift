@@ -48,6 +48,7 @@ final class HealthKitService {
         if let steps = HKObjectType.quantityType(forIdentifier: .stepCount) { set.insert(steps) }
         if let active = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) { set.insert(active) }
         if let energy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) { set.insert(energy) }
+        if let hr = HKObjectType.quantityType(forIdentifier: .heartRate) { set.insert(hr) }
         // Critical for Today metrics
         if let hrv = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) { set.insert(hrv) }
         if let rhr = HKObjectType.quantityType(forIdentifier: .restingHeartRate) { set.insert(rhr) }
@@ -127,18 +128,21 @@ final class HealthKitService {
         async let resting = latestRestingHR(in: range)
         async let stepsTotal = sumSteps(in: range)
 
-        var (hrv, rest, steps) = try await (hrvMs, resting, stepsTotal)
+    var (hrv, rest, steps) = try await (hrvMs, resting, stepsTotal)
 
     // Fallbacks for days with no samples
     let hrvRecent: Double? = (try? await latestSDNNRecent(daysBack: 7)) ?? nil
     if hrv <= 0, let v = hrvRecent, v > 0 { hrv = v }
     let rhrRecent: Double? = (try? await latestRestingHRRecent(daysBack: 7)) ?? nil
     if rest <= 0, let v = rhrRecent, v > 0 { rest = v }
+        // Sedentary stress: elevated HR while low steps in short windows
+        let sedentaryStress = await sedentaryStressScore(in: range, restingHR: rest)
+        // Keep existing proxies for energy and battery
         let heur = deriveHeuristics(hrvMs: hrv, restingHR: rest, steps: steps)
         if DeveloperFlags.verboseLogging {
-            print("[HealthKit] TodaySnapshot hrv=\(hrv)ms rhr=\(rest)bpm steps=\(steps) -> stress=\(heur.stress), energy=\(heur.energy), battery=\(heur.battery)")
+            print("[HealthKit] TodaySnapshot hrv=\(hrv)ms rhr=\(rest)bpm steps=\(steps) -> sedentaryStress=\(sedentaryStress), energy=\(heur.energy), battery=\(heur.battery)")
         }
-        return TodaySnapshot(stress: heur.stress, energy: heur.energy, battery: heur.battery,
+        return TodaySnapshot(stress: sedentaryStress, energy: heur.energy, battery: heur.battery,
                              hrvSDNNms: hrv, restingHR: rest, steps: steps)
     }
 
@@ -308,6 +312,91 @@ final class HealthKitService {
         let energy = max(0.0, min(1.0, (100.0 - restingHR) / 100))
         let battery = max(0.0, min(1.0, Double(steps) / 8000.0))
         return (stress, energy, battery)
+    }
+
+    // MARK: Sedentary Stress
+    /// Computes a sedentary stress score for the provided range by combining 5-minute
+    /// average heart rate with step counts. Minutes with very low steps are considered sedentary;
+    /// elevated HR above resting baseline in those windows contributes to stress load.
+    /// Normalization is chosen so ~60 minutes at +15 bpm maps near 1.0.
+    private func sedentaryStressScore(in range: ClosedRange<Date>, restingHR: Double) async -> Double {
+        guard let hrType = HKObjectType.quantityType(forIdentifier: .heartRate),
+              let stepsType = HKObjectType.quantityType(forIdentifier: .stepCount) else {
+            return 0
+        }
+
+        // 5-minute bins to reduce noise and cost
+        let interval = DateComponents(minute: 5)
+        let anchor = calendar.startOfDay(for: Date(timeIntervalSince1970: 0))
+        let hrUnit = HKUnit(from: "count/min")
+        let stepsUnit = HKUnit.count()
+
+        // Build collections in parallel
+        async let hrPointsAsync: [HealthDataPoint] = statisticsSeries(
+            type: hrType, options: .discreteAverage, unit: hrUnit, range: range, interval: interval, anchor: anchor
+        )
+        async let stepsPointsAsync: [HealthDataPoint] = statisticsSeries(
+            type: stepsType, options: .cumulativeSum, unit: stepsUnit, range: range, interval: interval, anchor: anchor
+        )
+
+        let (hrPoints, stepsPoints) = await ((try? hrPointsAsync) ?? [], (try? stepsPointsAsync) ?? [])
+        if hrPoints.isEmpty { return 0 }
+
+        // Index steps by timestamp for quick join
+        var stepsByDate: [Date: Double] = [:]
+        for p in stepsPoints { stepsByDate[p.date] = p.value }
+
+        // Parameters
+        let sedentaryStepsThreshold = 3.0 // ~ no walking in 5 minutes
+        let hrBuffer = max(5.0, 0.08 * restingHR) // ignore tiny bumps (<~8% or <5bpm)
+        let baseline = max(40.0, restingHR) // reasonable floor
+
+        var load = 0.0
+        var sedentaryMinutes = 0.0
+        for hp in hrPoints {
+            let steps = stepsByDate[hp.date] ?? 0
+            let isSedentary = steps <= sedentaryStepsThreshold
+            guard isSedentary else { continue }
+            sedentaryMinutes += 5.0
+            let delta = max(0.0, hp.value - (baseline + hrBuffer))
+            // Integrate delta over the window size (5 minutes)
+            load += delta * 5.0
+        }
+
+        if sedentaryMinutes <= 0 { return 0 }
+        // Normalize: 60 min at +15 bpm -> 1.0 => denom = 15 * 60 = 900
+        let normalized = min(1.0, load / 900.0)
+        if DeveloperFlags.verboseLogging {
+            print("[HealthKit] sedentaryStress: load=\(Int(load)) baseline=\(baseline) buffer=\(Int(hrBuffer)) sedMin=\(Int(sedentaryMinutes)) -> score=\(normalized))")
+        }
+        return normalized
+    }
+
+    /// Generic statistics collection to produce regular-interval series for a type.
+    private func statisticsSeries(type: HKQuantityType, options: HKStatisticsOptions, unit: HKUnit, range: ClosedRange<Date>, interval: DateComponents, anchor: Date) async throws -> [HealthDataPoint] {
+        return try await withCheckedThrowingContinuation { cont in
+            let predicate = NSPredicate.defaultPredicate(for: range)
+            let q = HKStatisticsCollectionQuery(quantityType: type, quantitySamplePredicate: predicate, options: options, anchorDate: anchor, intervalComponents: interval)
+            q.initialResultsHandler = { _, collection, error in
+                if let error = error { cont.resume(throwing: error); return }
+                guard let collection = collection else { cont.resume(returning: []); return }
+                var out: [HealthDataPoint] = []
+                collection.enumerateStatistics(from: range.lowerBound, to: range.upperBound) { stats, _ in
+                    let value: Double
+                    switch options {
+                    case .cumulativeSum:
+                        value = stats.sumQuantity()?.doubleValue(for: unit) ?? 0
+                    case .discreteAverage:
+                        value = stats.averageQuantity()?.doubleValue(for: unit) ?? 0
+                    default:
+                        value = 0
+                    }
+                    out.append(.init(date: stats.startDate, value: value))
+                }
+                cont.resume(returning: out)
+            }
+            self.store.execute(q)
+        }
     }
 
     // MARK: Queries
