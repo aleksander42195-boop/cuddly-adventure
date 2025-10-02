@@ -96,7 +96,15 @@ final class HealthKitService {
     private func updateAuthorizationStatus() async {
         guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { self.isAuthorized = false; return }
         do {
-            let status = try await store.getRequestStatusForAuthorization(toShare: shareTypes, read: readTypes)
+            let status: HKAuthorizationRequestStatus = try await withCheckedThrowingContinuation { cont in
+                store.getRequestStatusForAuthorization(toShare: shareTypes, read: readTypes) { status, error in
+                    if let error = error {
+                        cont.resume(throwing: error)
+                    } else {
+                        cont.resume(returning: status)
+                    }
+                }
+            }
             switch status {
             case .shouldRequest:
                 self.isAuthorized = computeAuthorizationStatus()
