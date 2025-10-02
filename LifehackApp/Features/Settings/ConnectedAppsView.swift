@@ -56,5 +56,5 @@ struct ConnectedAppsView: View {
 }
 
 #Preview {
-    ConnectedAppsView().environmentObject(AppState.shared)
+    ConnectedAppsView().environmentObject(AppState())
 }
