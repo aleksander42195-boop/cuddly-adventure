@@ -18,6 +18,12 @@ final class AppState: ObservableObject {
         didSet { birthdateTimestamp = birthdate.timeIntervalSince1970 }
     }
     @Published var lastNightSleepHours: Double = 0
+    @Published var lastNightSleepScore: Double = 0
+    @Published var lastNightAwakeMinutes: Double = 0
+    @Published var lastNightAvgHRVms: Double? = nil
+    @Published var lastNightAvgHRbpm: Double? = nil
+    @Published var lastNightAvgSpO2: Double? = nil
+    @Published var lastNightMinSpO2: Double? = nil
     @Published var todayMETHours: Double = 0
     @Published var latestHRVDate: Date? = nil
 
@@ -125,6 +131,14 @@ final class AppState: ObservableObject {
         NotificationsManager.shared.scheduleStudySuggestions(basedOn: snap)
         let sleep = (try? await healthService.lastNightSleepHours()) ?? 0
         lastNightSleepHours = sleep
+        if let s = try? await healthService.lastNightSleepScore() {
+            lastNightSleepScore = s.score
+            lastNightAwakeMinutes = s.awakeMinutes
+            lastNightAvgHRVms = s.avgHRVduringSleepMs
+            lastNightAvgHRbpm = s.avgHRduringSleep
+            lastNightAvgSpO2 = s.avgSpO2
+            lastNightMinSpO2 = s.minSpO2
+        }
         let mets = (try? await healthService.todayMETHours()) ?? 0
         todayMETHours = mets
         // Capture latest HRV sample timestamp for UX hinting (used in TodayView)

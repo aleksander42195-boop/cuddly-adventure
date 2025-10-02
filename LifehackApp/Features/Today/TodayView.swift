@@ -402,16 +402,35 @@ struct TodayView: View {
                     }
                 }
                 
-                // Sleep score placeholder (you can enhance this later)
-                HStack {
-                    Text("Sleep Score")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                // Sleep score
+                HStack(alignment: .firstTextBaseline) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Sleep Score")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        HStack(spacing: 12) {
+                            let scorePct = Int((app.lastNightSleepScore.clamped01) * 100)
+                            Text("\(scorePct)%")
+                                .font(.title2.monospacedDigit()).bold()
+                                .foregroundStyle(scorePct >= 80 ? .green : (scorePct >= 60 ? .yellow : .orange))
+                            if let hrv = app.lastNightAvgHRVms {
+                                Text(String(format: "HRV: %.0f ms", hrv)).font(.caption).foregroundStyle(.secondary)
+                            }
+                            if let hr = app.lastNightAvgHRbpm {
+                                Text(String(format: "HR: %.0f bpm", hr)).font(.caption).foregroundStyle(.secondary)
+                            }
+                            if let sp = app.lastNightAvgSpO2 {
+                                Text(String(format: "SpO₂: %.0f%%", sp * 100)).font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
                     Spacer()
-                    Text("Good") // Placeholder - can be calculated based on sleep hours
-                        .font(.subheadline)
-                        .bold()
-                        .foregroundStyle(.green)
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(String(format: "Awake: %.0f min", app.lastNightAwakeMinutes)).font(.caption).foregroundStyle(.secondary)
+                        if let spMin = app.lastNightMinSpO2 {
+                            Text(String(format: "Min SpO₂: %.0f%%", spMin * 100)).font(.caption2).foregroundStyle(.secondary)
+                        }
+                    }
                 }
             }
         }

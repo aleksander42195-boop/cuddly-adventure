@@ -49,6 +49,7 @@ final class HealthKitService {
         if let active = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) { set.insert(active) }
         if let energy = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) { set.insert(energy) }
         if let hr = HKObjectType.quantityType(forIdentifier: .heartRate) { set.insert(hr) }
+        if let spo2 = HKObjectType.quantityType(forIdentifier: .oxygenSaturation) { set.insert(spo2) }
         // Critical for Today metrics
         if let hrv = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) { set.insert(hrv) }
         if let rhr = HKObjectType.quantityType(forIdentifier: .restingHeartRate) { set.insert(rhr) }
@@ -303,6 +304,222 @@ final class HealthKitService {
                 cont.resume(returning: total / 3600.0)
             }
             self.store.execute(q)
+        }
+    }
+
+    // MARK: Sleep Score (Last Night)
+    struct SleepScore: Sendable {
+        let score: Double // 0..1
+        let timeInBedHours: Double
+        let asleepHours: Double
+        let awakeMinutes: Double
+        let avgHRduringSleep: Double?
+        let avgHRVduringSleepMs: Double?
+        let avgSpO2: Double?
+        let minSpO2: Double?
+    }
+
+    /// Compute a last-night sleep score using duration, restlessness (awake minutes),
+    /// HRV, heart rate and SpO2. Windows: yesterday 18:00 -> today 12:00.
+    func lastNightSleepScore() async throws -> SleepScore {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let sleepType = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) else {
+            throw HealthKitServiceError.notAvailable
+        }
+
+        // Window
+        let cal = calendar
+        let now = Date()
+        let startOfToday = cal.startOfDay(for: now)
+        let yesterday = cal.date(byAdding: .day, value: -1, to: startOfToday)!
+        let start = cal.date(bySettingHour: 18, minute: 0, second: 0, of: yesterday)!
+        let end = cal.date(bySettingHour: 12, minute: 0, second: 0, of: startOfToday)!
+        let range: ClosedRange<Date> = start...end
+
+        // Fetch sleep samples
+        let pred = HKQuery.predicateForSamples(withStart: start, end: end, options: .strictEndDate)
+        let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: true)
+        let sleepSamples: [HKCategorySample] = try await withCheckedThrowingContinuation { cont in
+            let q = HKSampleQuery(sampleType: sleepType, predicate: pred, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { _, results, error in
+                if let error = error { cont.resume(throwing: error); return }
+                cont.resume(returning: (results as? [HKCategorySample]) ?? [])
+            }
+            self.store.execute(q)
+        }
+
+        // Partition intervals
+        let intervals = partitionSleepIntervals(sleepSamples: sleepSamples, window: range)
+        let timeInBed = intervals.timeInBed
+        let asleep = intervals.asleep
+        let awake = intervals.awake
+
+        // Compute metrics in parallel
+        async let avgHR = averageHeartRateDuring(intervals: asleep)
+        async let avgHRV = averageHRVDuring(intervals: asleep)
+        async let spo2Stats = spo2StatsDuring(intervals: asleep)
+
+        let (avgHRVms, avgHRbpm, (avgSpO2, minSpO2)) = (
+            try? await avgHRV,
+            try? await avgHR,
+            (try? await spo2Stats) ?? (nil, nil)
+        )
+
+        // Derived measures
+        let asleepHours = asleep.totalDuration / 3600.0
+        let timeInBedHours = timeInBed.totalDuration / 3600.0
+        let awakeMinutes = awake.totalDuration / 60.0
+
+        // Individual sub-scores (0..1)
+        let durationScore = min(1.0, asleepHours / 8.0)
+        let restlessnessScore = max(0.0, 1.0 - min(1.0, awakeMinutes / 45.0))
+        let hrvScore: Double? = avgHRVms.map { v in
+            // Map 30..110 ms to 0..1
+            let s = (v - 30.0) / (110.0 - 30.0)
+            return max(0.0, min(1.0, s))
+        }
+        let hrScore: Double? = avgHRbpm.map { v in
+            // Map 45..75 bpm to 1..0 (lower is better)
+            let s = (75.0 - v) / 30.0
+            return max(0.0, min(1.0, s))
+        }
+        let spo2Score: Double? = avgSpO2.map { v in
+            // Map 90%..98% to 0..1
+            let s = (v - 0.90) / 0.08
+            return max(0.0, min(1.0, s))
+        }
+
+        // Weights (renormalize if some metrics are missing)
+        var weighted: [(Double, Double)] = [] // (score, weight)
+        weighted.append((durationScore, 0.35))
+        weighted.append((restlessnessScore, 0.25))
+        if let s = hrvScore { weighted.append((s, 0.15)) }
+        if let s = hrScore { weighted.append((s, 0.15)) }
+        if let s = spo2Score { weighted.append((s, 0.10)) }
+        let totalW = weighted.reduce(0.0) { $0 + $1.1 }
+        let score = totalW > 0 ? weighted.reduce(0.0) { $0 + $1.0 * ($1.1 / totalW) } : 0
+
+        let result = SleepScore(
+            score: score,
+            timeInBedHours: timeInBedHours,
+            asleepHours: asleepHours,
+            awakeMinutes: awakeMinutes,
+            avgHRduringSleep: avgHRbpm,
+            avgHRVduringSleepMs: avgHRVms,
+            avgSpO2: avgSpO2,
+            minSpO2: minSpO2
+        )
+        if DeveloperFlags.verboseLogging { print("[HealthKit] SleepScore -> \(result)") }
+        return result
+    }
+
+    // Partition sleep samples into union intervals
+    private func partitionSleepIntervals(sleepSamples: [HKCategorySample], window: ClosedRange<Date>) -> (timeInBed: IntervalSet, asleep: IntervalSet, awake: IntervalSet) {
+        var inBed = IntervalSet()
+        var asleep = IntervalSet()
+        var awake = IntervalSet()
+        for s in sleepSamples {
+            let start = max(s.startDate, window.lowerBound)
+            let end = min(s.endDate, window.upperBound)
+            guard end > start else { continue }
+            inBed.add(start: start, end: end)
+            // Values: 0=inBed, 1=asleepUnspecified; in iOS 16+: 3=core,4=deep,5=rem; 2=awake
+            if s.value == 2 { awake.add(start: start, end: end) }
+            else if s.value == 1 || s.value == 3 || s.value == 4 || s.value == 5 {
+                asleep.add(start: start, end: end)
+            }
+        }
+        return (inBed, asleep, awake)
+    }
+
+    // Average HR during specific intervals (time-weighted)
+    private func averageHeartRateDuring(intervals: IntervalSet) async throws -> Double? {
+        guard let hrType = HKObjectType.quantityType(forIdentifier: .heartRate) else { return nil }
+        let unit = HKUnit(from: "count/min")
+        guard let bounds = intervals.bounds else { return nil }
+        let pred = HKQuery.predicateForSamples(withStart: bounds.lowerBound, end: bounds.upperBound, options: .strictEndDate)
+        let samples: [HKQuantitySample] = try await quantitySamples(type: hrType, predicate: pred)
+        if samples.isEmpty { return nil }
+        var num = 0.0
+        var den = 0.0
+        for s in samples {
+            let o = intervals.overlapDuration(start: s.startDate, end: s.endDate)
+            guard o > 0 else { continue }
+            let v = s.quantity.doubleValue(for: unit)
+            num += v * o
+            den += o
+        }
+        return den > 0 ? num / den : nil
+    }
+
+    private func averageHRVDuring(intervals: IntervalSet) async throws -> Double? {
+        guard let hrvType = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) else { return nil }
+        let unit = HKUnit.secondUnit(with: .milli)
+        guard let bounds = intervals.bounds else { return nil }
+        let pred = HKQuery.predicateForSamples(withStart: bounds.lowerBound, end: bounds.upperBound, options: .strictEndDate)
+        let samples: [HKQuantitySample] = try await quantitySamples(type: hrvType, predicate: pred)
+        if samples.isEmpty { return nil }
+        // Simple average over samples (HRV is instantaneous)
+        let vals = samples.map { $0.quantity.doubleValue(for: unit) }
+        let avg = vals.reduce(0, +) / Double(vals.count)
+        return avg
+    }
+
+    private func spo2StatsDuring(intervals: IntervalSet) async throws -> (avg: Double?, min: Double?) {
+        guard let spo2Type = HKObjectType.quantityType(forIdentifier: .oxygenSaturation) else { return (nil, nil) }
+        let unit = HKUnit.percent()
+        guard let bounds = intervals.bounds else { return (nil, nil) }
+        let pred = HKQuery.predicateForSamples(withStart: bounds.lowerBound, end: bounds.upperBound, options: .strictEndDate)
+        let samples: [HKQuantitySample] = try await quantitySamples(type: spo2Type, predicate: pred)
+        if samples.isEmpty { return (nil, nil) }
+        let vals = samples.map { $0.quantity.doubleValue(for: unit) }
+        let avg = vals.reduce(0, +) / Double(vals.count)
+        let minV = vals.min()
+        return (avg, minV)
+    }
+
+    private func quantitySamples(type: HKQuantityType, predicate: NSPredicate?) async throws -> [HKQuantitySample] {
+        try await withCheckedThrowingContinuation { cont in
+            let sort = NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: true)
+            let q = HKSampleQuery(sampleType: type, predicate: predicate, limit: HKObjectQueryNoLimit, sortDescriptors: [sort]) { _, results, error in
+                if let error = error { cont.resume(throwing: error); return }
+                cont.resume(returning: (results as? [HKQuantitySample]) ?? [])
+            }
+            self.store.execute(q)
+        }
+    }
+
+    // Lightweight interval set for union/overlap calculations
+    private struct IntervalSet {
+        private(set) var intervals: [ClosedRange<Date>] = []
+        mutating func add(start: Date, end: Date) {
+            guard end > start else { return }
+            intervals.append(start...end)
+            intervals = merge(intervals)
+        }
+        var totalDuration: TimeInterval { intervals.reduce(0) { $0 + $1.upperBound.timeIntervalSince($1.lowerBound) } }
+        var bounds: ClosedRange<Date>? {
+            guard let first = intervals.first, let last = intervals.last else { return nil }
+            return min(first.lowerBound, intervals.map { $0.lowerBound }.min()!) ... max(last.upperBound, intervals.map { $0.upperBound }.max()!)
+        }
+        func overlapDuration(start: Date, end: Date) -> TimeInterval {
+            var total: TimeInterval = 0
+            for r in intervals {
+                let s = max(start, r.lowerBound)
+                let e = min(end, r.upperBound)
+                if e > s { total += e.timeIntervalSince(s) }
+            }
+            return total
+        }
+        private func merge(_ arr: [ClosedRange<Date>]) -> [ClosedRange<Date>] {
+            guard !arr.isEmpty else { return [] }
+            let sorted = arr.sorted { $0.lowerBound < $1.lowerBound }
+            var out: [ClosedRange<Date>] = [sorted[0]]
+            for r in sorted.dropFirst() {
+                let last = out.removeLast()
+                if r.lowerBound <= last.upperBound { out.append(last.lowerBound ... max(last.upperBound, r.upperBound)) }
+                else { out.append(last); out.append(r) }
+            }
+            return out
         }
     }
 
