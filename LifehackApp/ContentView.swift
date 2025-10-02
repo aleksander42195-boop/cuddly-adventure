@@ -55,13 +55,16 @@ private struct ProfileTab: View {
                     }
                 }
                 .onAppear { syncNavigationIntent() }
-                .onChange(of: appState.pendingOpenSettings) { _ in syncNavigationIntent() }
+                .onChange(of: appState.pendingOpenSettings) { syncNavigationIntent() }
         }
     }
 
     private var navigationLink: some View {
-        NavigationLink(isActive: $navigateToSettings) { SettingsView() } label: { EmptyView() }
-            .hidden()
+        // Use navigationDestination(isPresented:) with a boolean binding in NavigationStack
+        NavigationLink("") { EmptyView() }.hidden()
+            .navigationDestination(isPresented: $navigateToSettings) {
+                SettingsView()
+            }
     }
 
     private func syncNavigationIntent() {

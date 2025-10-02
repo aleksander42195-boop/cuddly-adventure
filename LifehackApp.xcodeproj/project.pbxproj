@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+	CONAPPSRC000000000000001 /* Features/Settings/ConnectedAppsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CONAPPREF000000000000000 /* Features/Settings/ConnectedAppsView.swift */; };
 		20FA2181014C2E399B0B82FE /* TrainingModeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEE2045021D09CC11FC49CAE /* TrainingModeManager.swift */; };
 		2634027E32689F2395DC5E1E /* LifehackWatchAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AD0D785A073CC47DDD66FC6 /* LifehackWatchAppApp.swift */; };
 		45C13E03D88703D97630FBF0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8354E68B506DA9EFD5F7E27 /* ContentView.swift */; };
@@ -112,6 +113,7 @@
 /* iOS Watch container proxies removed */
 /* End PBXContainerItemProxy section */
 /* Begin PBXFileReference section */
+	CONAPPREF000000000000000 /* Features/Settings/ConnectedAppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/ConnectedAppsView.swift; sourceTree = "<group>"; };
 		1AC2ED0CD3CA46A8B7C03D01 /* WatchMainView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchMainView.swift; path = "LifehackWatchApp Watch App/WatchMainView.swift"; sourceTree = "<group>"; };
 		1BA9657AA20F355529EE0579 /* WatchTrainingManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchTrainingManager.swift; path = "LifehackWatchApp Watch App/WatchTrainingManager.swift"; sourceTree = "<group>"; };
 		27B863F682D6AE68B535A27E /* WatchTrainingView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchTrainingView.swift; path = WatchApp/Views/WatchTrainingView.swift; sourceTree = "<group>"; };
@@ -360,6 +362,7 @@
 				TODAYV000000000000000 /* Features/Today/TodayView.swift */,
 				STUDYV000000000000000 /* Features/Studies/StudiesView.swift */,
 				SETTGV000000000000000 /* Features/Settings/SettingsView.swift */,
+				CONAPPREF000000000000000 /* Features/Settings/ConnectedAppsView.swift */,
 				PROFIV000000000000000 /* Features/Profile/ProfileView.swift */,
 				USERME000000000000000 /* Features/Profile/UserMetricsView.swift */,
 				PRIVAC000000000000000 /* Features/Profile/PrivacySettingsView.swift */,
@@ -706,6 +709,7 @@
 				TODAYV000000000000001 /* Features/Today/TodayView.swift in Sources */,
 				STUDYV000000000000001 /* Features/Studies/StudiesView.swift in Sources */,
 				SETTGV000000000000001 /* Features/Settings/SettingsView.swift in Sources */,
+				CONAPPSRC000000000000001 /* Features/Settings/ConnectedAppsView.swift in Sources */,
 				PROFIV000000000000001 /* Features/Profile/ProfileView.swift in Sources */,
 				USERME000000000000001 /* Features/Profile/UserMetricsView.swift in Sources */,
 				PRIVAC000000000000001 /* Features/Profile/PrivacySettingsView.swift in Sources */,
