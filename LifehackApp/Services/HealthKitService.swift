@@ -851,6 +851,29 @@ final class HealthKitService {
     func energyProxyDaily(days: Int) async -> [HealthDataPoint] { [] }
     func rollingAverage(_ series: [HealthDataPoint], window: Int) -> [HealthDataPoint] { series }
     func lastNightSleepHours() async throws -> Double { 0 }
+    // Keep API parity with HealthKit-enabled build for simulator and other platforms
+    struct SleepScore: Sendable {
+        let score: Double
+        let timeInBedHours: Double
+        let asleepHours: Double
+        let awakeMinutes: Double
+        let avgHRduringSleep: Double?
+        let avgHRVduringSleepMs: Double?
+        let avgSpO2: Double?
+        let minSpO2: Double?
+    }
+    func lastNightSleepScore() async throws -> SleepScore {
+        return SleepScore(
+            score: 0,
+            timeInBedHours: 0,
+            asleepHours: 0,
+            awakeMinutes: 0,
+            avgHRduringSleep: nil,
+            avgHRVduringSleepMs: nil,
+            avgSpO2: nil,
+            minSpO2: nil
+        )
+    }
     func latestHRVSampleDate(daysBack: Int? = nil) async -> Date? { nil }
     func authorizationBreakdown() -> [(name: String, authorized: Bool)] { [] }
 }

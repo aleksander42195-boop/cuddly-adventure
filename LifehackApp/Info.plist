@@ -58,7 +58,7 @@
 		<string>background-app-refresh</string>
 	</array>
 	<key>NSHealthShareUsageDescription</key>
-	<string>This app reads your HRV, resting heart rate, steps, sleep, and workouts to compute daily wellness metrics and personalize training.</string>
+	<string>This app reads your HRV, heart rate, blood oxygen (SpO₂), steps, sleep, and workouts to compute daily wellness metrics and personalize training.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>This app writes workouts from your watch training sessions to Health so your activity rings and history stay accurate.</string>
 </dict>
