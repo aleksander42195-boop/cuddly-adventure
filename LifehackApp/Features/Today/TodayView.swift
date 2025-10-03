@@ -32,18 +32,7 @@ struct TodayView: View {
             }
         }
         .sheet(isPresented: $showingHRVExplanation) {
-            NavigationView {
-                HRVCameraView()
-                    .navigationTitle("HRV Camera")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingHRVExplanation = false
-                            }
-                        }
-                    }
-            }
+            HRVMeasureIntroView()
         }
         .sheet(isPresented: $showingChatGPTLogin) {
             CoachSheetRouter(
@@ -107,7 +96,7 @@ struct TodayView: View {
                 .clipShape(Circle())
                 .shadow(color: .cyan.opacity(0.3), radius: 8, x: 0, y: 4)
         }
-        .accessibilityLabel("Learn about HRV Camera")
+    .accessibilityLabel("Measure HRV with camera")
     }
     
     private var settingsButton: some View {

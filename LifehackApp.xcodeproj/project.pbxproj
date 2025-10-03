@@ -63,6 +63,7 @@
 		OFFHEUR000000000000001 /* Services/OfflineHeuristicsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OFFHEUR000000000000000 /* Services/OfflineHeuristicsService.swift */; };
 		PPGDLG000000000000001 /* Features/HRV/PPGProcessorDelegateAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */; };
 		PPGPROC000000000000001 /* Features/HRV/PPGProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */; };
+		HRVINTROSRC000000000000001 /* Features/HRV/HRVMeasureIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVINTRO000000000000000 /* Features/HRV/HRVMeasureIntroView.swift */; };
 		PRIVAC000000000000001 /* Features/Profile/PrivacySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRIVAC000000000000000 /* Features/Profile/PrivacySettingsView.swift */; };
 		PROFIV000000000000001 /* Features/Profile/ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PROFIV000000000000000 /* Features/Profile/ProfileView.swift */; };
 		ROOTT000000000000000001 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ROOTT000000000000000000 /* RootTabView.swift */; };
@@ -113,7 +114,7 @@
 /* iOS Watch container proxies removed */
 /* End PBXContainerItemProxy section */
 /* Begin PBXTargetDependency section */
-		FE96EA4D2E8999B90088BA9C /* PBXTargetDependency */ = {
+		FE96EA6D2E8999B90088BA9C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */;
 			targetProxy = FE96EA2B2E8999B80088BA9C /* PBXContainerItemProxy */;
@@ -187,6 +188,7 @@
 		OFFHEUR000000000000000 /* Services/OfflineHeuristicsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OfflineHeuristicsService.swift; sourceTree = "<group>"; };
 		PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessorDelegateAdapter.swift; sourceTree = "<group>"; };
 		PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessor.swift; sourceTree = "<group>"; };
+		HRVINTRO000000000000000 /* Features/HRV/HRVMeasureIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/HRVMeasureIntroView.swift; sourceTree = "<group>"; };
 		PRIVAC000000000000000 /* Features/Profile/PrivacySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/PrivacySettingsView.swift; sourceTree = "<group>"; };
 		PROFIV000000000000000 /* Features/Profile/ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/ProfileView.swift; sourceTree = "<group>"; };
 		ROOTT000000000000000000 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
@@ -385,6 +387,7 @@
 				HRVCAM000000000000000 /* Features/HRV/HRVCameraView.swift */,
 				PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */,
 				PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */,
+				HRVINTRO000000000000000 /* Features/HRV/HRVMeasureIntroView.swift */,
 				APPICON000000000000000 /* Utils/AppIconManager.swift */,
 				ZODIAC000000000000000 /* Utils/Zodiac.swift */,
 				OAICHAT2000000000000000 /* Services/OpenAIChatService.swift */,
@@ -451,8 +454,8 @@
 		FE96EA4C2E8999B90088BA9C /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 16;
+			dstPath = Watch;
+			dstSubfolderSpec = 1;
 			files = (
 				FE96EA2A2E8999B80088BA9C /* LifehackWatchApp Watch App.app in Embed Watch Content */,
 			);
@@ -474,7 +477,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				FE96EA4D2E8999B90088BA9C /* PBXTargetDependency */,
+				FE96EA6D2E8999B90088BA9C /* PBXTargetDependency */,
 			);
 			name = LifehackApp;
 			productName = LifehackApp;
@@ -699,6 +702,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				HRVINTROSRC000000000000001 /* Features/HRV/HRVMeasureIntroView.swift in Sources */,
 				A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */,
 				A1234567890ABCDEF123456A /* (null) in Sources */,
 				A1MAIN000000000000000002 /* LifehackApp.swift in Sources */,
@@ -1214,7 +1218,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lifehack.LifehackWatchApp.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lifehack.LifehackApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -1251,7 +1255,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lifehack.LifehackWatchApp.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.lifehack.LifehackApp.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;

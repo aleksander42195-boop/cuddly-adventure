@@ -30,6 +30,9 @@ final class HealthKitService {
         let value: Double
     }
 
+    // Note: There is no synchronous API to check read authorization. We treat the
+    // overall isAuthorized flag as the single source of truth for UI display.
+
     // Gate via Secrets: allow disabling HealthKit reads at runtime
     private var isHealthKitEnabled: Bool {
         Secrets.shared.healthKitEnabledFlag
@@ -87,7 +90,9 @@ final class HealthKitService {
     func requestAuthorization() async throws -> Bool {
         guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { return false }
         try await store.requestAuthorization(toShare: shareTypes, read: readTypes)
-        await updateAuthorizationStatus()
+        // Optimistically treat Health as connected for read flows; detailed reconciliation runs later.
+        self.isAuthorized = true
+        Task { await updateAuthorizationStatus() }
         if DeveloperFlags.verboseLogging {
             print("[HealthKit] requestAuthorization() -> isAuthorized=\(isAuthorized)")
         }
@@ -150,9 +155,9 @@ final class HealthKitService {
     // Convenience: return placeholder instead of throwing (UI-friendly)
     func safeTodaySnapshot() async -> TodaySnapshot {
         do {
-            if HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled {
-                isAuthorized = computeAuthorizationStatus()
-            }
+            // Do not mutate isAuthorized here; authorization is managed by explicit requests
+            // and updateAuthorizationStatus(). Recomputing here could incorrectly downgrade
+            // the state (e.g., when only read types are granted).
             let snapshot = try await fetchTodaySnapshot() ?? .placeholder
             if DeveloperFlags.verboseLogging {
                 print("[HealthKit] safeTodaySnapshot() -> success: \(snapshot)")
@@ -619,19 +624,14 @@ final class HealthKitService {
     // MARK: Queries
     private func computeAuthorizationStatus() -> Bool {
         guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { return false }
-        // For our Today metrics, consider authorized if at least one key type is authorized for reading
+        // authorizationStatus(for:) reports share permission status.
+        // Use only share types here; read types are not reflected by this API.
         var anyAuthorized = false
-        let keys: [HKObjectType?] = [
-            HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN),
-            HKObjectType.quantityType(forIdentifier: .restingHeartRate),
-            HKObjectType.quantityType(forIdentifier: .stepCount),
-            HKObjectType.categoryType(forIdentifier: .sleepAnalysis)
-        ]
-        for key in keys.compactMap({ $0 }) {
-            let status = store.authorizationStatus(for: key)
+        for shareType in shareTypes {
+            let status = store.authorizationStatus(for: shareType)
             if status == .sharingAuthorized { anyAuthorized = true }
             if DeveloperFlags.verboseLogging {
-                print("[HealthKit] authorizationStatus(\(key.identifier)) = \(status.rawValue)")
+                print("[HealthKit] share authorizationStatus(\(shareType.identifier)) = \(status.rawValue)")
             }
         }
         return anyAuthorized
@@ -813,16 +813,18 @@ final class HealthKitService {
     /// Returns a compact authorization breakdown for core types used by the app.
     func authorizationBreakdown() -> [(name: String, authorized: Bool)] {
         guard HKHealthStore.isHealthDataAvailable(), isHealthKitEnabled else { return [] }
-        let pairs: [(String, HKObjectType?)] = [
+        let mapping: [(String, HKObjectType?)] = [
             ("HRV", HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN)),
             ("Resting HR", HKObjectType.quantityType(forIdentifier: .restingHeartRate)),
             ("Steps", HKObjectType.quantityType(forIdentifier: .stepCount)),
             ("Sleep", HKObjectType.categoryType(forIdentifier: .sleepAnalysis))
         ]
-        return pairs.compactMap { (name, type) in
-            guard let t = type else { return nil }
-            let status = store.authorizationStatus(for: t)
-            return (name: name, authorized: status == .sharingAuthorized)
+        // We cannot synchronously query read-authorization per type. For UI purposes,
+        // reflect the overall authorization state uniformly for the listed types.
+        let granted = isAuthorized
+        return mapping.compactMap { (name, maybeType) in
+            guard maybeType != nil else { return nil }
+            return (name: name, authorized: granted)
         }
     }
 
