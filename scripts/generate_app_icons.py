@@ -26,7 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 APPICON = ROOT / "LifehackApp/Assets.xcassets/AppIcon.appiconset"
 APPICON_DARK = ROOT / "LifehackApp/Assets.xcassets/AppIcon-Dark.appiconset"
-WATCH_APPICON = ROOT / "WatchApp/Assets.xcassets/AppIcon.appiconset"
+WATCH_APPICON = ROOT / "LifehackWatchApp Watch App/Assets.xcassets/AppIcon.appiconset"
 
 
 def run(cmd):

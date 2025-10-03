@@ -5,9 +5,11 @@ import UIKit
 
 @MainActor
 final class AppState: ObservableObject {
-    enum Tab: Hashable { case today, journal, trends }
+    enum Tab: Hashable { case today, journal, trends, profile }
 
     @Published var selectedTab: Tab = .today
+    // Cross-tab intent routing (e.g., Today -> Profile -> Settings)
+    @Published var pendingOpenSettings: Bool = false
     @Published var isOnboardingPresented: Bool = false
     @Published var hapticsEnabled: Bool = true
     // iOS 17-compatible persistence: store birthdate as timestamp and expose a @Published Date for bindings
@@ -16,7 +18,14 @@ final class AppState: ObservableObject {
         didSet { birthdateTimestamp = birthdate.timeIntervalSince1970 }
     }
     @Published var lastNightSleepHours: Double = 0
+    @Published var lastNightSleepScore: Double = 0
+    @Published var lastNightAwakeMinutes: Double = 0
+    @Published var lastNightAvgHRVms: Double? = nil
+    @Published var lastNightAvgHRbpm: Double? = nil
+    @Published var lastNightAvgSpO2: Double? = nil
+    @Published var lastNightMinSpO2: Double? = nil
     @Published var todayMETHours: Double = 0
+    @Published var latestHRVDate: Date? = nil
 
     // Today snapshot used by TodayView
     @Published var today: TodaySnapshot = .empty
@@ -38,6 +47,15 @@ final class AppState: ObservableObject {
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 
+    // Human-readable data age for HRV (e.g., "HRV last measured 2 days ago")
+    var hrvDataAgeText: String {
+        guard let date = latestHRVDate else { return "No HRV data" }
+        let rel = RelativeDateTimeFormatter()
+        rel.unitsStyle = .full
+        let relative = rel.localizedString(for: date, relativeTo: Date())
+        return "HRV last measured " + relative.replacingOccurrences(of: "from now", with: "ago")
+    }
+
     init() {
         // Initialize published birthdate from persisted timestamp
         birthdate = Date(timeIntervalSince1970: birthdateTimestamp)
@@ -57,6 +75,7 @@ final class AppState: ObservableObject {
             switch savedTab {
             case "journal": selectedTab = .journal
             case "trends": selectedTab = .trends
+            case "profile": selectedTab = .profile
             default: selectedTab = .today
             }
         }
@@ -92,6 +111,7 @@ final class AppState: ObservableObject {
         case .today: tabString = "today"
         case .journal: tabString = "journal"
         case .trends: tabString = "trends"
+        case .profile: tabString = "profile"
         }
         UserDefaults.standard.set(tabString, forKey: "selectedTab")
         UserDefaults.standard.synchronize()
@@ -103,18 +123,45 @@ final class AppState: ObservableObject {
 
     @MainActor
     func refreshFromHealthIfAvailable() async {
+        if DeveloperFlags.verboseLogging {
+            print("[AppState] refreshFromHealthIfAvailable() called, current today: \(today)")
+        }
         let snap = await healthService.safeTodaySnapshot()
         today = snap
         NotificationsManager.shared.scheduleStudySuggestions(basedOn: snap)
         let sleep = (try? await healthService.lastNightSleepHours()) ?? 0
         lastNightSleepHours = sleep
+        if let s = try? await healthService.lastNightSleepScore() {
+            lastNightSleepScore = s.score
+            lastNightAwakeMinutes = s.awakeMinutes
+            lastNightAvgHRVms = s.avgHRVduringSleepMs
+            lastNightAvgHRbpm = s.avgHRduringSleep
+            lastNightAvgSpO2 = s.avgSpO2
+            lastNightMinSpO2 = s.minSpO2
+        }
         let mets = (try? await healthService.todayMETHours()) ?? 0
         todayMETHours = mets
+        // Capture latest HRV sample timestamp for UX hinting (used in TodayView)
+        latestHRVDate = await healthService.latestHRVSampleDate(daysBack: 30)
+        if DeveloperFlags.verboseLogging {
+            print("[AppState] refreshFromHealthIfAvailable() completed, new today: \(today), sleep: \(sleep)h, mets: \(mets)")
+        }
     }
 
-    var isHealthAuthorized: Bool { healthService.isAuthorized }
+    var isHealthAuthorized: Bool { 
+        let authorized = healthService.isAuthorized
+        if DeveloperFlags.verboseLogging {
+            print("[AppState] isHealthAuthorized -> \(authorized)")
+        }
+        return authorized
+    }
     func requestHealthAuthorization() async {
-        _ = try? await healthService.requestAuthorization()
+        print("[AppState] requestHealthAuthorization() called - button pressed!")
+        if DeveloperFlags.verboseLogging {
+            print("[AppState] requestHealthAuthorization() called")
+        }
+        let result = try? await healthService.requestAuthorization()
+        print("[AppState] requestHealthAuthorization() result: \(result ?? false)")
         await refreshFromHealthIfAvailable()
     }
 
@@ -130,6 +177,7 @@ final class AppState: ObservableObject {
     
     // MARK: - Manual Sync Trigger (UI)
     func triggerManualSync() {
+        print("[AppState] triggerManualSync() called - button pressed!")
         guard !isSyncing else { return }
         Task { await performManualSync() }
     }
@@ -146,5 +194,17 @@ final class AppState: ObservableObject {
     
     func requestNotificationPermission() async {
         NotificationsManager.shared.requestAuthorizationIfNeeded()
+    }
+
+    // MARK: - Deep links
+    func openHealthApp() {
+        guard let url = URL(string: "x-apple-health://") else { return }
+        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    }
+
+    func openAppSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
     }
 }

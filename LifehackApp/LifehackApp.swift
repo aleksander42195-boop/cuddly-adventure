@@ -15,6 +15,8 @@ struct LifehackApp: App {
         // Initialize app lifecycle management directly
         AppTheme.configureGlobal()
         NotificationsManager.shared.configure()
+        // Start global lifecycle monitor for safe shutdowns
+        LifecycleManager.shared.start()
     }
 
     var body: some Scene {
@@ -74,9 +76,11 @@ struct LifehackApp: App {
             print("App moved to background - saving state")
             AppBootstrap.saveAppState()
             saveForBackground()
+            NotificationCenter.default.post(name: .appSafeShutdown, object: nil)
         case .inactive:
             print("App became inactive - cleaning up operations")
             AppBootstrap.cleanupActiveOperations()
+            NotificationCenter.default.post(name: .appSafeShutdown, object: nil)
         case .active:
             print("App became active - restoring state")
             AppBootstrap.restoreAppState()

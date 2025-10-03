@@ -137,6 +137,6 @@ struct TodaySnapshot: Sendable {
     )
 }
 
-private extension Double {
+extension Double {
     var clamped01: Double { min(max(self, 0), 1) }
 }

@@ -1,7 +1,11 @@
 import SwiftUI
+#if canImport(HealthKit)
+import HealthKit
+#endif
 
 struct SettingsView: View {
     @EnvironmentObject private var engineManager: CoachEngineManager
+    @EnvironmentObject private var app: AppState
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
     @AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = true
     @State private var selectedIconKey: String? = AppIconManager.currentKey()
@@ -10,6 +14,40 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: AppTheme.spacing) {
+                    // HealthKit Access
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Health").font(.headline)
+                            if app.isHealthAuthorized {
+                                HStack {
+                                    Image(systemName: "checkmark.seal.fill").foregroundStyle(.green)
+                                    Text("Tilgang til Health er gitt")
+                                        .foregroundStyle(.secondary)
+                                }
+                                // Permissions status line
+                                let statuses = app.healthService.authorizationBreakdown()
+                                if !statuses.isEmpty {
+                                    let summary = statuses.map { "\($0.name): \($0.authorized ? "✅" : "❌")" }.joined(separator: " · ")
+                                    Text(summary)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            } else {
+                                Button("Gi tilgang til Health") {
+                                    Task { await app.requestHealthAuthorization() }
+                                }
+                                .buttonStyle(AppTheme.LiquidGlassButtonStyle())
+                            }
+                        }
+                    }
+
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Connected Apps").font(.headline)
+                            NavigationLink("Manage Connections") { ConnectedAppsView() }
+                        }
+                    }
+
                     GlassCard {
                         VStack(alignment: .leading, spacing: AppTheme.spacingS) {
                             Text("Coach").font(.headline)
@@ -61,7 +99,12 @@ struct SettingsView: View {
             }
             .background(AppTheme.background.ignoresSafeArea())
             .navigationTitle("Innstillinger")
-            .onAppear { selectedIconKey = AppIconManager.currentKey() }
+            .onAppear {
+                selectedIconKey = AppIconManager.currentKey()
+                if !app.isHealthAuthorized {
+                    Task { await app.requestHealthAuthorization() }
+                }
+            }
         }
     }
 }

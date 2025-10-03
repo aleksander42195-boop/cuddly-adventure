@@ -1,0 +1,14 @@
+{
+  "name": "lifehack-worker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "wrangler": "^3.78.6"
+  },
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  }
+}

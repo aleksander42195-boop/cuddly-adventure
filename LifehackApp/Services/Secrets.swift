@@ -33,7 +33,33 @@ final class Secrets {
         Vault.deleteOpenAIKey()
     }
 
+    // Convenience to check if a user-provided key is set
+    var hasUserAPIKey: Bool { Vault.loadOpenAIKey() != nil }
+
     var healthKitEnabledFlag: Bool {
-        bool("HEALTHKIT_ENABLED")
+        // Default to true if the key is missing so HealthKit works out of the box
+        if let v = dict["HEALTHKIT_ENABLED"] as? Bool { return v }
+        return true
+    }
+
+    // Managed Proxy configuration
+    var proxyBaseURL: URL? {
+        if let s = string("PROXY_BASE_URL"), let u = URL(string: s) { return u }
+        if let s = AppGroup.defaults.string(forKey: "proxy_base_url"), let u = URL(string: s) { return u }
+        return nil
+    }
+
+    func setProxyBaseURL(_ urlString: String) {
+        AppGroup.defaults.set(urlString, forKey: "proxy_base_url")
+    }
+
+    var proxyAccessToken: String? {
+        Vault.loadProxyAccessToken()
+    }
+    func setProxyAccessToken(_ token: String) {
+        Vault.saveProxyAccessToken(token)
+    }
+    func clearProxyAccessToken() {
+        Vault.deleteProxyAccessToken()
     }
 }

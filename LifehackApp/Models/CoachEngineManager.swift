@@ -30,11 +30,16 @@ final class CoachEngineManager: ObservableObject {
     private enum Keys {}
 
     init() {
-        let raw = store.string(forKey: SharedKeys.coachEngineSelection) ?? CoachEngine.openAIResponses.rawValue
-        self.engine = CoachEngine(rawValue: raw) ?? .openAIResponses
+    let raw = store.string(forKey: SharedKeys.coachEngineSelection) ?? CoachEngine.openAIChatCompletions.rawValue
+    var initial = CoachEngine(rawValue: raw) ?? .openAIChatCompletions
+        if initial == .managedProxy && !DeveloperFlags.enableManagedProxy {
+            initial = .openAIResponses
+            store.set(initial.rawValue, forKey: SharedKeys.coachEngineSelection)
+        }
+        self.engine = initial
         self.baseURLString = store.string(forKey: SharedKeys.coachBaseURL) ?? ""
-        self.responsesModel = store.string(forKey: SharedKeys.coachResponsesModel) ?? "gpt-4o-mini"
-        self.chatModel = store.string(forKey: SharedKeys.coachChatModel) ?? "gpt-4o-mini"
+    self.responsesModel = store.string(forKey: SharedKeys.coachResponsesModel) ?? "gpt-4o-mini"
+    self.chatModel = store.string(forKey: SharedKeys.coachChatModel) ?? "gpt-4o-mini"
         self.wristTipsEnabled = store.bool(forKey: SharedKeys.coachWristTipsEnabled)
         
         // Setup automatic state saving when app backgrounded
@@ -67,6 +72,16 @@ final class CoachEngineManager: ObservableObject {
         switch engine {
         case .offlineHeuristics:
             return OfflineHeuristicsService()
+        case .managedProxy:
+            // Temporarily disabled: no direct ManagedProxyService usage to avoid build issues.
+            // When the domain & worker are ready, reintroduce the proxy-backed service here.
+            // Fallback to Responses if API key exists; else mock
+            if let key = Secrets.shared.openAIAPIKey {
+                return OpenAIResponsesService(
+                    config: .init(apiKey: key, model: responsesModel, baseURL: baseURL)
+                )
+            }
+            return SimpleMockChatService()
         case .openAIResponses:
             if let key = Secrets.shared.openAIAPIKey {
                 return OpenAIResponsesService(

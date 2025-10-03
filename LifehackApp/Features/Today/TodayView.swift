@@ -6,6 +6,7 @@ import Charts
 struct TodayView: View {
     @EnvironmentObject var app: AppState
     @Environment(\.themeTokens) private var theme
+    @Environment(\.horizontalSizeClass) private var hSizeClass
     @State private var studyOfTheDay: Study? = nil
     @State private var studyError: String? = nil
     @State private var showingHRVExplanation = false
@@ -13,18 +14,7 @@ struct TodayView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: theme.spacing) {
-                topControlsSection
-                healthPermissionSection
-                metricsSection
-                hrvSection
-                studySection
-                activitySection
-                aiCoachSection
-                sleepSection
-                refreshButton
-            }
-            .padding()
+            content
         }
         .refreshable {
             await app.refreshFromHealthIfAvailable()
@@ -42,32 +32,13 @@ struct TodayView: View {
             }
         }
         .sheet(isPresented: $showingHRVExplanation) {
-            NavigationView {
-                HRVCameraView()
-                    .navigationTitle("HRV Camera")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingHRVExplanation = false
-                            }
-                        }
-                    }
-            }
+            HRVMeasureIntroView()
         }
         .sheet(isPresented: $showingChatGPTLogin) {
-            NavigationView {
-                StreamingCoachView()
-                    .navigationTitle("AI Health Coach")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingChatGPTLogin = false
-                            }
-                        }
-                    }
-            }
+            CoachSheetRouter(
+                hasAPIKey: Secrets.shared.openAIAPIKey != nil,
+                onClose: { showingChatGPTLogin = false }
+            )
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(
@@ -76,6 +47,29 @@ struct TodayView: View {
             "Battery \(Int(app.today.battery * 100)) percent. " +
             "HRV \(app.today.hrvLabel). Steps \(app.today.steps)."
         )
+    }
+    
+    // Extracted to reduce type-checker complexity in `body`
+    private var content: some View {
+        let isCompact = (hSizeClass == .compact)
+        return VStack(spacing: AppTheme.spacing) {
+            topControlsSection
+            healthPermissionSection
+            trainingModeSection
+            metricsSection
+            hrvSection
+            studySection
+            activitySection
+            aiCoachSection
+            sleepSection
+            refreshButton
+        }
+        // Responsive padding: slightly larger on compact (e.g., iPhone/SE)
+        .padding(.horizontal, isCompact ? 20 : 24)
+        .padding(.vertical, 12)
+        // Limit width on compact to a tighter cap for better feel in portrait
+        .frame(maxWidth: isCompact ? 380 : 680, alignment: .center)
+        .frame(maxWidth: .infinity)
     }
     
     private var topControlsSection: some View {
@@ -102,11 +96,17 @@ struct TodayView: View {
                 .clipShape(Circle())
                 .shadow(color: .cyan.opacity(0.3), radius: 8, x: 0, y: 4)
         }
-        .accessibilityLabel("Learn about HRV Camera")
+    .accessibilityLabel("Measure HRV with camera")
     }
     
     private var settingsButton: some View {
-        NavigationLink(destination: SettingsView()) {
+        Button {
+            app.tapHaptic()
+            withAnimation {
+                app.pendingOpenSettings = true
+                app.selectedTab = .profile
+            }
+        } label: {
             Image(systemName: "gearshape.fill")
                 .font(.title2)
                 .foregroundStyle(.white)
@@ -115,7 +115,6 @@ struct TodayView: View {
                 .clipShape(Circle())
                 .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
         }
-        .onTapGesture { app.tapHaptic() }
         .accessibilityLabel("Open Settings")
     }
     
@@ -146,6 +145,10 @@ struct TodayView: View {
         }
     }
     
+    private var trainingModeSection: some View {
+        TrainingModeView()
+    }
+    
     private var metricsSection: some View {
         MetricCardView(
             energy: app.today.energy,
@@ -167,6 +170,11 @@ struct TodayView: View {
                 
                 Text("Resting HR: \(app.today.restingHR, specifier: "%.0f") bpm · Steps: \(app.today.steps)")
                     .foregroundStyle(.secondary)
+                if let _ = app.latestHRVDate {
+                    Text(app.hrvDataAgeText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
                 
                 #if canImport(Charts)
                 if app.isHealthAuthorized {
@@ -339,7 +347,7 @@ struct TodayView: View {
                         HStack {
                             Image(systemName: "message.fill")
                                 .foregroundStyle(.purple)
-                            Text("Setup AI Coach")
+                            Text(Secrets.shared.openAIAPIKey == nil ? "Setup AI Coach" : "Open AI Coach")
                         }
                     }
                     .buttonStyle(AppTheme.LiquidGlassButtonStyle())
@@ -383,16 +391,35 @@ struct TodayView: View {
                     }
                 }
                 
-                // Sleep score placeholder (you can enhance this later)
-                HStack {
-                    Text("Sleep Score")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                // Sleep score
+                HStack(alignment: .firstTextBaseline) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Sleep Score")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        HStack(spacing: 12) {
+                            let scorePct = Int((app.lastNightSleepScore.clamped01) * 100)
+                            Text("\(scorePct)%")
+                                .font(.title2.monospacedDigit()).bold()
+                                .foregroundStyle(scorePct >= 80 ? .green : (scorePct >= 60 ? .yellow : .orange))
+                            if let hrv = app.lastNightAvgHRVms {
+                                Text(String(format: "HRV: %.0f ms", hrv)).font(.caption).foregroundStyle(.secondary)
+                            }
+                            if let hr = app.lastNightAvgHRbpm {
+                                Text(String(format: "HR: %.0f bpm", hr)).font(.caption).foregroundStyle(.secondary)
+                            }
+                            if let sp = app.lastNightAvgSpO2 {
+                                Text(String(format: "SpO₂: %.0f%%", sp * 100)).font(.caption).foregroundStyle(.secondary)
+                            }
+                        }
+                    }
                     Spacer()
-                    Text("Good") // Placeholder - can be calculated based on sleep hours
-                        .font(.subheadline)
-                        .bold()
-                        .foregroundStyle(.green)
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(String(format: "Awake: %.0f min", app.lastNightAwakeMinutes)).font(.caption).foregroundStyle(.secondary)
+                        if let spMin = app.lastNightMinSpO2 {
+                            Text(String(format: "Min SpO₂: %.0f%%", spMin * 100)).font(.caption2).foregroundStyle(.secondary)
+                        }
+                    }
                 }
             }
         }
@@ -400,6 +427,28 @@ struct TodayView: View {
     
     private var refreshButton: some View {
         VStack(spacing: 8) {
+            // Debug information when verbose logging is enabled
+            if DeveloperFlags.verboseLogging {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Debug Info:")
+                        .font(.caption.bold())
+                        .foregroundStyle(.orange)
+                    Text(verbatim: "HealthKit Enabled: \(Secrets.shared.healthKitEnabledFlag)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text(verbatim: "Health Authorized: \(app.isHealthAuthorized)")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text(verbatim: "Current Metrics: stress=\(app.today.stressPercent)% energy=\(app.today.energyPercent)% battery=\(app.today.batteryPercent)%")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                    Text(String(format: "HRV: %.1fms, RHR: %.0fbpm, Steps: %d", app.today.hrvSDNNms, app.today.restingHR, app.today.steps))
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+                .padding(.bottom, 8)
+            }
+            
             // Sync status
             HStack {
                 Text("Last sync:")
@@ -427,6 +476,33 @@ struct TodayView: View {
             }
             .buttonStyle(AppTheme.LiquidGlassButtonStyle())
             .disabled(app.isSyncing)
+        }
+    }
+}
+
+// Small router that chooses between AI coach setup and chat, keeping a single
+// .sheet content type to help the Swift type-checker.
+private struct CoachSheetRouter: View {
+    let hasAPIKey: Bool
+    let onClose: () -> Void
+    
+    var body: some View {
+        NavigationView {
+            Group {
+                if hasAPIKey {
+                    StreamingCoachView()
+                        .navigationTitle("AI Health Coach")
+                } else {
+                    ChatGPTLoginView()
+                        .navigationTitle("AI Coach Setup")
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") { onClose() }
+                }
+            }
         }
     }
 }
