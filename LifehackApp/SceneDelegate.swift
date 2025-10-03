@@ -51,6 +51,4 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 }
 
-extension Notification.Name {
-    static let hrvStopMeasurement = Notification.Name("hrv.stop.measurement")
-}
+// Notification names are centralized in Utils/Notifications+Names.swift
