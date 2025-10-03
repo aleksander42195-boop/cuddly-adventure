@@ -17,6 +17,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private let output = AVCaptureVideoDataOutput()
     private let ciContext = CIContext(options: nil)
     private let queue = DispatchQueue(label: "ppg.processor.queue")
+    private var isRunning = false
 
     // Signal processing state
     private var rawSamples: [Double] = []    // normalized intensity samples
@@ -41,46 +42,54 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     var captureSession: AVCaptureSession { session }
 
     func start() throws {
-        session.beginConfiguration()
-        session.sessionPreset = .medium
-
+        if isRunning { return }
+        // Prepare camera input synchronously to throw if unavailable
         guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
             throw NSError(domain: "PPG", code: -1, userInfo: [NSLocalizedDescriptionKey: "Camera not available"])
         }
         let input = try AVCaptureDeviceInput(device: device)
-    if session.canAddInput(input) { session.addInput(input) }
-    cameraDevice = device
-
-        output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
-        output.alwaysDiscardsLateVideoFrames = true
-        output.setSampleBufferDelegate(self, queue: queue)
-        if session.canAddOutput(output) { session.addOutput(output) }
-
-        // Orientation/connection
-        if #available(iOS 17.0, *) {
-            output.connections.first?.videoRotationAngle = 0
-        } else {
-            output.connections.first?.videoOrientation = .portrait
+        cameraDevice = device
+        // Configure and start on the processing queue to avoid blocking UI
+        queue.async {
+            self.session.beginConfiguration()
+            self.session.sessionPreset = .medium
+            if self.session.inputs.isEmpty, self.session.canAddInput(input) { self.session.addInput(input) }
+            self.output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
+            self.output.alwaysDiscardsLateVideoFrames = true
+            self.output.setSampleBufferDelegate(self, queue: self.queue)
+            if self.session.outputs.isEmpty, self.session.canAddOutput(self.output) { self.session.addOutput(self.output) }
+            // Orientation/connection
+            if #available(iOS 17.0, *) {
+                self.output.connections.first?.videoRotationAngle = 0
+            } else {
+                self.output.connections.first?.videoOrientation = .portrait
+            }
+            self.session.commitConfiguration()
+            self.applyTorchState()
+            self.session.startRunning()
+            self.isRunning = true
         }
-
-        // Enable torch if desired
-        applyTorchState()
-
-        session.commitConfiguration()
-        session.startRunning()
     }
 
     func stop() {
-        if let device = (session.inputs.first as? AVCaptureDeviceInput)?.device, device.hasTorch {
-            try? device.lockForConfiguration()
-            if device.isTorchActive { device.torchMode = .off }
-            device.unlockForConfiguration()
+        if !isRunning { return }
+        queue.async {
+            if let device = (self.session.inputs.first as? AVCaptureDeviceInput)?.device, device.hasTorch {
+                try? device.lockForConfiguration()
+                if device.isTorchActive { device.torchMode = .off }
+                device.unlockForConfiguration()
+            }
+            if self.session.isRunning { self.session.stopRunning() }
+            self.isRunning = false
+            self.rawSamples.removeAll()
+            self.filteredSamples.removeAll()
+            self.timestamps.removeAll()
+            self.hpY = 0; self.hpXPrev = 0; self.lpY = 0
         }
-        session.stopRunning()
-        rawSamples.removeAll()
-        filteredSamples.removeAll()
-        timestamps.removeAll()
-        hpY = 0; hpXPrev = 0; lpY = 0
+    }
+
+    deinit {
+        stop()
     }
 
     func setTorch(enabled: Bool) {

@@ -15,6 +15,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         
         // Initialize app lifecycle management
         setupAppLifecycle()
+        // Start global lifecycle observer to broadcast safe-shutdown signals
+        LifecycleManager.shared.start()
         
         // Initialize device manager
         let deviceManager = DeviceManager.shared
@@ -38,12 +40,16 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // App moved to background - save critical state
         print("App entering background - saving state")
         AppBootstrap.saveAppState()
+        // Broadcast safe shutdown
+        NotificationCenter.default.post(name: .appSafeShutdown, object: nil)
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
         // App becoming inactive - prepare for possible termination
         print("App will resign active - preparing for inactive")
         AppBootstrap.cleanupActiveOperations()
+        // Broadcast safe shutdown
+        NotificationCenter.default.post(name: .appSafeShutdown, object: nil)
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -56,6 +62,8 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         // App will terminate - save critical state
         print("App will terminate - performing final save")
         saveForTermination()
+        // Broadcast safe shutdown
+        NotificationCenter.default.post(name: .appSafeShutdown, object: nil)
     }
     
     private func setupAppLifecycle() {

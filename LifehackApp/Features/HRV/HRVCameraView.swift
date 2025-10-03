@@ -1,5 +1,6 @@
 import SwiftUI
 import AVFoundation
+import Combine
 
 struct HRVCameraView: View {
     @Environment(\.dismiss) private var dismiss
@@ -10,6 +11,11 @@ struct HRVCameraView: View {
     @State private var isRunning = false
     @State private var remainingSeconds: Int = 180
     @State private var timer: Timer? = nil
+    @State private var hrSamples: [Double] = []
+    @State private var sdnnSamples: [Double] = []
+    @State private var showResult: Bool = false
+    @State private var result: HRVResult? = nil
+    @State private var startedAt: Date? = nil
     @AppStorage("ppgTorchEnabled") private var torchEnabled: Bool = true
 
     var body: some View {
@@ -66,6 +72,30 @@ struct HRVCameraView: View {
             .background(AppTheme.background.ignoresSafeArea())
             .onAppear { startIfNeeded() }
             .onDisappear { ppg.stop(); timer?.invalidate(); timer = nil }
+            .onReceive(NotificationCenter.default.publisher(for: .hrvStopMeasurement)) { _ in
+                // Stop or complete the measurement when app is backgrounding/interrupting
+                if isRunning {
+                    completeMeasurement()
+                } else {
+                    ppg.stop()
+                    timer?.invalidate(); timer = nil
+                    remainingSeconds = 180
+                }
+            }
+            .onReceive(NotificationCenter.default.publisher(for: .appSafeShutdown)) { _ in
+                if isRunning {
+                    completeMeasurement()
+                } else {
+                    ppg.stop()
+                    timer?.invalidate(); timer = nil
+                    remainingSeconds = 180
+                }
+            }
+            .sheet(isPresented: $showResult) {
+                if let r = result {
+                    HRVResultView(result: r, onSave: { saveLocal($0) }, onDone: { showResult = false })
+                }
+            }
         }
     }
 
@@ -75,6 +105,8 @@ struct HRVCameraView: View {
         do {
             try ppg.start()
             isRunning = true
+            hrSamples.removeAll(); sdnnSamples.removeAll()
+            startedAt = Date()
             startAutoStopTimer()
         } catch {
             // ignore
@@ -83,7 +115,7 @@ struct HRVCameraView: View {
 
     private func toggleCapture() {
         if isRunning {
-            ppg.stop(); isRunning = false; timer?.invalidate(); timer = nil; remainingSeconds = 180
+            completeMeasurement()
         } else {
             startIfNeeded()
         }
@@ -98,8 +130,8 @@ struct HRVCameraView: View {
             signal.append(val)
             if signal.count > 300 { signal.removeFirst(signal.count - 300) }
         },
-        onHR: { bpm in currentHR = bpm },
-        onSDNN: { ms in currentSDNN = ms },
+        onHR: { bpm in currentHR = bpm; if bpm > 0 { hrSamples.append(bpm) } },
+        onSDNN: { ms in currentSDNN = ms; if ms > 0 { sdnnSamples.append(ms) } },
         wantsTorch: { torchEnabled }
     ) }
 
@@ -144,10 +176,7 @@ struct HRVCameraView: View {
             if remainingSeconds > 0 {
                 remainingSeconds -= 1
             }
-            if remainingSeconds == 0 {
-                timer?.invalidate(); timer = nil
-                ppg.stop(); isRunning = false
-            }
+            if remainingSeconds == 0 { completeMeasurement() }
         }
         RunLoop.main.add(timer!, forMode: .common)
     }
@@ -156,6 +185,36 @@ struct HRVCameraView: View {
         let m = seconds / 60
         let s = seconds % 60
         return String(format: "%d:%02d", m, s)
+    }
+
+    private func completeMeasurement() {
+        ppg.stop(); isRunning = false
+        timer?.invalidate(); timer = nil
+        let duration = 180 - max(0, remainingSeconds)
+        remainingSeconds = 180
+        let avgHR = hrSamples.isEmpty ? 0 : (hrSamples.reduce(0, +) / Double(hrSamples.count))
+        let avgSDNN = sdnnSamples.isEmpty ? 0 : (sdnnSamples.reduce(0, +) / Double(sdnnSamples.count))
+        result = HRVResult(
+            date: startedAt ?? Date(),
+            durationSeconds: max(1, duration),
+            averageHRBpm: avgHR,
+            averageSDNNms: avgSDNN,
+            samples: max(hrSamples.count, sdnnSamples.count)
+        )
+        showResult = true
+    }
+
+    private func saveLocal(_ r: HRVResult) {
+        let key = "hrv_results_history"
+        var arr: [HRVResult] = []
+        let ud = AppGroup.defaults
+        if let data = ud.data(forKey: key) {
+            if let decoded = try? JSONDecoder().decode([HRVResult].self, from: data) { arr = decoded }
+        }
+        arr.append(r)
+        if let encoded = try? JSONEncoder().encode(arr) {
+            ud.set(encoded, forKey: key)
+        }
     }
 }
 
