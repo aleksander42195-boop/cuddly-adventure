@@ -112,6 +112,13 @@
 /* Begin PBXContainerItemProxy section */
 /* iOS Watch container proxies removed */
 /* End PBXContainerItemProxy section */
+/* Begin PBXTargetDependency section */
+		FE96EA4D2E8999B90088BA9C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FE96EA282E8999B80088BA9C /* LifehackWatchApp Watch App */;
+			targetProxy = FE96EA2B2E8999B80088BA9C /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 /* Begin PBXFileReference section */
 	CONAPPREF000000000000000 /* Features/Settings/ConnectedAppsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/ConnectedAppsView.swift; sourceTree = "<group>"; };
 		1AC2ED0CD3CA46A8B7C03D01 /* WatchMainView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WatchMainView.swift; path = "LifehackWatchApp Watch App/WatchMainView.swift"; sourceTree = "<group>"; };
@@ -467,6 +474,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				FE96EA4D2E8999B90088BA9C /* PBXTargetDependency */,
 			);
 			name = LifehackApp;
 			productName = LifehackApp;
