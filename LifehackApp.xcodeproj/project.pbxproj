@@ -87,6 +87,8 @@
 		USERME000000000000001 /* Features/Profile/UserMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = USERME000000000000000 /* Features/Profile/UserMetricsView.swift */; };
 		ZODIAC000000000000001 /* Utils/Zodiac.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZODIAC000000000000000 /* Utils/Zodiac.swift */; };
 		LCFMGR000000000000001 /* Services/LifecycleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = LCFMGR000000000000000 /* Services/LifecycleManager.swift */; };
+		HRVRESBUILDREF00000001 /* Features/HRV/HRVResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVRESFILEREF00000001 /* Features/HRV/HRVResultView.swift */; };
+		NOTIFNAMESBUILDREF00000001 /* Utils/Notifications+Names.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTIFNAMESFILEREF00000001 /* Utils/Notifications+Names.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -213,6 +215,8 @@
 		USERME000000000000000 /* Features/Profile/UserMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/UserMetricsView.swift; sourceTree = "<group>"; };
 		ZODIAC000000000000000 /* Utils/Zodiac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/Zodiac.swift; sourceTree = "<group>"; };
 		LCFMGR000000000000000 /* Services/LifecycleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/LifecycleManager.swift; sourceTree = "<group>"; };
+		HRVRESFILEREF00000001 /* Features/HRV/HRVResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/HRVResultView.swift; sourceTree = "<group>"; };
+		NOTIFNAMESFILEREF00000001 /* Utils/Notifications+Names.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/Notifications+Names.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -391,7 +395,9 @@
 				PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */,
 				PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */,
 				HRVINTRO000000000000000 /* Features/HRV/HRVMeasureIntroView.swift */,
+				HRVRESFILEREF00000001 /* Features/HRV/HRVResultView.swift */,
 				APPICON000000000000000 /* Utils/AppIconManager.swift */,
+				NOTIFNAMESFILEREF00000001 /* Utils/Notifications+Names.swift */,
 				ZODIAC000000000000000 /* Utils/Zodiac.swift */,
 				OAICHAT2000000000000000 /* Services/OpenAIChatService.swift */,
 				OAICLIENT000000000000 /* Services/OpenAIClient.swift */,
@@ -705,6 +711,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				HRVRESBUILDREF00000001 /* Features/HRV/HRVResultView.swift in Sources */,
+				NOTIFNAMESBUILDREF00000001 /* Utils/Notifications+Names.swift in Sources */,
 				LCFMGR000000000000001 /* Services/LifecycleManager.swift in Sources */,
 				HRVINTROSRC000000000000001 /* Features/HRV/HRVMeasureIntroView.swift in Sources */,
 				A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */,

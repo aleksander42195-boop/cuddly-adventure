@@ -39,8 +39,3 @@ final class LifecycleManager {
         AppBootstrap.cleanupActiveOperations()
     }
 }
-
-extension Notification.Name {
-    /// Generic notification broadcast signaling that long-running operations must stop safely.
-    static let appSafeShutdown = Notification.Name("app.safe.shutdown")
-}
