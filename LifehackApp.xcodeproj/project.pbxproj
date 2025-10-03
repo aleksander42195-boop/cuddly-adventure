@@ -18,7 +18,6 @@
 		8BEC48C1C1E288D53F05A1C0 /* Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3F767BE6313CC1893316F50 /* Secrets.swift */; };
 		A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234561 /* DeviceManager.swift */; };
 		A1234567890ABCDEF1234564 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1234567890ABCDEF1234565 /* Assets.xcassets */; };
-		A1234567890ABCDEF123456A /* (null) in Sources */ = {isa = PBXBuildFile; };
 		A1MAIN000000000000000002 /* LifehackApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1MAIN000000000000000001 /* LifehackApp.swift */; };
 		ACTPYR000000000000001 /* Components/ActivityPyramid.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACTPYR000000000000000 /* Components/ActivityPyramid.swift */; };
 		APPGRUP000000000000001 /* Config/AppGroup.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPGRUP000000000000000 /* Config/AppGroup.swift */; };
@@ -64,6 +63,7 @@
 		PPGDLG000000000000001 /* Features/HRV/PPGProcessorDelegateAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */; };
 		PPGPROC000000000000001 /* Features/HRV/PPGProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */; };
 		HRVINTROSRC000000000000001 /* Features/HRV/HRVMeasureIntroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVINTRO000000000000000 /* Features/HRV/HRVMeasureIntroView.swift */; };
+		HRVRESLTSRC000000000000001 /* Features/HRV/HRVResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVRESLT000000000000000 /* Features/HRV/HRVResultView.swift */; };
 		PRIVAC000000000000001 /* Features/Profile/PrivacySettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PRIVAC000000000000000 /* Features/Profile/PrivacySettingsView.swift */; };
 		PROFIV000000000000001 /* Features/Profile/ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PROFIV000000000000000 /* Features/Profile/ProfileView.swift */; };
 		ROOTT000000000000000001 /* RootTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ROOTT000000000000000000 /* RootTabView.swift */; };
@@ -87,7 +87,6 @@
 		USERME000000000000001 /* Features/Profile/UserMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = USERME000000000000000 /* Features/Profile/UserMetricsView.swift */; };
 		ZODIAC000000000000001 /* Utils/Zodiac.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZODIAC000000000000000 /* Utils/Zodiac.swift */; };
 		LCFMGRBUILDREF20251003 /* Services/LifecycleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = LCFMGRFILEREF20251003 /* Services/LifecycleManager.swift */; };
-		HRVRESBUILDREF20251003 /* Features/HRV/HRVResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVRESFILEREF20251003 /* Features/HRV/HRVResultView.swift */; };
 		NOTIFNAMESBUILDREF20251003 /* Utils/Notifications+Names.swift in Sources */ = {isa = PBXBuildFile; fileRef = NOTIFNAMESFILEREF20251003 /* Utils/Notifications+Names.swift */; };
 /* End PBXBuildFile section */
 
@@ -192,6 +191,7 @@
 		PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessorDelegateAdapter.swift; sourceTree = "<group>"; };
 		PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessor.swift; sourceTree = "<group>"; };
 		HRVINTRO000000000000000 /* Features/HRV/HRVMeasureIntroView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/HRVMeasureIntroView.swift; sourceTree = "<group>"; };
+		HRVRESLT000000000000000 /* Features/HRV/HRVResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/HRVResultView.swift; sourceTree = "<group>"; };
 		PRIVAC000000000000000 /* Features/Profile/PrivacySettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/PrivacySettingsView.swift; sourceTree = "<group>"; };
 		PROFIV000000000000000 /* Features/Profile/ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/ProfileView.swift; sourceTree = "<group>"; };
 		ROOTT000000000000000000 /* RootTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTabView.swift; sourceTree = "<group>"; };
@@ -215,8 +215,7 @@
 		USERME000000000000000 /* Features/Profile/UserMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Profile/UserMetricsView.swift; sourceTree = "<group>"; };
 		ZODIAC000000000000000 /* Utils/Zodiac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/Zodiac.swift; sourceTree = "<group>"; };
 		LCFMGRFILEREF20251003 /* Services/LifecycleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/LifecycleManager.swift; sourceTree = "<group>"; };
-		HRVRESFILEREF20251003 /* Features/HRV/HRVResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/HRVResultView.swift; sourceTree = "<group>"; };
-		NOTIFNAMESFILEREF20251003 /* Utils/Notifications+Names.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/Notifications+Names.swift; sourceTree = "<group>"; };
+		NOTIFNAMESFILEREF20251003 /* Utils/Notifications+Names.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/Notifications+Names.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -395,7 +394,7 @@
 				PPGPROC000000000000000 /* Features/HRV/PPGProcessor.swift */,
 				PPGDLG000000000000000 /* Features/HRV/PPGProcessorDelegateAdapter.swift */,
 				HRVINTRO000000000000000 /* Features/HRV/HRVMeasureIntroView.swift */,
-				HRVRESFILEREF20251003 /* Features/HRV/HRVResultView.swift */,
+				HRVRESLT000000000000000 /* Features/HRV/HRVResultView.swift */,
 				APPICON000000000000000 /* Utils/AppIconManager.swift */,
 				NOTIFNAMESFILEREF20251003 /* Utils/Notifications+Names.swift */,
 				ZODIAC000000000000000 /* Utils/Zodiac.swift */,
@@ -711,12 +710,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				HRVRESBUILDREF20251003 /* Features/HRV/HRVResultView.swift in Sources */,
-				NOTIFNAMESBUILDREF20251003 /* Utils/Notifications+Names.swift in Sources */,
 				LCFMGRBUILDREF20251003 /* Services/LifecycleManager.swift in Sources */,
+				NOTIFNAMESBUILDREF20251003 /* Utils/Notifications+Names.swift in Sources */,
 				HRVINTROSRC000000000000001 /* Features/HRV/HRVMeasureIntroView.swift in Sources */,
+				HRVRESLTSRC000000000000001 /* Features/HRV/HRVResultView.swift in Sources */,
 				A1234567890ABCDEF1234560 /* DeviceManager.swift in Sources */,
-				A1234567890ABCDEF123456A /* (null) in Sources */,
 				A1MAIN000000000000000002 /* LifehackApp.swift in Sources */,
 				COACH000000000000000001 /* Models/CoachEngineManager.swift in Sources */,
 				THEME000000000000000001 /* AppTheme.swift in Sources */,
