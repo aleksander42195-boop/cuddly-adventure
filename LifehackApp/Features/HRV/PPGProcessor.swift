@@ -26,7 +26,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
 
     // Config
     private let sampleRate: Double = 30.0 // approx; depends on device
-    private let windowSeconds: Double = 45 // sliding window for SDNN
+    private let windowSeconds: Double = 180 // sliding window for SDNN (3 minutes)
     private let warmupSeconds: Double = 8
 
     // Band-pass filter params (~0.7–3.5 Hz)
@@ -36,6 +36,9 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private var hpXPrev: Double = 0
     private var lpY: Double = 0
     private var cameraDevice: AVCaptureDevice?
+
+    // Expose session for preview rendering
+    var captureSession: AVCaptureSession { session }
 
     func start() throws {
         session.beginConfiguration()

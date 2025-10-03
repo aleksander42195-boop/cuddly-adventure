@@ -6,21 +6,21 @@ struct HRVMeasureIntroView: View {
     @State private var navigateToMeasure = false
     @State private var showDeniedAlert = false
 
-    private let measurementSeconds: Int = 45
+    private let measurementSeconds: Int = 180
 
     var body: some View {
         NavigationStack {
             VStack(spacing: AppTheme.spacing) {
                 VStack(spacing: 8) {
                     Text("Measure HRV with Camera").font(.title2).bold()
-                    Text("Hold your fingertip gently over the rear camera and flash. Keep still and relaxed. The measurement takes about \(measurementSeconds) seconds.")
+                    Text("Cover the rear camera and flash with three or more fingertips. Keep still and relaxed. The measurement takes about \(measurementSeconds/60) minutes for higher accuracy.")
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.secondary)
                 }
 
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Wash and warm your hands for good blood flow", systemImage: "drop.fill")
-                    Label("Cover the camera and flash with your fingertip", systemImage: "camera.fill")
+                    Label("Use 3+ fingers to fully cover the camera and flash", systemImage: "camera.fill")
                     Label("Don't press too hard; keep your hand still", systemImage: "hand.raised.fill")
                     Label("Sit and breathe normally during the test", systemImage: "lungs.fill")
                 }

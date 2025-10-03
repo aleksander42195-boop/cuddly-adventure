@@ -20,7 +20,7 @@ struct HRVCameraExplanationView: View {
         ),
         ExplanationStep(
             title: "Camera Setup",
-            description: "Gently place your fingertip over the rear camera lens. Make sure your finger covers the camera completely but don't press too hard.",
+            description: "Cover the rear camera and flash with three or more fingertips. Ensure full coverage but don't press too hard.",
             icon: "camera.fill",
             color: .blue
         ),
@@ -32,7 +32,7 @@ struct HRVCameraExplanationView: View {
         ),
         ExplanationStep(
             title: "Measure Time",
-            description: "Keep measuring for at least 60 seconds for accurate results. The app will calculate your heart rate and SDNN (HRV metric).",
+            description: "Keep measuring for about 3 minutes for best accuracy. The app will calculate your heart rate and SDNN (HRV metric).",
             icon: "timer",
             color: .green
         )

@@ -8,6 +8,8 @@ struct HRVCameraView: View {
     @State private var currentHR: Double = 0
     @State private var currentSDNN: Double = 0
     @State private var isRunning = false
+    @State private var remainingSeconds: Int = 180
+    @State private var timer: Timer? = nil
     @AppStorage("ppgTorchEnabled") private var torchEnabled: Bool = true
 
     var body: some View {
@@ -15,9 +17,15 @@ struct HRVCameraView: View {
             VStack(spacing: AppTheme.spacing) {
                 Text("HRV via Camera")
                     .font(.title2).bold()
-                Text("Place your fingertip gently over the camera lens and keep still. We’ll analyze PPG to estimate HRV.")
+                Text("Place three or more fingertips over the rear camera and flash, and keep still. We’ll analyze PPG to estimate HRV.")
                     .multilineTextAlignment(.center)
                     .foregroundStyle(.secondary)
+
+                CameraPreview(session: ppg.captureSession)
+                    .frame(height: 160)
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.white.opacity(0.15), lineWidth: 1))
+                    .accessibilityLabel("Live camera preview")
 
                 signalView
                     .frame(height: 140)
@@ -29,6 +37,16 @@ struct HRVCameraView: View {
                 }
                 .accessibilityElement(children: .ignore)
                 .accessibilityLabel("Heart rate \(Int(currentHR)) beats per minute. SDNN \(Int(currentSDNN)) milliseconds.")
+
+                if isRunning {
+                    Text("Time left: \(timeString(remainingSeconds))")
+                        .font(.footnote.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("Measurement duration: 3:00")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
 
                 Spacer(minLength: 8)
                 HStack(spacing: 12) {
@@ -47,7 +65,7 @@ struct HRVCameraView: View {
             .navigationBarTitleDisplayMode(.inline)
             .background(AppTheme.background.ignoresSafeArea())
             .onAppear { startIfNeeded() }
-            .onDisappear { ppg.stop() }
+            .onDisappear { ppg.stop(); timer?.invalidate(); timer = nil }
         }
     }
 
@@ -57,6 +75,7 @@ struct HRVCameraView: View {
         do {
             try ppg.start()
             isRunning = true
+            startAutoStopTimer()
         } catch {
             // ignore
         }
@@ -64,14 +83,14 @@ struct HRVCameraView: View {
 
     private func toggleCapture() {
         if isRunning {
-            ppg.stop(); isRunning = false
+            ppg.stop(); isRunning = false; timer?.invalidate(); timer = nil; remainingSeconds = 180
         } else {
             startIfNeeded()
         }
     }
 
     private func stopAndClose() {
-        ppg.stop(); isRunning = false; dismiss()
+        ppg.stop(); isRunning = false; timer?.invalidate(); timer = nil; remainingSeconds = 180; dismiss()
     }
 
     private var delegate: PPGProcessorDelegateAdapter { .init(
@@ -117,6 +136,48 @@ struct HRVCameraView: View {
                 .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.white.opacity(0.15), lineWidth: 1))
         )
     }
+
+    private func startAutoStopTimer() {
+        timer?.invalidate()
+        remainingSeconds = 180
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            if remainingSeconds > 0 {
+                remainingSeconds -= 1
+            }
+            if remainingSeconds == 0 {
+                timer?.invalidate(); timer = nil
+                ppg.stop(); isRunning = false
+            }
+        }
+        RunLoop.main.add(timer!, forMode: .common)
+    }
+
+    private func timeString(_ seconds: Int) -> String {
+        let m = seconds / 60
+        let s = seconds % 60
+        return String(format: "%d:%02d", m, s)
+    }
 }
 
 #Preview { HRVCameraView() }
+
+// MARK: - Camera Preview Layer Wrapper
+private struct CameraPreview: UIViewRepresentable {
+    let session: AVCaptureSession
+
+    func makeUIView(context: Context) -> PreviewView {
+        let v = PreviewView()
+        v.videoPreviewLayer.session = session
+        v.videoPreviewLayer.videoGravity = .resizeAspectFill
+        return v
+    }
+
+    func updateUIView(_ uiView: PreviewView, context: Context) {
+        uiView.videoPreviewLayer.session = session
+    }
+
+    final class PreviewView: UIView {
+        override static var layerClass: AnyClass { AVCaptureVideoPreviewLayer.self }
+        var videoPreviewLayer: AVCaptureVideoPreviewLayer { layer as! AVCaptureVideoPreviewLayer }
+    }
+}
