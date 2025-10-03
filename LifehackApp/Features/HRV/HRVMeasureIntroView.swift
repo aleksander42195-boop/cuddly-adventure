@@ -30,8 +30,7 @@ struct HRVMeasureIntroView: View {
 
                 Spacer(minLength: 8)
 
-                NavigationLink(destination: HRVCameraView(), isActive: $navigateToMeasure) { EmptyView() }
-                    .hidden()
+                // Push HRVCameraView using modern NavigationStack API without deprecated isActive link
 
                 Button {
                     requestCameraPermissionThenNavigate()
@@ -48,6 +47,9 @@ struct HRVMeasureIntroView: View {
             .navigationTitle("HRV Camera")
             .navigationBarTitleDisplayMode(.inline)
             .background(AppTheme.background.ignoresSafeArea())
+            .navigationDestination(isPresented: $navigateToMeasure) {
+                HRVCameraView()
+            }
             .alert("Camera Access Needed", isPresented: $showDeniedAlert) {
                 Button("Open Settings") {
                     if let url = URL(string: UIApplication.openSettingsURLString) {

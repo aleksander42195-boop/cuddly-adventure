@@ -1,14 +1,26 @@
 {
   "images": [
-    {
-      "size": "1024x1024",
-      "idiom": "watch-marketing",
-      "filename": "watch_marketing_1024x1024@1x.png",
-      "scale": "1x"
-    }
+    { "size": "24x24",  "idiom": "watch", "scale": "2x", "role": "notificationCenter", "subtype": "38mm", "filename": "notificationCenter_38mm_48x48@2x.png" },
+    { "size": "27.5x27.5", "idiom": "watch", "scale": "2x", "role": "notificationCenter", "subtype": "42mm", "filename": "notificationCenter_42mm_55x55@2x.png" },
+
+    { "size": "29x29",  "idiom": "watch", "scale": "2x", "role": "companionSettings", "filename": "companionSettings_58x58@2x.png" },
+    { "size": "29x29",  "idiom": "watch", "scale": "3x", "role": "companionSettings", "filename": "companionSettings_87x87@3x.png" },
+
+    { "size": "40x40",  "idiom": "watch", "scale": "2x", "role": "appLauncher", "subtype": "38mm", "filename": "appLauncher_38mm_80x80@2x.png" },
+    { "size": "44x44",  "idiom": "watch", "scale": "2x", "role": "appLauncher", "subtype": "40mm", "filename": "appLauncher_40mm_88x88@2x.png" },
+    { "size": "46x46",  "idiom": "watch", "scale": "2x", "role": "appLauncher", "subtype": "41mm", "filename": "appLauncher_41mm_92x92@2x.png" },
+    { "size": "50x50",  "idiom": "watch", "scale": "2x", "role": "appLauncher", "subtype": "44mm", "filename": "appLauncher_44mm_100x100@2x.png" },
+    { "size": "51x51",  "idiom": "watch", "scale": "2x", "role": "appLauncher", "subtype": "45mm", "filename": "appLauncher_45mm_102x102@2x.png" },
+    { "size": "54x54",  "idiom": "watch", "scale": "2x", "role": "appLauncher", "subtype": "49mm", "filename": "appLauncher_49mm_108x108@2x.png" },
+
+    { "size": "86x86",  "idiom": "watch", "scale": "2x", "role": "quickLook", "subtype": "38mm", "filename": "quickLook_38mm_172x172@2x.png" },
+    { "size": "98x98",  "idiom": "watch", "scale": "2x", "role": "quickLook", "subtype": "42mm", "filename": "quickLook_42mm_196x196@2x.png" },
+    { "size": "108x108", "idiom": "watch", "scale": "2x", "role": "quickLook", "subtype": "44mm", "filename": "quickLook_44mm_216x216@2x.png" },
+    { "size": "117x117", "idiom": "watch", "scale": "2x", "role": "quickLook", "subtype": "45mm", "filename": "quickLook_45mm_234x234@2x.png" },
+    { "size": "129x129", "idiom": "watch", "scale": "2x", "role": "quickLook", "subtype": "49mm", "filename": "quickLook_49mm_258x258@2x.png" },
+
+    { "size": "1024x1024", "idiom": "watch-marketing", "filename": "watch_marketing_1024x1024@1x.png", "scale": "1x" }
   ],
   "info": { "version": 1, "author": "xcode" },
-  "properties": {
-    "pre-rendered": false
-  }
+  "properties": { "pre-rendered": false }
 }
