@@ -108,7 +108,8 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
 
     func setTorch(enabled: Bool) {
         guard let device = cameraDevice, device.hasTorch else { return }
-        Self.logger.notice("PPG torch set to \(enabled ? \"ON\" : \"OFF\", privacy: .public)")
+    let torchState = enabled ? "ON" : "OFF"
+    Self.logger.notice("PPG torch set to \(torchState, privacy: .public)")
         try? device.lockForConfiguration()
         defer { device.unlockForConfiguration() }
         if enabled {
