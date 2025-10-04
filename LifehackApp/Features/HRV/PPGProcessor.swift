@@ -28,9 +28,11 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private var filteredSamples: [Double] = []
     private var timestamps: [Double] = []
     private var lastSDNN: Double = 0
+    private var lastComputeStamp: CFTimeInterval = 0
+    private let computeInterval: CFTimeInterval = 0.25 // run HR/SDNN detection at most 4 Hz
 
     // Config
-    private let sampleRate: Double = 30.0 // approx; depends on device
+    private let sampleRate: Double = 20.0 // target; we cap device FPS to reduce load
     private let windowSeconds: Double = 180 // sliding window for SDNN (3 minutes)
     private let warmupSeconds: Double = 8
 
@@ -69,9 +71,10 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             // Prefer luma-only and cap frame rate to reduce memory pressure
             if let dev = self.cameraDevice {
                 try? dev.lockForConfiguration()
-                if dev.activeVideoMinFrameDuration != CMTime(value: 1, timescale: 30) {
-                    dev.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 30)
-                    dev.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 30)
+                // Cap FPS to ~20 to avoid buffer pressure
+                if dev.activeVideoMinFrameDuration != CMTime(value: 1, timescale: 20) {
+                    dev.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 20)
+                    dev.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 20)
                 }
                 dev.unlockForConfiguration()
             }
@@ -163,12 +166,12 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             guard let base = CVPixelBufferGetBaseAddressOfPlane(pb, 0) else { return }
             let bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pb, 0)
 
-            // Central 40% ROI, sample every 4th pixel in x/y to reduce work ~16x
-            let roiW = width * 2 / 5
-            let roiH = height * 2 / 5
+            // Central ~30% ROI, sample every 6th pixel in x/y to reduce work further
+            let roiW = max(1, width * 3 / 10)
+            let roiH = max(1, height * 3 / 10)
             let startX = (width - roiW) / 2
             let startY = (height - roiH) / 2
-            let step = 4
+            let step = 6
 
             var sum: UInt64 = 0
             var count: Int = 0
@@ -193,16 +196,36 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             rawSamples.append(sample)
             filteredSamples.append(band)
             timestamps.append(t)
-            dropOldSamples(olderThan: t - windowSeconds)
+            // Bound arrays by trimming occasionally (avoid per-frame O(n) removeFirst)
+            let maxSamples = Int(sampleRate * 200) // keep ~10 seconds extra headroom beyond target window
+            if filteredSamples.count > maxSamples {
+                let drop = filteredSamples.count - maxSamples
+                filteredSamples.removeFirst(drop)
+                rawSamples.removeFirst(min(drop, rawSamples.count))
+                timestamps.removeFirst(min(drop, timestamps.count))
+            }
 
-            // Use filteredSamples for HR/RR estimation
-            let filtered = filteredSamples
-
-            // Peak detection with adaptive thresholds
-            let (rr, hr) = detectRRAndHR(filtered: filtered, times: timestamps, minRR: 0.3, maxRR: 2.0)
+            // Use filteredSamples for HR/RR estimation, but compute at most 4 Hz and only on a recent window
+            var rr: [Double] = []
+            var hr: Double = 0
+            let nowStamp = CACurrentMediaTime()
+            if nowStamp - lastComputeStamp >= computeInterval {
+                lastComputeStamp = nowStamp
+                // Take a recent window (e.g., last 120s) to reduce compute
+                let computeWindow: Double = min(120, windowSeconds)
+                let tLast = timestamps.last ?? t
+                var startIdx = 0
+                // Find first index within window by scanning backwards (cheap at these sizes)
+                for i in (0..<(timestamps.count)).reversed() {
+                    if tLast - timestamps[i] <= computeWindow { startIdx = i } else { break }
+                }
+                let filteredSlice = filteredSamples[startIdx..<filteredSamples.count]
+                let timeSlice = timestamps[startIdx..<timestamps.count]
+                (rr, hr) = detectRRAndHR(filtered: filteredSlice, times: timeSlice, minRR: 0.3, maxRR: 2.0)
+            }
 
             // Throttle signal callback to main thread
-            if let last = filtered.last {
+            if let last = filteredSamples.last {
                 let now = CACurrentMediaTime()
                 if now - lastSignalDispatch >= signalDispatchInterval {
                     lastSignalDispatch = now
@@ -215,10 +238,12 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                 DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didUpdateHeartRate: hr) }
             }
 
-            let sdnn = sdnnMs(rr)
-            if sdnn > 0, duration >= warmupSeconds, abs(sdnn - lastSDNN) > 1 {
-                lastSDNN = sdnn
-                DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didComputeSDNN: sdnn) }
+            if !rr.isEmpty {
+                let sdnn = sdnnMs(rr)
+                if sdnn > 0, duration >= warmupSeconds, abs(sdnn - lastSDNN) > 1 {
+                    lastSDNN = sdnn
+                    DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didComputeSDNN: sdnn) }
+                }
             }
         }
     }
@@ -246,11 +271,11 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         return lpY
     }
 
-    private func detectRRAndHR(filtered: [Double], times: [Double], minRR: Double, maxRR: Double) -> ([Double], Double) {
+    private func detectRRAndHR(filtered: ArraySlice<Double>, times: ArraySlice<Double>, minRR: Double, maxRR: Double) -> ([Double], Double) {
         guard filtered.count == times.count, filtered.count > 5 else { return ([], 0) }
         // Adaptive threshold based on recent window statistics
         let window = min(Int(sampleRate * 3.0), filtered.count)
-        let recent = Array(filtered.suffix(window))
+        let recent = filtered.suffix(window)
         let mean = recent.reduce(0, +) / Double(recent.count)
         let variance = recent.reduce(0) { $0 + pow($1 - mean, 2) } / Double(recent.count)
         let std = max(1e-6, sqrt(variance))
@@ -262,21 +287,22 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         // Ensure we have enough samples for safe indexing
         guard filtered.count >= 5 else { return ([], 0) }
         
-        for i in 2..<(filtered.count - 2) {
+        let base = filtered.startIndex
+        for i in (base+2)..<(filtered.endIndex - 2) {
             let y0 = filtered[i - 1]
             let y1 = filtered[i]
             let y2 = filtered[i + 1]
             // Local maximum + above dynamic threshold
             if y1 > y0 && y1 > y2 && y1 > threshold {
-                if peaks.last.map({ i - $0 > refractorySamples }) ?? true {
-                    peaks.append(i)
+                if peaks.last.map({ (i - (base + $0)) > refractorySamples }) ?? true {
+                    peaks.append(i - base)
                 }
             }
         }
         guard peaks.count >= 2 else { return ([], 0) }
         var rr: [Double] = []
         for i in 1..<peaks.count {
-            let dt = times[peaks[i]] - times[peaks[i - 1]]
+            let dt = times[base + peaks[i]] - times[base + peaks[i - 1]]
             if dt >= minRR && dt <= maxRR { rr.append(dt) }
         }
         // Heart rate from median of last few RR for stability

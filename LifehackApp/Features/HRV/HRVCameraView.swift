@@ -21,6 +21,7 @@ struct HRVCameraView: View {
     @State private var startedAt: Date? = nil
     @State private var showCameraError: Bool = false
     @State private var cameraErrorMessage: String = ""
+    @State private var startWatchdog: Timer? = nil
     @AppStorage("ppgTorchEnabled") private var torchEnabled: Bool = true
     // Throttle signal drawing to reduce SwiftUI re-render load
     @State private var lastSignalStamp: CFTimeInterval = 0
@@ -85,7 +86,7 @@ struct HRVCameraView: View {
             .background(AppTheme.background.ignoresSafeArea())
             // Do not auto-start: starting camera on appear can lag the navigation transition
             .onAppear { }
-            .onDisappear { ppg.stop(); timer?.invalidate(); timer = nil }
+            .onDisappear { ppg.stop(); timer?.invalidate(); timer = nil; startWatchdog?.invalidate(); startWatchdog = nil }
             .onReceive(NotificationCenter.default.publisher(for: .hrvStopMeasurement)) { _ in
                 // Stop or complete the measurement when app is backgrounding/interrupting
                 Self.logger.notice("Received .hrvStopMeasurement; isRunning=\(self.isRunning, privacy: .public)")
@@ -133,6 +134,19 @@ struct HRVCameraView: View {
             startedAt = Date()
             Self.logger.notice("HRV session started at \(self.startedAt?.timeIntervalSince1970 ?? 0, privacy: .public); torchEnabled=\(self.torchEnabled, privacy: .public)")
             startAutoStopTimer()
+            // Watchdog: if frames don't arrive promptly, show an error instead of freezing
+            startWatchdog?.invalidate()
+            startWatchdog = Timer.scheduledTimer(withTimeInterval: 8.0, repeats: false) { _ in
+                if !showResult && isRunning && signal.isEmpty {
+                    Self.logger.error("HRV watchdog: no frames within 8s; stopping session")
+                    ppg.stop(); isRunning = false
+                    timer?.invalidate(); timer = nil
+                    remainingSeconds = 180
+                    cameraErrorMessage = "Camera stream didn't start. Please ensure camera and flashlight access are allowed, then try again."
+                    showCameraError = true
+                }
+            }
+            if let wd = startWatchdog { RunLoop.main.add(wd, forMode: .common) }
         } catch {
             cameraErrorMessage = (error as NSError).localizedDescription
             showCameraError = true
@@ -152,7 +166,7 @@ struct HRVCameraView: View {
 
     private func stopAndClose() {
         Self.logger.notice("HRV stopAndClose invoked")
-        ppg.stop(); isRunning = false; timer?.invalidate(); timer = nil; remainingSeconds = 180; dismiss()
+        ppg.stop(); isRunning = false; timer?.invalidate(); timer = nil; remainingSeconds = 180; startWatchdog?.invalidate(); startWatchdog = nil; dismiss()
     }
 
     private func dismissIfStopped() {
@@ -166,6 +180,7 @@ struct HRVCameraView: View {
                 lastSignalStamp = now
                 signal.append(val)
                 if signal.count > 300 { signal.removeFirst(signal.count - 300) }
+                startWatchdog?.invalidate(); startWatchdog = nil
             }
         },
         onHR: { bpm in
@@ -193,6 +208,7 @@ struct HRVCameraView: View {
                 startAutoStopTimer()
                 Self.logger.notice("HRV timer started on first stream frame; torchEnabled=\(self.torchEnabled, privacy: .public)")
             }
+            startWatchdog?.invalidate(); startWatchdog = nil
         }
     ) }
 
