@@ -1,8 +1,10 @@
 import SwiftUI
 import AVFoundation
 import Combine
+import OSLog
 
 struct HRVCameraView: View {
+    private static let logger = Logger(subsystem: "com.lifehack.LifehackApp", category: "HRV")
     @Environment(\.dismiss) private var dismiss
     @State private var ppg = PPGProcessor()
     @State private var signal: [Double] = []
@@ -76,18 +78,22 @@ struct HRVCameraView: View {
             .onDisappear { ppg.stop(); timer?.invalidate(); timer = nil }
             .onReceive(NotificationCenter.default.publisher(for: .hrvStopMeasurement)) { _ in
                 // Stop or complete the measurement when app is backgrounding/interrupting
+                Self.logger.notice("Received .hrvStopMeasurement; isRunning=\(self.isRunning, privacy: .public)")
                 if isRunning {
                     completeMeasurement()
                 } else {
+                    Self.logger.notice("Ignoring .hrvStopMeasurement; no active session")
                     ppg.stop()
                     timer?.invalidate(); timer = nil
                     remainingSeconds = 180
                 }
             }
             .onReceive(NotificationCenter.default.publisher(for: .appSafeShutdown)) { _ in
+                Self.logger.notice("Received .appSafeShutdown; isRunning=\(self.isRunning, privacy: .public)")
                 if isRunning {
                     completeMeasurement()
                 } else {
+                    Self.logger.notice("Ignoring .appSafeShutdown; no active session")
                     ppg.stop()
                     timer?.invalidate(); timer = nil
                     remainingSeconds = 180
@@ -108,28 +114,34 @@ struct HRVCameraView: View {
 
     private func startIfNeeded() {
         guard !isRunning else { return }
+        Self.logger.notice("HRV startIfNeeded invoked")
         ppg.delegate = delegate
         do {
             try ppg.start()
             isRunning = true
             hrSamples.removeAll(); sdnnSamples.removeAll()
             startedAt = Date()
+            Self.logger.notice("HRV session started at \(self.startedAt?.timeIntervalSince1970 ?? 0, privacy: .public); torchEnabled=\(self.torchEnabled, privacy: .public)")
             startAutoStopTimer()
         } catch {
             cameraErrorMessage = (error as NSError).localizedDescription
             showCameraError = true
+            Self.logger.error("HRV start failed: \(self.cameraErrorMessage, privacy: .public)")
         }
     }
 
     private func toggleCapture() {
         if isRunning {
+            Self.logger.notice("HRV manual stop requested")
             completeMeasurement()
         } else {
+            Self.logger.notice("HRV manual start requested")
             startIfNeeded()
         }
     }
 
     private func stopAndClose() {
+        Self.logger.notice("HRV stopAndClose invoked")
         ppg.stop(); isRunning = false; timer?.invalidate(); timer = nil; remainingSeconds = 180; dismiss()
     }
 
@@ -191,6 +203,7 @@ struct HRVCameraView: View {
             if remainingSeconds == 0 { completeMeasurement() }
         }
         RunLoop.main.add(timer!, forMode: .common)
+        Self.logger.notice("HRV countdown timer started: 180s")
     }
 
     private func timeString(_ seconds: Int) -> String {
@@ -200,12 +213,14 @@ struct HRVCameraView: View {
     }
 
     private func completeMeasurement() {
+        let duration = 180 - max(0, remainingSeconds)
+        Self.logger.notice("HRV completeMeasurement invoked; elapsed=\(duration, privacy: .public)s")
         ppg.stop(); isRunning = false
         timer?.invalidate(); timer = nil
-        let duration = 180 - max(0, remainingSeconds)
         remainingSeconds = 180
         let avgHR = hrSamples.isEmpty ? 0 : (hrSamples.reduce(0, +) / Double(hrSamples.count))
         let avgSDNN = sdnnSamples.isEmpty ? 0 : (sdnnSamples.reduce(0, +) / Double(sdnnSamples.count))
+        Self.logger.notice("HRV results: avgHR=\(avgHR, privacy: .public) bpm, avgSDNN=\(avgSDNN, privacy: .public) ms, hrSamples=\(self.hrSamples.count, privacy: .public), sdnnSamples=\(self.sdnnSamples.count, privacy: .public)")
         result = HRVResult(
             date: startedAt ?? Date(),
             durationSeconds: max(1, duration),

@@ -2,6 +2,7 @@ import Foundation
 import AVFoundation
 import CoreImage
 import Accelerate
+import OSLog
 
 protocol PPGProcessorDelegate: AnyObject {
     func ppgProcessor(_ p: PPGProcessor, didUpdateSignal value: Double)
@@ -11,6 +12,7 @@ protocol PPGProcessorDelegate: AnyObject {
 }
 
 final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+    private static let logger = Logger(subsystem: "com.lifehack.LifehackApp", category: "PPG")
     weak var delegate: PPGProcessorDelegate?
 
     private let session = AVCaptureSession()
@@ -51,6 +53,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         cameraDevice = device
         // Configure and start on the processing queue to avoid blocking UI
         queue.async {
+            Self.logger.notice("PPG start: configuring session")
             self.session.beginConfiguration()
             self.session.sessionPreset = .medium
             if self.session.inputs.isEmpty, self.session.canAddInput(input) { self.session.addInput(input) }
@@ -73,6 +76,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             }
             self.session.startRunning()
             self.isRunning = true
+            Self.logger.notice("PPG session running; applying torch state")
             // Apply desired torch after session starts to avoid configuration conflicts
             self.applyTorchState()
         }
@@ -81,6 +85,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     func stop() {
         if !isRunning { return }
         queue.async {
+            Self.logger.notice("PPG stop: stopping session and torch")
             if let device = (self.session.inputs.first as? AVCaptureDeviceInput)?.device, device.hasTorch {
                 try? device.lockForConfiguration()
                 if device.isTorchActive { device.torchMode = .off }
@@ -92,6 +97,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             self.filteredSamples.removeAll()
             self.timestamps.removeAll()
             self.hpY = 0; self.hpXPrev = 0; self.lpY = 0
+            Self.logger.notice("PPG stopped and buffers cleared")
         }
     }
 
@@ -101,6 +107,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
 
     func setTorch(enabled: Bool) {
         guard let device = cameraDevice, device.hasTorch else { return }
+        Self.logger.notice("PPG torch set to \(enabled ? \"ON\" : \"OFF\", privacy: .public)")
         try? device.lockForConfiguration()
         defer { device.unlockForConfiguration() }
         if enabled {
@@ -145,7 +152,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         }
         let mean = Double(sum) / Double(roiW * roiH) / 255.0
 
-        // Invert (blood volume pulse correlates with lower intensity when finger covers lens)
+    // Invert (blood volume pulse correlates with lower intensity when finger covers lens)
         let sample = 1.0 - mean
 
         // Band-pass filter (HP then LP) and append
@@ -159,7 +166,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         let filtered = filteredSamples
 
         // Peak detection with adaptive thresholds
-        let (rr, hr) = detectRRAndHR(filtered: filtered, times: timestamps, minRR: 0.3, maxRR: 2.0)
+    let (rr, hr) = detectRRAndHR(filtered: filtered, times: timestamps, minRR: 0.3, maxRR: 2.0)
 
         if let last = filtered.last { DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didUpdateSignal: last) } }
         let duration = (timestamps.last ?? 0) - (timestamps.first ?? 0)
