@@ -78,9 +78,9 @@ struct LifehackApp: App {
             saveForBackground()
             NotificationCenter.default.post(name: .appSafeShutdown, object: nil)
         case .inactive:
-            print("App became inactive - cleaning up operations")
-            AppBootstrap.cleanupActiveOperations()
-            NotificationCenter.default.post(name: .appSafeShutdown, object: nil)
+            // Transient interruptions (e.g., Control Center) shouldn't force-stop measurements.
+            // Defer to background/terminate for safe shutdowns.
+            break
         case .active:
             print("App became active - restoring state")
             AppBootstrap.restoreAppState()

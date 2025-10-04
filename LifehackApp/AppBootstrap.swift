@@ -50,9 +50,9 @@ enum AppBootstrap {
     }
     
     static func cleanupActiveOperations() {
-        // Cancel any background tasks
-        UIApplication.shared.endBackgroundTask(.invalid)
-        
+        // Cancel any background tasks (no-op placeholder; track and end valid tasks explicitly where started)
+        // NOTE: Do not call endBackgroundTask with .invalid, this can assert/crash.
+
         // Clean up network operations
         URLSession.shared.invalidateAndCancel()
         
