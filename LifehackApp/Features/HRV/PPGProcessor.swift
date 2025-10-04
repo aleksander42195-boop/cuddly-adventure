@@ -168,18 +168,18 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             let roiH = height * 2 / 5
             let startX = (width - roiW) / 2
             let startY = (height - roiH) / 2
-            let stride = 4
+            let step = 4
 
             var sum: UInt64 = 0
             var count: Int = 0
-            for y in stride(from: 0, to: roiH, by: stride) {
+            for y in Swift.stride(from: 0, to: roiH, by: step) {
                 let rowBase = base.advanced(by: (startY + y) * bytesPerRow + startX)
                 let ptr = rowBase.assumingMemoryBound(to: UInt8.self)
                 var x = 0
                 while x < roiW {
                     sum &+= UInt64(ptr[x])
                     count &+= 1
-                    x &+= stride
+                    x &+= step
                 }
             }
             guard count > 0 else { return }
