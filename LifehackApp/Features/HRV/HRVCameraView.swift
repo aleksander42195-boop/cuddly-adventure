@@ -184,7 +184,16 @@ struct HRVCameraView: View {
                 if ms > 0 { sdnnSamples.append(ms) }
             }
         },
-        wantsTorch: { torchEnabled }
+        wantsTorch: { torchEnabled },
+        onStarted: {
+            if !isRunning {
+                isRunning = true
+                hrSamples.removeAll(); sdnnSamples.removeAll();
+                startedAt = Date()
+                startAutoStopTimer()
+                Self.logger.notice("HRV timer started on first stream frame; torchEnabled=\(self.torchEnabled, privacy: .public)")
+            }
+        }
     ) }
 
     private func metric(title: String, value: String) -> some View {

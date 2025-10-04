@@ -3,12 +3,14 @@ import AVFoundation
 import CoreImage
 import Accelerate
 import OSLog
+import QuartzCore
 
 protocol PPGProcessorDelegate: AnyObject {
     func ppgProcessor(_ p: PPGProcessor, didUpdateSignal value: Double)
     func ppgProcessor(_ p: PPGProcessor, didUpdateHeartRate bpm: Double)
     func ppgProcessor(_ p: PPGProcessor, didComputeSDNN ms: Double)
     func ppgProcessorRequiresTorch(_ p: PPGProcessor) -> Bool
+    func ppgProcessorDidStartStreaming(_ p: PPGProcessor)
 }
 
 final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
@@ -39,6 +41,10 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private var hpXPrev: Double = 0
     private var lpY: Double = 0
     private var cameraDevice: AVCaptureDevice?
+    private var lastSignalDispatch: CFTimeInterval = 0
+    private let signalDispatchInterval: CFTimeInterval = 0.1 // 10 Hz max to UI
+    private var didReceiveFirstFrame = false
+    private var startDeadline: DispatchTime?
 
     // Expose session for preview rendering
     var captureSession: AVCaptureSession { session }
@@ -55,10 +61,20 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         queue.async {
             Self.logger.notice("PPG start: configuring session")
             self.session.beginConfiguration()
-            self.session.sessionPreset = .medium
+            // Lower resolution reduces pixel buffer allocations and CPU load
+            self.session.sessionPreset = .low
             if self.session.inputs.isEmpty, self.session.canAddInput(input) { self.session.addInput(input) }
             self.output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_420YpCbCr8BiPlanarFullRange]
             self.output.alwaysDiscardsLateVideoFrames = true
+            // Prefer luma-only and cap frame rate to reduce memory pressure
+            if let dev = self.cameraDevice {
+                try? dev.lockForConfiguration()
+                if dev.activeVideoMinFrameDuration != CMTime(value: 1, timescale: 30) {
+                    dev.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 30)
+                    dev.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 30)
+                }
+                dev.unlockForConfiguration()
+            }
             self.output.setSampleBufferDelegate(self, queue: self.queue)
             if self.session.outputs.isEmpty, self.session.canAddOutput(self.output) { self.session.addOutput(self.output) }
             // Orientation/connection
@@ -77,6 +93,8 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             // Start session on a non-main queue, but ensure we don't block UI
             self.session.startRunning()
             self.isRunning = true
+            self.didReceiveFirstFrame = false
+            self.startDeadline = .now() + .seconds(8)
             Self.logger.notice("PPG session running; applying torch state")
             // Apply desired torch after session starts to avoid configuration conflicts
             self.applyTorchState()
@@ -127,57 +145,81 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
 
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard let pb = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
-        let time = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
-        let t = time.seconds
+        @autoreleasepool {
+            if !didReceiveFirstFrame {
+                didReceiveFirstFrame = true
+                DispatchQueue.main.async { self.delegate?.ppgProcessorDidStartStreaming(self) }
+            }
+            guard let pb = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+            let time = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
+            let t = time.seconds
 
-        // Compute mean intensity from luma plane (Y) in a central ROI
-        CVPixelBufferLockBaseAddress(pb, .readOnly)
-        defer { CVPixelBufferUnlockBaseAddress(pb, .readOnly) }
+            // Compute mean intensity from luma plane (Y) in a central ROI, with subsampling for performance
+            CVPixelBufferLockBaseAddress(pb, .readOnly)
+            defer { CVPixelBufferUnlockBaseAddress(pb, .readOnly) }
 
-        let width = CVPixelBufferGetWidthOfPlane(pb, 0)
-        let height = CVPixelBufferGetHeightOfPlane(pb, 0)
-        guard let base = CVPixelBufferGetBaseAddressOfPlane(pb, 0) else { return }
-        let bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pb, 0)
+            let width = CVPixelBufferGetWidthOfPlane(pb, 0)
+            let height = CVPixelBufferGetHeightOfPlane(pb, 0)
+            guard let base = CVPixelBufferGetBaseAddressOfPlane(pb, 0) else { return }
+            let bytesPerRow = CVPixelBufferGetBytesPerRowOfPlane(pb, 0)
 
-        // Central 40% ROI
-        let roiW = width * 2 / 5
-        let roiH = height * 2 / 5
-        let startX = (width - roiW) / 2
-        let startY = (height - roiH) / 2
+            // Central 40% ROI, sample every 4th pixel in x/y to reduce work ~16x
+            let roiW = width * 2 / 5
+            let roiH = height * 2 / 5
+            let startX = (width - roiW) / 2
+            let startY = (height - roiH) / 2
+            let stride = 4
 
-        var sum: UInt64 = 0
-        for y in 0..<roiH {
-            let row = base.advanced(by: (startY + y) * bytesPerRow + startX)
-            let buf = UnsafeBufferPointer<UInt8>(start: row.assumingMemoryBound(to: UInt8.self), count: roiW)
-            sum += buf.reduce(0) { $0 + UInt64($1) }
-        }
-        let mean = Double(sum) / Double(roiW * roiH) / 255.0
+            var sum: UInt64 = 0
+            var count: Int = 0
+            for y in stride(from: 0, to: roiH, by: stride) {
+                let rowBase = base.advanced(by: (startY + y) * bytesPerRow + startX)
+                let ptr = rowBase.assumingMemoryBound(to: UInt8.self)
+                var x = 0
+                while x < roiW {
+                    sum &+= UInt64(ptr[x])
+                    count &+= 1
+                    x &+= stride
+                }
+            }
+            guard count > 0 else { return }
+            let mean = Double(sum) / Double(count) / 255.0
 
-    // Invert (blood volume pulse correlates with lower intensity when finger covers lens)
-        let sample = 1.0 - mean
+            // Invert (blood volume pulse correlates with lower intensity when finger covers lens)
+            let sample = 1.0 - mean
 
-        // Band-pass filter (HP then LP) and append
-        let band = bandpass(sample)
-        rawSamples.append(sample)
-        filteredSamples.append(band)
-        timestamps.append(t)
-        dropOldSamples(olderThan: t - windowSeconds)
+            // Band-pass filter (HP then LP) and append
+            let band = bandpass(sample)
+            rawSamples.append(sample)
+            filteredSamples.append(band)
+            timestamps.append(t)
+            dropOldSamples(olderThan: t - windowSeconds)
 
-        // Use filteredSamples for HR/RR estimation
-        let filtered = filteredSamples
+            // Use filteredSamples for HR/RR estimation
+            let filtered = filteredSamples
 
-        // Peak detection with adaptive thresholds
-    let (rr, hr) = detectRRAndHR(filtered: filtered, times: timestamps, minRR: 0.3, maxRR: 2.0)
+            // Peak detection with adaptive thresholds
+            let (rr, hr) = detectRRAndHR(filtered: filtered, times: timestamps, minRR: 0.3, maxRR: 2.0)
 
-        if let last = filtered.last { DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didUpdateSignal: last) } }
-        let duration = (timestamps.last ?? 0) - (timestamps.first ?? 0)
-        if hr > 0, duration >= warmupSeconds { DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didUpdateHeartRate: hr) } }
+            // Throttle signal callback to main thread
+            if let last = filtered.last {
+                let now = CACurrentMediaTime()
+                if now - lastSignalDispatch >= signalDispatchInterval {
+                    lastSignalDispatch = now
+                    DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didUpdateSignal: last) }
+                }
+            }
 
-        let sdnn = sdnnMs(rr)
-        if sdnn > 0, duration >= warmupSeconds, abs(sdnn - lastSDNN) > 1 {
-            lastSDNN = sdnn
-            DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didComputeSDNN: sdnn) }
+            let duration = (timestamps.last ?? 0) - (timestamps.first ?? 0)
+            if hr > 0, duration >= warmupSeconds {
+                DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didUpdateHeartRate: hr) }
+            }
+
+            let sdnn = sdnnMs(rr)
+            if sdnn > 0, duration >= warmupSeconds, abs(sdnn - lastSDNN) > 1 {
+                lastSDNN = sdnn
+                DispatchQueue.main.async { self.delegate?.ppgProcessor(self, didComputeSDNN: sdnn) }
+            }
         }
     }
 
