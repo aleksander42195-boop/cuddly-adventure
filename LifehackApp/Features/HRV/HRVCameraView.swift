@@ -16,6 +16,8 @@ struct HRVCameraView: View {
     @State private var showResult: Bool = false
     @State private var result: HRVResult? = nil
     @State private var startedAt: Date? = nil
+    @State private var showCameraError: Bool = false
+    @State private var cameraErrorMessage: String = ""
     @AppStorage("ppgTorchEnabled") private var torchEnabled: Bool = true
 
     var body: some View {
@@ -96,6 +98,11 @@ struct HRVCameraView: View {
                     HRVResultView(result: r, onSave: { saveLocal($0) }, onDone: { showResult = false })
                 }
             }
+            .alert("Camera Error", isPresented: $showCameraError) {
+                Button("OK", role: .cancel) { dismissIfStopped() }
+            } message: {
+                Text(cameraErrorMessage)
+            }
         }
     }
 
@@ -109,7 +116,8 @@ struct HRVCameraView: View {
             startedAt = Date()
             startAutoStopTimer()
         } catch {
-            // ignore
+            cameraErrorMessage = (error as NSError).localizedDescription
+            showCameraError = true
         }
     }
 
@@ -123,6 +131,10 @@ struct HRVCameraView: View {
 
     private func stopAndClose() {
         ppg.stop(); isRunning = false; timer?.invalidate(); timer = nil; remainingSeconds = 180; dismiss()
+    }
+
+    private func dismissIfStopped() {
+        if !isRunning { dismiss() }
     }
 
     private var delegate: PPGProcessorDelegateAdapter { .init(

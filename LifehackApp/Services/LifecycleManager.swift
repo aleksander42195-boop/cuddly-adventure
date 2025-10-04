@@ -20,7 +20,6 @@ final class LifecycleManager {
             self.observers.append(token)
         }
 
-        add(UIApplication.willResignActiveNotification)
         add(UIApplication.didEnterBackgroundNotification)
         add(UIApplication.willTerminateNotification)
     }
@@ -32,10 +31,8 @@ final class LifecycleManager {
     }
 
     private func broadcastSafeShutdown() {
-        // Notify feature-specific listeners first (legacy compatibility), then generic safe-shutdown.
-        NotificationCenter.default.post(name: .hrvStopMeasurement, object: nil)
+        // Post a single generic safe-shutdown event; avoid feature-specific stops unless explicitly requested.
         NotificationCenter.default.post(name: .appSafeShutdown, object: nil)
-        // Give shared app bootstrap a chance to clean up as well.
         AppBootstrap.cleanupActiveOperations()
     }
 }

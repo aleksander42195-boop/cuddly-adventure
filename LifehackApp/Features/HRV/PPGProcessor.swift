@@ -65,9 +65,16 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                 self.output.connections.first?.videoOrientation = .portrait
             }
             self.session.commitConfiguration()
-            self.applyTorchState()
+            // Torch configuration requires locking the device; do it safely on queue
+            if let dev = self.cameraDevice, dev.hasTorch {
+                try? dev.lockForConfiguration()
+                if dev.isTorchActive { dev.torchMode = .off }
+                dev.unlockForConfiguration()
+            }
             self.session.startRunning()
             self.isRunning = true
+            // Apply desired torch after session starts to avoid configuration conflicts
+            self.applyTorchState()
         }
     }
 
