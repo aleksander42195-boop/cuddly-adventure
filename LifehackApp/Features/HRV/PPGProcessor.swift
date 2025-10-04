@@ -145,7 +145,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
 
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        @autoreleasepool {
+        autoreleasepool {
             if !didReceiveFirstFrame {
                 didReceiveFirstFrame = true
                 DispatchQueue.main.async { self.delegate?.ppgProcessorDidStartStreaming(self) }

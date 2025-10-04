@@ -26,7 +26,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 APPICON = ROOT / "LifehackApp/Assets.xcassets/AppIcon.appiconset"
 APPICON_DARK = ROOT / "LifehackApp/Assets.xcassets/AppIcon-Dark.appiconset"
-WATCH_APPICON = ROOT / "LifehackWatchApp Watch App/Assets.xcassets/AppIcon.appiconset"
+WATCH_APPICON = ROOT / "WatchApp/Assets.xcassets/AppIcon.appiconset"
+WATCH_APPICON_ALT = ROOT / "LifehackWatchApp Watch App/Assets.xcassets/AppIcon.appiconset"
 
 
 def run(cmd):
@@ -80,7 +81,14 @@ def main():
     if args.dark:
         generate_for_set(args.dark, APPICON_DARK / "Contents.json")
     if args.watch:
-        generate_for_set(args.watch, WATCH_APPICON / "Contents.json")
+        # Generate into primary WatchApp asset catalog if it exists
+        target1 = WATCH_APPICON / "Contents.json"
+        if target1.exists():
+            generate_for_set(args.watch, target1)
+        # Also generate into the watch asset catalog actually used by the Xcode target, if present
+        target2 = WATCH_APPICON_ALT / "Contents.json"
+        if target2.exists():
+            generate_for_set(args.watch, target2)
 
     if not args.primary and not args.dark and not args.watch:
         ap.error("Provide at least one of --primary, --dark or --watch")
