@@ -1,6 +1,7 @@
 import SwiftUI
 import AVFoundation
 import Combine
+import QuartzCore
 import OSLog
 
 struct HRVCameraView: View {
@@ -21,6 +22,14 @@ struct HRVCameraView: View {
     @State private var showCameraError: Bool = false
     @State private var cameraErrorMessage: String = ""
     @AppStorage("ppgTorchEnabled") private var torchEnabled: Bool = true
+    // Throttle signal drawing to reduce SwiftUI re-render load
+    @State private var lastSignalStamp: CFTimeInterval = 0
+    private let signalUpdateInterval: CFTimeInterval = 0.1 // 10 Hz
+    // Throttle metric label updates to reduce UI churn
+    @State private var lastHRStamp: CFTimeInterval = 0
+    @State private var lastSDNNStamp: CFTimeInterval = 0
+    private let hrUpdateInterval: CFTimeInterval = 0.5
+    private let sdnnUpdateInterval: CFTimeInterval = 0.5
 
     var body: some View {
         NavigationStack {
@@ -74,7 +83,8 @@ struct HRVCameraView: View {
             .navigationTitle("Camera HRV")
             .navigationBarTitleDisplayMode(.inline)
             .background(AppTheme.background.ignoresSafeArea())
-            .onAppear { startIfNeeded() }
+            // Do not auto-start: starting camera on appear can lag the navigation transition
+            .onAppear { }
             .onDisappear { ppg.stop(); timer?.invalidate(); timer = nil }
             .onReceive(NotificationCenter.default.publisher(for: .hrvStopMeasurement)) { _ in
                 // Stop or complete the measurement when app is backgrounding/interrupting
@@ -151,11 +161,29 @@ struct HRVCameraView: View {
 
     private var delegate: PPGProcessorDelegateAdapter { .init(
         onSignal: { val in
-            signal.append(val)
-            if signal.count > 300 { signal.removeFirst(signal.count - 300) }
+            let now = CACurrentMediaTime()
+            if now - lastSignalStamp >= signalUpdateInterval {
+                lastSignalStamp = now
+                signal.append(val)
+                if signal.count > 300 { signal.removeFirst(signal.count - 300) }
+            }
         },
-        onHR: { bpm in currentHR = bpm; if bpm > 0 { hrSamples.append(bpm) } },
-        onSDNN: { ms in currentSDNN = ms; if ms > 0 { sdnnSamples.append(ms) } },
+        onHR: { bpm in
+            let now = CACurrentMediaTime()
+            if now - lastHRStamp >= hrUpdateInterval {
+                lastHRStamp = now
+                currentHR = bpm
+                if bpm > 0 { hrSamples.append(bpm) }
+            }
+        },
+        onSDNN: { ms in
+            let now = CACurrentMediaTime()
+            if now - lastSDNNStamp >= sdnnUpdateInterval {
+                lastSDNNStamp = now
+                currentSDNN = ms
+                if ms > 0 { sdnnSamples.append(ms) }
+            }
+        },
         wantsTorch: { torchEnabled }
     ) }
 
@@ -259,7 +287,9 @@ private struct CameraPreview: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: PreviewView, context: Context) {
-        uiView.videoPreviewLayer.session = session
+        if uiView.videoPreviewLayer.session !== session {
+            uiView.videoPreviewLayer.session = session
+        }
     }
 
     final class PreviewView: UIView {

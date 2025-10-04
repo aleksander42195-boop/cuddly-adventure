@@ -74,6 +74,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                 if dev.isTorchActive { dev.torchMode = .off }
                 dev.unlockForConfiguration()
             }
+            // Start session on a non-main queue, but ensure we don't block UI
             self.session.startRunning()
             self.isRunning = true
             Self.logger.notice("PPG session running; applying torch state")
