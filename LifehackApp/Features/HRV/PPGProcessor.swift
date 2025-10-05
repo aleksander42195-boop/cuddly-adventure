@@ -48,6 +48,8 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private var didReceiveFirstFrame = false
     private var startDeadline: DispatchTime?
     private var thermalObserver: NSObjectProtocol?
+    private var sessionObserver: NSObjectProtocol?
+    private var interruptionObserver: NSObjectProtocol?
 
     // Expose session for preview rendering
     var captureSession: AVCaptureSession { session }
@@ -113,10 +115,22 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             self.isRunning = true
             self.didReceiveFirstFrame = false
             self.startDeadline = .now() + .seconds(8)
-            Self.logger.notice("PPG session running; applying torch state")
-            // Apply desired torch after a short delay to avoid configuration conflicts and thermal spikes
-            self.queue.asyncAfter(deadline: .now() + .milliseconds(500)) {
-                self.applyTorchState()
+            Self.logger.notice("PPG session running; awaiting first frame before torch")
+            // Observe runtime errors to notify UI promptly
+            self.sessionObserver = NotificationCenter.default.addObserver(forName: .AVCaptureSessionRuntimeError, object: self.session, queue: nil) { [weak self] n in
+                guard let self, let err = n.userInfo?[AVCaptureSessionErrorKey] as? NSError else { return }
+                Self.logger.error("AVCaptureSession runtime error: \(err.localizedDescription, privacy: .public)")
+                // Stop to allow UI to restart
+                self.stop()
+            }
+            // Observe interruptions (e.g., camera in use by another app)
+            self.interruptionObserver = NotificationCenter.default.addObserver(forName: .AVCaptureSessionWasInterrupted, object: self.session, queue: nil) { [weak self] n in
+                guard let self else { return }
+                Self.logger.notice("AVCaptureSession was interrupted: \(String(describing: n.userInfo), privacy: .public)")
+            }
+            NotificationCenter.default.addObserver(forName: .AVCaptureSessionInterruptionEnded, object: self.session, queue: nil) { [weak self] _ in
+                guard let self else { return }
+                Self.logger.notice("AVCaptureSession interruption ended")
             }
         }
     }
@@ -143,6 +157,8 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     deinit {
         stop()
         if let obs = thermalObserver { NotificationCenter.default.removeObserver(obs) }
+        if let obs = sessionObserver { NotificationCenter.default.removeObserver(obs) }
+        if let obs = interruptionObserver { NotificationCenter.default.removeObserver(obs) }
     }
 
     func setTorch(enabled: Bool) {
@@ -167,6 +183,32 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private func applyTorchState() {
         let wants = delegate?.ppgProcessorRequiresTorch(self) ?? true
         setTorch(enabled: wants)
+    }
+
+    // Conservative soft restart: lower preset and fps, keep torch off; used if no frames arrive
+    func softRestartConservative(completion: (() -> Void)? = nil) {
+        queue.async {
+            Self.logger.notice("PPG softRestartConservative invoked")
+            if self.session.isRunning { self.session.stopRunning() }
+            self.session.beginConfiguration()
+            // Keep existing input
+            self.session.sessionPreset = .vga640x480
+            if let dev = self.cameraDevice {
+                try? dev.lockForConfiguration()
+                dev.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 15)
+                dev.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 15)
+                if dev.hasTorch && dev.isTorchActive { dev.torchMode = .off }
+                dev.unlockForConfiguration()
+            }
+            self.session.commitConfiguration()
+            self.didReceiveFirstFrame = false
+            self.lastSignalDispatch = 0
+            self.startDeadline = .now() + .seconds(8)
+            self.session.startRunning()
+            self.isRunning = true
+            Self.logger.notice("PPG soft restart completed; waiting for frames")
+            if let completion { DispatchQueue.main.async { completion() } }
+        }
     }
 
     // MARK: AVCaptureVideoDataOutputSampleBufferDelegate

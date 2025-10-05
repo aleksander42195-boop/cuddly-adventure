@@ -1,0 +1,25 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "xcodebuild-lifehack-debug",
+			"type": "shell",
+			"command": "xcodebuild -project LifehackApp.xcodeproj -scheme Lifehack -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' build",
+			"isBackground": false,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		},
+		{
+			"label": "xcodebuild-lifehack-iphone-debug",
+			"type": "shell",
+			"command": "xcodebuild -project LifehackApp.xcodeproj -scheme \"Lifehack iPhone\" -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' build",
+			"isBackground": false,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
+		}
+	]
+}
