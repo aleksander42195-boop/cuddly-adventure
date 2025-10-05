@@ -26,6 +26,9 @@ struct HRVCameraView: View {
     @State private var attemptedSoftRestart: Bool = false
     @AppStorage("ppgTorchEnabled") private var torchEnabled: Bool = true
     @AppStorage("ppgTorchLevel") private var torchLevel: Double = 0.25 // 0..1
+    // Status display
+    @State private var cameraAuth: AVAuthorizationStatus = AVCaptureDevice.authorizationStatus(for: .video)
+    @State private var thermalRaw: Int = ProcessInfo.processInfo.thermalState.rawValue
     // UI throttling
     @State private var lastSignalStamp: CFTimeInterval = 0
     private let signalUpdateInterval: CFTimeInterval = 0.1
@@ -51,6 +54,8 @@ struct HRVCameraView: View {
                 signalView
                     .frame(height: 140)
                     .accessibilityHidden(true)
+
+                statusRow
 
                 HStack(spacing: 16) {
                     metric(title: "HR", value: currentHR > 0 ? String(format: "%.0f bpm", currentHR) : "--")
@@ -87,6 +92,9 @@ struct HRVCameraView: View {
             .navigationBarTitleDisplayMode(.inline)
             .background(AppTheme.background.ignoresSafeArea())
             .onAppear { }
+            .onReceive(NotificationCenter.default.publisher(for: PPGProcessor.thermalStateDidChangeNotification)) { n in
+                if let raw = n.userInfo?["state"] as? Int { thermalRaw = raw }
+            }
             .onDisappear { ppg.stop(); timer?.invalidate(); timer = nil; startWatchdog?.invalidate(); startWatchdog = nil }
             .onReceive(NotificationCenter.default.publisher(for: .hrvStopMeasurement)) { _ in
                 Self.logger.notice("Received .hrvStopMeasurement; isRunning=\(self.isRunning, privacy: .public)")
@@ -139,7 +147,8 @@ struct HRVCameraView: View {
     private func beginStart() {
         ppg.delegate = delegate
         do {
-            try ppg.start()
+            // Try a fresh reconfigure on first start attempt
+            try ppg.start(forceFreshConfig: true)
             isRunning = true
             hrSamples.removeAll(); sdnnSamples.removeAll()
             startedAt = Date()
@@ -194,6 +203,39 @@ struct HRVCameraView: View {
     }
 
     private func dismissIfStopped() { if !isRunning { dismiss() } }
+
+    private var statusRow: some View {
+        HStack(spacing: 12) {
+            let auth = cameraAuthString(cameraAuth)
+            let thermal = thermalString(thermalRaw)
+            Label("Camera: \(auth)", systemImage: auth == "Authorized" ? "checkmark.shield" : "xmark.shield")
+                .foregroundStyle(auth == "Authorized" ? .green : .orange)
+            Label("Thermal: \(thermal)", systemImage: "thermometer")
+                .foregroundStyle(thermalRaw >= ProcessInfo.ThermalState.serious.rawValue ? .red : (thermalRaw >= ProcessInfo.ThermalState.fair.rawValue ? .orange : .secondary))
+        }
+        .font(.caption)
+        .padding(.vertical, 4)
+        .frame(maxWidth: .infinity)
+    }
+
+    private func cameraAuthString(_ s: AVAuthorizationStatus) -> String {
+        switch s {
+        case .authorized: return "Authorized"
+        case .notDetermined: return "Not determined"
+        case .denied, .restricted: return "Denied"
+        @unknown default: return "Unknown"
+        }
+    }
+
+    private func thermalString(_ raw: Int) -> String {
+        switch raw {
+        case ProcessInfo.ThermalState.nominal.rawValue: return "Nominal"
+        case ProcessInfo.ThermalState.fair.rawValue: return "Fair"
+        case ProcessInfo.ThermalState.serious.rawValue: return "Serious"
+        case ProcessInfo.ThermalState.critical.rawValue: return "Critical"
+        default: return "Unknown"
+        }
+    }
 
     private var delegate: PPGProcessorDelegateAdapter { .init(
         onSignal: { val in

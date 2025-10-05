@@ -15,6 +15,7 @@ protocol PPGProcessorDelegate: AnyObject {
 
 final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     private static let logger = Logger(subsystem: "com.lifehack.LifehackApp", category: "PPG")
+    static let thermalStateDidChangeNotification = Notification.Name("PPGProcessorThermalStateDidChange")
     weak var delegate: PPGProcessorDelegate?
 
     private let session = AVCaptureSession()
@@ -67,6 +68,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             let state = ProcessInfo.processInfo.thermalState
             self.currentThermalState = state
             Self.logger.notice("Thermal state changed: \(state.rawValue, privacy: .public)")
+            NotificationCenter.default.post(name: Self.thermalStateDidChangeNotification, object: self, userInfo: ["state": state.rawValue])
             switch state {
             case ProcessInfo.ThermalState.nominal:
                 break
@@ -89,7 +91,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         }
     }
 
-    func start() throws {
+    func start(forceFreshConfig: Bool = false) throws {
         if isRunning { return }
         // Prepare camera input synchronously to throw if unavailable
         guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
@@ -101,6 +103,11 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         queue.async {
             Self.logger.notice("PPG start: configuring session")
             self.session.beginConfiguration()
+            if forceFreshConfig {
+                // Remove existing inputs/outputs to avoid stale wiring
+                for inp in self.session.inputs { self.session.removeInput(inp) }
+                for outp in self.session.outputs { self.session.removeOutput(outp) }
+            }
             // Lower resolution reduces pixel buffer allocations and CPU load
             self.session.sessionPreset = .low
             if self.session.inputs.isEmpty, self.session.canAddInput(input) { self.session.addInput(input) }
