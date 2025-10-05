@@ -20,6 +20,16 @@
 				"$gcc"
 			],
 			"group": "build"
+		},
+		{
+			"label": "build-lifehack-iphone-sim",
+			"type": "shell",
+			"command": "xcodebuild -project LifehackApp.xcodeproj -scheme \"Lifehack iPhone\" -configuration Debug -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' build",
+			"isBackground": false,
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": "build"
 		}
 	]
 }

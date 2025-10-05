@@ -230,8 +230,8 @@ struct HRVCameraView: View {
                 startAutoStopTimer()
                 Self.logger.notice("HRV timer started on first stream frame; torchEnabled=\(self.torchEnabled, privacy: .public)")
             }
-            // Apply torch only after first frame to reduce thermal spike on startup
-            ppg.setTorch(enabled: torchEnabled)
+            // Apply torch only after first frame and ramp it to reduce thermal spike on startup
+            ppg.setTorch(enabled: torchEnabled, ramp: true)
             startWatchdog?.invalidate(); startWatchdog = nil
         }
     ) }

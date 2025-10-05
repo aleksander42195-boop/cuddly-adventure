@@ -50,6 +50,11 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private var thermalObserver: NSObjectProtocol?
     private var sessionObserver: NSObjectProtocol?
     private var interruptionObserver: NSObjectProtocol?
+    private var interruptionEndedObserver: NSObjectProtocol?
+    private var torchRampWorkItem: DispatchWorkItem?
+    private var torchRampID: Int = 0
+    private var currentTorchTargetFraction: Float = 0.25 // 0..1 user-level fraction
+    private var currentThermalState: ProcessInfo.ThermalState = .nominal
 
     // Expose session for preview rendering
     var captureSession: AVCaptureSession { session }
@@ -60,10 +65,28 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         thermalObserver = NotificationCenter.default.addObserver(forName: ProcessInfo.thermalStateDidChangeNotification, object: nil, queue: nil) { [weak self] _ in
             guard let self else { return }
             let state = ProcessInfo.processInfo.thermalState
+            self.currentThermalState = state
             Self.logger.notice("Thermal state changed: \(state.rawValue, privacy: .public)")
-            if state == .serious || state == .critical {
+            switch state {
+            case .nominal:
+                break
+            case .fair:
+                break
+            case .moderate:
+                // Dim torch in moderate state to reduce heat
+                self.queue.async { [weak self] in
+                    guard let self, let dev = self.cameraDevice, dev.hasTorch else { return }
+                    if dev.isTorchActive {
+                        let dimmed = max(0.1, self.currentTorchTargetFraction * 0.5)
+                        self.applyTorchLevelFraction(dimmed)
+                        Self.logger.notice("PPG torch dimmed due to moderate thermal: targetFraction=\(self.currentTorchTargetFraction, privacy: .public) -> dim \(dimmed, privacy: .public)")
+                    }
+                }
+            case .serious, .critical:
                 // Turn off torch to reduce heat
                 self.queue.async { self.setTorch(enabled: false) }
+            @unknown default:
+                break
             }
         }
     }
@@ -127,10 +150,19 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             self.interruptionObserver = NotificationCenter.default.addObserver(forName: .AVCaptureSessionWasInterrupted, object: self.session, queue: nil) { [weak self] n in
                 guard let self else { return }
                 Self.logger.notice("AVCaptureSession was interrupted: \(String(describing: n.userInfo), privacy: .public)")
+                // Turn off torch immediately
+                self.queue.async { self.setTorch(enabled: false) }
             }
-            NotificationCenter.default.addObserver(forName: .AVCaptureSessionInterruptionEnded, object: self.session, queue: nil) { [weak self] _ in
+            self.interruptionEndedObserver = NotificationCenter.default.addObserver(forName: .AVCaptureSessionInterruptionEnded, object: self.session, queue: nil) { [weak self] _ in
                 guard let self else { return }
                 Self.logger.notice("AVCaptureSession interruption ended")
+                // Auto-retry if we intended to run but session isn't running
+                self.queue.async {
+                    if self.isRunning && !self.session.isRunning {
+                        Self.logger.notice("PPG auto-retry after interruption end")
+                        self.softRestartConservative()
+                    }
+                }
             }
         }
     }
@@ -159,30 +191,84 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         if let obs = thermalObserver { NotificationCenter.default.removeObserver(obs) }
         if let obs = sessionObserver { NotificationCenter.default.removeObserver(obs) }
         if let obs = interruptionObserver { NotificationCenter.default.removeObserver(obs) }
+        if let obs = interruptionEndedObserver { NotificationCenter.default.removeObserver(obs) }
     }
 
-    func setTorch(enabled: Bool) {
+    func setTorch(enabled: Bool, ramp: Bool = false) {
         guard let device = cameraDevice, device.hasTorch else { return }
-    let torchState = enabled ? "ON" : "OFF"
-    Self.logger.notice("PPG torch set to \(torchState, privacy: .public)")
-        try? device.lockForConfiguration()
-        defer { device.unlockForConfiguration() }
-        if enabled {
+        // Cancel any ongoing ramp
+        queue.async {
+            self.torchRampWorkItem?.cancel(); self.torchRampWorkItem = nil
+            self.torchRampID &+= 1
+            let rampID = self.torchRampID
+            let torchState = enabled ? "ON" : "OFF"
+            Self.logger.notice("PPG torch set to \(torchState, privacy: .public) ramp=\(ramp, privacy: .public)")
+            guard enabled else {
+                try? device.lockForConfiguration(); if device.isTorchActive { device.torchMode = .off }; device.unlockForConfiguration(); return
+            }
+            // Don't enable torch in serious/critical thermal
+            if self.currentThermalState == .serious || self.currentThermalState == .critical {
+                Self.logger.notice("PPG torch enable suppressed due to thermal state \(self.currentThermalState.rawValue, privacy: .public)")
+                return
+            }
             guard device.isTorchModeSupported(.on) else { return }
-            device.torchMode = .on
-            // Use level from AppStorage if available; fall back to conservative 0.25
+            // Effective target fraction from user defaults (0..1)
             let stored = UserDefaults.standard.double(forKey: "ppgTorchLevel")
-            let uiLevel = stored > 0 ? stored : 0.25
-            let level = min(AVCaptureDevice.maxAvailableTorchLevel, 1.0) * Float(uiLevel)
-            try? device.setTorchModeOn(level: level)
-        } else {
-            device.torchMode = .off
+            var targetFraction = Float(stored > 0 ? stored : 0.25)
+            if self.currentThermalState == .moderate {
+                targetFraction = max(0.1, min(targetFraction * 0.5, targetFraction))
+            }
+            self.currentTorchTargetFraction = targetFraction
+            let maxLevel = min(AVCaptureDevice.maxAvailableTorchLevel, 1.0)
+            let targetLevel = maxLevel * targetFraction
+            // Start level for ramp
+            let startLevel = min(targetLevel, maxLevel * 0.10)
+            if ramp {
+                try? device.lockForConfiguration()
+                device.torchMode = .on
+                try? device.setTorchModeOn(level: startLevel)
+                device.unlockForConfiguration()
+                // Ramp in steps to target over ~1.2s
+                let steps = 6
+                let stepDuration: TimeInterval = 0.2
+                for i in 1...steps {
+                    let delay = stepDuration * Double(i)
+                    self.queue.asyncAfter(deadline: .now() + delay) { [weak self] in
+                        guard let self else { return }
+                        // Cancel if a new ramp started
+                        guard self.torchRampID == rampID else { return }
+                        guard let dev = self.cameraDevice, dev.hasTorch else { return }
+                        let fraction = Float(i) / Float(steps)
+                        let level = startLevel + (targetLevel - startLevel) * fraction
+                        try? dev.lockForConfiguration()
+                        if dev.isTorchModeSupported(.on) { try? dev.setTorchModeOn(level: level) }
+                        dev.unlockForConfiguration()
+                    }
+                }
+            } else {
+                try? device.lockForConfiguration()
+                device.torchMode = .on
+                try? device.setTorchModeOn(level: targetLevel)
+                device.unlockForConfiguration()
+            }
         }
     }
 
     private func applyTorchState() {
         let wants = delegate?.ppgProcessorRequiresTorch(self) ?? true
         setTorch(enabled: wants)
+    }
+
+    private func applyTorchLevelFraction(_ fraction: Float) {
+        guard let device = cameraDevice, device.hasTorch else { return }
+        let maxLevel = min(AVCaptureDevice.maxAvailableTorchLevel, 1.0)
+        let level = maxLevel * fraction
+        try? device.lockForConfiguration()
+        if device.isTorchModeSupported(.on) {
+            if !device.isTorchActive { device.torchMode = .on }
+            try? device.setTorchModeOn(level: level)
+        }
+        device.unlockForConfiguration()
     }
 
     // Conservative soft restart: lower preset and fps, keep torch off; used if no frames arrive
