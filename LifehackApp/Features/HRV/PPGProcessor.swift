@@ -68,21 +68,19 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             self.currentThermalState = state
             Self.logger.notice("Thermal state changed: \(state.rawValue, privacy: .public)")
             switch state {
-            case .nominal:
+            case ProcessInfo.ThermalState.nominal:
                 break
-            case .fair:
-                break
-            case .moderate:
+            case ProcessInfo.ThermalState.fair:
                 // Dim torch in moderate state to reduce heat
                 self.queue.async { [weak self] in
                     guard let self, let dev = self.cameraDevice, dev.hasTorch else { return }
                     if dev.isTorchActive {
                         let dimmed = max(0.1, self.currentTorchTargetFraction * 0.5)
                         self.applyTorchLevelFraction(dimmed)
-                        Self.logger.notice("PPG torch dimmed due to moderate thermal: targetFraction=\(self.currentTorchTargetFraction, privacy: .public) -> dim \(dimmed, privacy: .public)")
+                        Self.logger.notice("PPG torch dimmed due to fair thermal: targetFraction=\(self.currentTorchTargetFraction, privacy: .public) -> dim \(dimmed, privacy: .public)")
                     }
                 }
-            case .serious, .critical:
+            case ProcessInfo.ThermalState.serious, ProcessInfo.ThermalState.critical:
                 // Turn off torch to reduce heat
                 self.queue.async { self.setTorch(enabled: false) }
             @unknown default:
@@ -140,20 +138,26 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             self.startDeadline = .now() + .seconds(8)
             Self.logger.notice("PPG session running; awaiting first frame before torch")
             // Observe runtime errors to notify UI promptly
-            self.sessionObserver = NotificationCenter.default.addObserver(forName: .AVCaptureSessionRuntimeError, object: self.session, queue: nil) { [weak self] n in
+            let runtimeErrorName: NSNotification.Name
+            if #available(iOS 18.0, *) { runtimeErrorName = AVCaptureSession.runtimeErrorNotification } else { runtimeErrorName = .AVCaptureSessionRuntimeError }
+            self.sessionObserver = NotificationCenter.default.addObserver(forName: runtimeErrorName, object: self.session, queue: nil) { [weak self] n in
                 guard let self, let err = n.userInfo?[AVCaptureSessionErrorKey] as? NSError else { return }
                 Self.logger.error("AVCaptureSession runtime error: \(err.localizedDescription, privacy: .public)")
                 // Stop to allow UI to restart
                 self.stop()
             }
             // Observe interruptions (e.g., camera in use by another app)
-            self.interruptionObserver = NotificationCenter.default.addObserver(forName: .AVCaptureSessionWasInterrupted, object: self.session, queue: nil) { [weak self] n in
+            let wasInterruptedName: NSNotification.Name
+            if #available(iOS 18.0, *) { wasInterruptedName = AVCaptureSession.wasInterruptedNotification } else { wasInterruptedName = .AVCaptureSessionWasInterrupted }
+            self.interruptionObserver = NotificationCenter.default.addObserver(forName: wasInterruptedName, object: self.session, queue: nil) { [weak self] n in
                 guard let self else { return }
                 Self.logger.notice("AVCaptureSession was interrupted: \(String(describing: n.userInfo), privacy: .public)")
                 // Turn off torch immediately
                 self.queue.async { self.setTorch(enabled: false) }
             }
-            self.interruptionEndedObserver = NotificationCenter.default.addObserver(forName: .AVCaptureSessionInterruptionEnded, object: self.session, queue: nil) { [weak self] _ in
+            let interruptionEndedName: NSNotification.Name
+            if #available(iOS 18.0, *) { interruptionEndedName = AVCaptureSession.interruptionEndedNotification } else { interruptionEndedName = .AVCaptureSessionInterruptionEnded }
+            self.interruptionEndedObserver = NotificationCenter.default.addObserver(forName: interruptionEndedName, object: self.session, queue: nil) { [weak self] _ in
                 guard let self else { return }
                 Self.logger.notice("AVCaptureSession interruption ended")
                 // Auto-retry if we intended to run but session isn't running
@@ -207,7 +211,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
                 try? device.lockForConfiguration(); if device.isTorchActive { device.torchMode = .off }; device.unlockForConfiguration(); return
             }
             // Don't enable torch in serious/critical thermal
-            if self.currentThermalState == .serious || self.currentThermalState == .critical {
+            if self.currentThermalState == ProcessInfo.ThermalState.serious || self.currentThermalState == ProcessInfo.ThermalState.critical {
                 Self.logger.notice("PPG torch enable suppressed due to thermal state \(self.currentThermalState.rawValue, privacy: .public)")
                 return
             }
@@ -215,7 +219,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             // Effective target fraction from user defaults (0..1)
             let stored = UserDefaults.standard.double(forKey: "ppgTorchLevel")
             var targetFraction = Float(stored > 0 ? stored : 0.25)
-            if self.currentThermalState == .moderate {
+            if self.currentThermalState == ProcessInfo.ThermalState.fair {
                 targetFraction = max(0.1, min(targetFraction * 0.5, targetFraction))
             }
             self.currentTorchTargetFraction = targetFraction
