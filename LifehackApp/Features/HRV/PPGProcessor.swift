@@ -47,9 +47,24 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
     private let signalDispatchInterval: CFTimeInterval = 0.1 // 10 Hz max to UI
     private var didReceiveFirstFrame = false
     private var startDeadline: DispatchTime?
+    private var thermalObserver: NSObjectProtocol?
 
     // Expose session for preview rendering
     var captureSession: AVCaptureSession { session }
+
+    override init() {
+        super.init()
+        // Observe thermal state to reduce load if device overheats
+        thermalObserver = NotificationCenter.default.addObserver(forName: ProcessInfo.thermalStateDidChangeNotification, object: nil, queue: nil) { [weak self] _ in
+            guard let self else { return }
+            let state = ProcessInfo.processInfo.thermalState
+            Self.logger.notice("Thermal state changed: \(state.rawValue, privacy: .public)")
+            if state == .serious || state == .critical {
+                // Turn off torch to reduce heat
+                self.queue.async { self.setTorch(enabled: false) }
+            }
+        }
+    }
 
     func start() throws {
         if isRunning { return }
@@ -99,8 +114,10 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             self.didReceiveFirstFrame = false
             self.startDeadline = .now() + .seconds(8)
             Self.logger.notice("PPG session running; applying torch state")
-            // Apply desired torch after session starts to avoid configuration conflicts
-            self.applyTorchState()
+            // Apply desired torch after a short delay to avoid configuration conflicts and thermal spikes
+            self.queue.asyncAfter(deadline: .now() + .milliseconds(500)) {
+                self.applyTorchState()
+            }
         }
     }
 
@@ -125,6 +142,7 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
 
     deinit {
         stop()
+        if let obs = thermalObserver { NotificationCenter.default.removeObserver(obs) }
     }
 
     func setTorch(enabled: Bool) {
@@ -134,8 +152,13 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
         try? device.lockForConfiguration()
         defer { device.unlockForConfiguration() }
         if enabled {
+            guard device.isTorchModeSupported(.on) else { return }
             device.torchMode = .on
-            try? device.setTorchModeOn(level: AVCaptureDevice.maxAvailableTorchLevel * 0.6)
+            // Use level from AppStorage if available; fall back to conservative 0.25
+            let stored = UserDefaults.standard.double(forKey: "ppgTorchLevel")
+            let uiLevel = stored > 0 ? stored : 0.25
+            let level = min(AVCaptureDevice.maxAvailableTorchLevel, 1.0) * Float(uiLevel)
+            try? device.setTorchModeOn(level: level)
         } else {
             device.torchMode = .off
         }

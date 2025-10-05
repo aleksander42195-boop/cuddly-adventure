@@ -23,6 +23,7 @@ struct HRVCameraView: View {
     @State private var cameraErrorMessage: String = ""
     @State private var startWatchdog: Timer? = nil
     @AppStorage("ppgTorchEnabled") private var torchEnabled: Bool = true
+    @AppStorage("ppgTorchLevel") private var torchLevel: Double = 0.25 // 0..1
     // Throttle signal drawing to reduce SwiftUI re-render load
     @State private var lastSignalStamp: CFTimeInterval = 0
     private let signalUpdateInterval: CFTimeInterval = 0.1 // 10 Hz
@@ -76,6 +77,13 @@ struct HRVCameraView: View {
                         .toggleStyle(.button)
                         .labelStyle(.iconOnly)
                         .onChange(of: torchEnabled) { _, newVal in ppg.setTorch(enabled: newVal) }
+                    Menu {
+                        Button("Flash Low") { torchLevel = 0.25; ppg.setTorch(enabled: torchEnabled) }
+                        Button("Flash Medium") { torchLevel = 0.5; ppg.setTorch(enabled: torchEnabled) }
+                        Button("Flash High") { torchLevel = 0.8; ppg.setTorch(enabled: torchEnabled) }
+                    } label: {
+                        Image(systemName: "sun.max.fill")
+                    }
                     Button("Close") { stopAndClose() }
                         .buttonStyle(AppTheme.LiquidGlassButtonStyle())
                 }
