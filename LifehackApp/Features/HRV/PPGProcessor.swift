@@ -137,6 +137,12 @@ final class PPGProcessor: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate
             self.didReceiveFirstFrame = false
             self.startDeadline = .now() + .seconds(8)
             Self.logger.notice("PPG session running; awaiting first frame before torch")
+            // Fallback: gently ramp torch shortly after start to help user placement before first frame
+            self.queue.asyncAfter(deadline: .now() + .milliseconds(600)) { [weak self] in
+                guard let self else { return }
+                let wants = self.delegate?.ppgProcessorRequiresTorch(self) ?? true
+                self.setTorch(enabled: wants, ramp: true)
+            }
             // Observe runtime errors to notify UI promptly
             let runtimeErrorName: NSNotification.Name
             if #available(iOS 18.0, *) { runtimeErrorName = AVCaptureSession.runtimeErrorNotification } else { runtimeErrorName = .AVCaptureSessionRuntimeError }
