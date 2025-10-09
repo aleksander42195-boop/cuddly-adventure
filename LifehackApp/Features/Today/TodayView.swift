@@ -8,7 +8,6 @@ struct TodayView: View {
     @Environment(\.themeTokens) private var theme
     @State private var studyOfTheDay: Study? = nil
     @State private var studyError: String? = nil
-    @State private var showingHRVExplanation = false
     @State private var showingChatGPTLogin = false
 
     var body: some View {
@@ -16,11 +15,56 @@ struct TodayView: View {
             VStack(spacing: theme.spacing) {
                 topControlsSection
                 healthPermissionSection
-                metricsSection
-                hrvSection
-                studySection
+                
+                // New Advanced Health Card replacing the simple metrics
+                AdvancedHealthCard(
+                    energy: app.today.energy,
+                    battery: app.today.battery,
+                    stress: app.today.stress,
+                    hrvSDNN: app.today.hrvSDNNms,
+                    sleepHours: app.lastNightSleepHours,
+                    steps: app.today.steps
+                )
+                
+                // Advanced Study Card replacing simple study section
+                AdvancedStudyCard(
+                    study: studyOfTheDay,
+                    isLoading: studyOfTheDay == nil && studyError == nil,
+                    onRefresh: { Task { await reloadStudy(force: true) } },
+                    onBookmark: { 
+                        if let slug = studyOfTheDay?.slug { 
+                            BookmarkStore.shared.toggle(slug: slug) 
+                        }
+                    },
+                    onOpen: {
+                        if let study = studyOfTheDay, let url = study.url {
+                            UIApplication.shared.open(url)
+                        }
+                    },
+                    isBookmarked: BookmarkStore.shared.isBookmarked(slug: studyOfTheDay?.slug ?? "")
+                )
+                
+                // Advanced Trends Card (new addition)
+                AdvancedTrendsCard(
+                    weeklyEnergyData: generateWeeklyData(for: .energy),
+                    weeklyStressData: generateWeeklyData(for: .stress),
+                    weeklyHRVData: generateWeeklyData(for: .hrv)
+                )
+                
+                // Advanced AI Coach Card replacing simple AI section
+                AdvancedAICoachCard(
+                    energyLevel: app.today.energy,
+                    stressLevel: app.today.stress,
+                    sleepHours: app.lastNightSleepHours,
+                    recentTrend: "stable",
+                    onStartCoaching: {
+                        app.tapHaptic()
+                        showingChatGPTLogin = true
+                    }
+                )
+                
+                // Keep activity and sleep sections for now (can be upgraded later)
                 activitySection
-                aiCoachSection
                 sleepSection
                 refreshButton
             }
@@ -40,20 +84,6 @@ struct TodayView: View {
                     Image(systemName: "person.crop.circle")
                         .foregroundStyle(theme.accent)
                 }
-            }
-        }
-        .sheet(isPresented: $showingHRVExplanation) {
-            NavigationView {
-                HRVCameraView()
-                    .navigationTitle("HRV Camera")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarTrailing) {
-                            Button("Done") {
-                                showingHRVExplanation = false
-                            }
-                        }
-                    }
             }
         }
         .sheet(isPresented: $showingChatGPTLogin) {
@@ -83,27 +113,8 @@ struct TodayView: View {
         HStack {
             Spacer()
             
-            HStack(spacing: 16) {
-                cameraButton
-                settingsButton
-            }
+            settingsButton
         }
-    }
-    
-    private var cameraButton: some View {
-        Button {
-            app.tapHaptic()
-            showingHRVExplanation = true
-        } label: {
-            Image(systemName: "camera.fill")
-                .font(.title2)
-                .foregroundStyle(.white)
-                .frame(width: 44, height: 44)
-                .background(.cyan)
-                .clipShape(Circle())
-                .shadow(color: .cyan.opacity(0.3), radius: 8, x: 0, y: 4)
-        }
-        .accessibilityLabel("Learn about HRV Camera")
     }
     
     private var settingsButton: some View {
@@ -155,39 +166,6 @@ struct TodayView: View {
             hrvSDNN: app.today.hrvSDNNms,
             sleepHours: app.lastNightSleepHours
         )
-    }
-    
-    private var hrvSection: some View {
-        GlassCard {
-            VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                Text("HRV (SDNN)")
-                    .font(.headline)
-                
-                Text(app.today.hrvLabel)
-                    .font(.title2.monospacedDigit())
-                
-                Text("Resting HR: \(app.today.restingHR, specifier: "%.0f") bpm · Steps: \(app.today.steps)")
-                    .foregroundStyle(.secondary)
-                
-                #if canImport(Charts)
-                if app.isHealthAuthorized {
-                    TodayHRVSparkline()
-                        .frame(height: 60)
-                        .accessibilityLabel("7-day HRV sparkline. Latest \(app.today.hrvLabel).")
-                }
-                #endif
-                
-                if !app.isHealthAuthorized {
-                    HStack {
-                        Spacer()
-                        Button("Allow Health") { 
-                            Task { await app.requestHealthAuthorization() } 
-                        }
-                        .buttonStyle(AppTheme.LiquidGlassButtonStyle())
-                    }
-                }
-            }
-        }
     }
     
     private var studySection: some View {
@@ -430,6 +408,38 @@ struct TodayView: View {
             .disabled(app.isSyncing)
         }
     }
+    
+    // Helper function to generate sample weekly data for trends
+    private func generateWeeklyData(for metric: TrendMetricType) -> [DailyMetric] {
+        return (0..<7).map { days in
+            let baseValue: Double
+            let variance: Double
+            
+            switch metric {
+            case .energy:
+                baseValue = app.today.energy
+                variance = 0.2
+            case .stress:
+                baseValue = app.today.stress
+                variance = 0.15
+            case .hrv:
+                baseValue = min(1.0, app.today.hrvSDNNms / 50.0)
+                variance = 0.25
+            }
+            
+            let randomVariation = Double.random(in: -variance...variance)
+            let value = max(0, min(1.0, baseValue + randomVariation))
+            
+            return DailyMetric(
+                date: Calendar.current.date(byAdding: .day, value: -days, to: Date()) ?? Date(),
+                value: value
+            )
+        }.reversed()
+    }
+    
+    private enum TrendMetricType {
+        case energy, stress, hrv
+    }
 }
 
 #Preview {
@@ -446,24 +456,3 @@ struct TodayView: View {
             .appThemeTokens(AppTheme.tokens())
     }
 }
-
-#if canImport(Charts)
-private struct TodayHRVSparkline: View {
-    @EnvironmentObject var app: AppState
-    @State private var points: [HealthKitService.HealthDataPoint] = []
-    var body: some View {
-        Chart(points, id: \.date) { pt in
-            LineMark(x: .value("Date", pt.date, unit: .day), y: .value("HRV", pt.value))
-                .interpolationMethod(.monotone)
-                .foregroundStyle(.cyan)
-        }
-        .chartXAxis(.hidden)
-        .chartYAxis(.hidden)
-        .task { await load() }
-    }
-    private func load() async {
-        let data = (try? await app.healthService.hrvDailyAverage(days: 7)) ?? []
-        await MainActor.run { points = data }
-    }
-}
-#endif

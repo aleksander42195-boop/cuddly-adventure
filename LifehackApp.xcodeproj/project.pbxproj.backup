@@ -57,10 +57,9 @@
 		STRMCV000000000000001 /* StreamingCoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = STRMCV000000000000000 /* StreamingCoachView.swift */; };
 		COACHVM000000000000001 /* CoachVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHVM000000000000000 /* CoachVM.swift */; };
 		COACHSET00000000000001 /* CoachEngineSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = COACHSET00000000000000 /* CoachEngineSettingsView.swift */; };
-                ADVHLTH000000000000001 /* AdvancedHealthCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADVHLTH000000000000000 /* AdvancedHealthCard.swift */; };
-                ADVTRND000000000000001 /* AdvancedTrendsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADVTRND000000000000000 /* AdvancedTrendsCard.swift */; };
-                ADVSTDY000000000000001 /* AdvancedStudyCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADVSTDY000000000000000 /* AdvancedStudyCard.swift */; };
-                ADVAICH000000000000001 /* AdvancedAICoachCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADVAICH000000000000000 /* AdvancedAICoachCard.swift */; };
+		HRVCAM000000000000001 /* HRVCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = HRVCAM000000000000000 /* HRVCameraView.swift */; };
+		PPGPROC000000000000001 /* PPGProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGPROC000000000000000 /* PPGProcessor.swift */; };
+		PPGDLG000000000000001 /* PPGProcessorDelegateAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = PPGDLG000000000000000 /* PPGProcessorDelegateAdapter.swift */; };
 		APPICON000000000000001 /* AppIconManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = APPICON000000000000000 /* AppIconManager.swift */; };
 		ZODIAC000000000000001 /* Zodiac.swift in Sources */ = {isa = PBXBuildFile; fileRef = ZODIAC000000000000000 /* Zodiac.swift */; };
 		OAICHAT2000000000000001 /* OpenAIChatService.swift in Sources */ = {isa = PBXBuildFile; fileRef = OAICHAT2000000000000000 /* OpenAIChatService.swift */; };
@@ -127,10 +126,9 @@
 		STRMCV000000000000000 /* StreamingCoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/StreamingCoachView.swift; sourceTree = "<group>"; };
 		COACHVM000000000000000 /* CoachVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Coach/CoachVM.swift; sourceTree = "<group>"; };
 		COACHSET00000000000000 /* CoachEngineSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/CoachEngineSettingsView.swift; sourceTree = "<group>"; };
-                ADVHLTH000000000000000 /* AdvancedHealthCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/AdvancedHealthCard.swift; sourceTree = "<group>"; };
-                ADVTRND000000000000000 /* AdvancedTrendsCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/AdvancedTrendsCard.swift; sourceTree = "<group>"; };
-                ADVSTDY000000000000000 /* AdvancedStudyCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/AdvancedStudyCard.swift; sourceTree = "<group>"; };
-                ADVAICH000000000000000 /* AdvancedAICoachCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components/AdvancedAICoachCard.swift; sourceTree = "<group>"; };
+		HRVCAM000000000000000 /* HRVCameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/HRVCameraView.swift; sourceTree = "<group>"; };
+		PPGPROC000000000000000 /* PPGProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessor.swift; sourceTree = "<group>"; };
+		PPGDLG000000000000000 /* PPGProcessorDelegateAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/HRV/PPGProcessorDelegateAdapter.swift; sourceTree = "<group>"; };
 		APPICON000000000000000 /* AppIconManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/AppIconManager.swift; sourceTree = "<group>"; };
 		ZODIAC000000000000000 /* Zodiac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/Zodiac.swift; sourceTree = "<group>"; };
 		OAICHAT2000000000000000 /* OpenAIChatService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/OpenAIChatService.swift; sourceTree = "<group>"; };
@@ -222,10 +220,9 @@
 				STRMCV000000000000000 /* StreamingCoachView.swift */,
 				COACHVM000000000000000 /* CoachVM.swift */,
 				COACHSET00000000000000 /* CoachEngineSettingsView.swift */,
-                            ADVHLTH000000000000000 /* AdvancedHealthCard.swift */,
-                            ADVTRND000000000000000 /* AdvancedTrendsCard.swift */,
-                            ADVSTDY000000000000000 /* AdvancedStudyCard.swift */,
-                            ADVAICH000000000000000 /* AdvancedAICoachCard.swift */,
+				HRVCAM000000000000000 /* HRVCameraView.swift */,
+				PPGPROC000000000000000 /* PPGProcessor.swift */,
+				PPGDLG000000000000000 /* PPGProcessorDelegateAdapter.swift */,
 				APPICON000000000000000 /* AppIconManager.swift */,
 				ZODIAC000000000000000 /* Zodiac.swift */,
 				OAICHAT2000000000000000 /* OpenAIChatService.swift */,
@@ -377,10 +374,9 @@
 				STRMCV000000000000001 /* StreamingCoachView.swift in Sources */,
 				COACHVM000000000000001 /* CoachVM.swift in Sources */,
 				COACHSET00000000000001 /* CoachEngineSettingsView.swift in Sources */,
-                            ADVHLTH000000000000001 /* AdvancedHealthCard.swift in Sources */,
-                            ADVTRND000000000000001 /* AdvancedTrendsCard.swift in Sources */,
-                            ADVSTDY000000000000001 /* AdvancedStudyCard.swift in Sources */,
-                            ADVAICH000000000000001 /* AdvancedAICoachCard.swift in Sources */,
+				HRVCAM000000000000001 /* HRVCameraView.swift in Sources */,
+				PPGPROC000000000000001 /* PPGProcessor.swift in Sources */,
+				PPGDLG000000000000001 /* PPGProcessorDelegateAdapter.swift in Sources */,
 				APPICON000000000000001 /* AppIconManager.swift in Sources */,
 				ZODIAC000000000000001 /* Zodiac.swift in Sources */,
 				OAICHAT2000000000000001 /* OpenAIChatService.swift in Sources */,
