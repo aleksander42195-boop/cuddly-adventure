@@ -21,10 +21,18 @@ private extension NSPredicate {
     }
 }
 
-final class HealthKitService {
+final class HealthKitService: ObservableObject, @unchecked Sendable {
+    static let shared = HealthKitService()
+    
     private let store = HKHealthStore()
-    private(set) var isAuthorized: Bool = false
+    @Published private(set) var isAuthorized: Bool = false
     private let calendar = Calendar.current
+    
+    // User profile data
+    @Published var userBirthDate: Date?
+    @Published var userSex: HKBiologicalSex?
+    @Published var userHeight: Double? // in centimeters
+    @Published var userWeight: Double? // in kilograms
     struct HealthDataPoint: Sendable, Hashable {
         let date: Date
         let value: Double
@@ -38,13 +46,250 @@ final class HealthKitService {
         if let weight = HKObjectType.quantityType(forIdentifier: .bodyMass) { set.insert(weight) }
         if let mindful = HKObjectType.categoryType(forIdentifier: .mindfulSession) { set.insert(mindful) }
         if let sleep = HKObjectType.categoryType(forIdentifier: .sleepAnalysis) { set.insert(sleep) }
+        
+        // Add workout/exercise types
+        set.insert(HKObjectType.workoutType())
+        if let exerciseTime = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) { set.insert(exerciseTime) }
+        if let standTime = HKObjectType.quantityType(forIdentifier: .appleStandTime) { set.insert(standTime) }
+        if let distance = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning) { set.insert(distance) }
+        if let cycling = HKObjectType.quantityType(forIdentifier: .distanceCycling) { set.insert(cycling) }
+        if let swimming = HKObjectType.quantityType(forIdentifier: .distanceSwimming) { set.insert(swimming) }
+        if let stairs = HKObjectType.quantityType(forIdentifier: .flightsClimbed) { set.insert(stairs) }
+        
+        // Add additional types for comprehensive health tracking
+        if let heartRate = HKObjectType.quantityType(forIdentifier: .heartRate) { set.insert(heartRate) }
+        if let hrvSDNN = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) { set.insert(hrvSDNN) }
+        if let restingHR = HKObjectType.quantityType(forIdentifier: .restingHeartRate) { set.insert(restingHR) }
+        if let height = HKObjectType.quantityType(forIdentifier: .height) { set.insert(height) }
+        
         return set
+    }
+    
+    private var writeTypes: Set<HKSampleType> {
+        var set: Set<HKSampleType> = []
+        if let weight = HKSampleType.quantityType(forIdentifier: .bodyMass) { set.insert(weight) }
+        if let height = HKSampleType.quantityType(forIdentifier: .height) { set.insert(height) }
+        return set
+    }
+    
+    func isHealthKitAvailable() -> Bool {
+        return HKHealthStore.isHealthDataAvailable()
+    }
+    
+    func requestAuthorization() async throws {
+        guard isHealthKitAvailable() else {
+            throw HealthKitServiceError.notAvailable
+        }
+        
+        // Create separate sets for different types
+        var allReadTypes = readTypes
+        let characteristicTypes: Set<HKCharacteristicType> = [
+            HKObjectType.characteristicType(forIdentifier: .biologicalSex)!,
+            HKObjectType.characteristicType(forIdentifier: .dateOfBirth)!
+        ]
+        
+        try await store.requestAuthorization(toShare: writeTypes, read: allReadTypes)
+        
+        await MainActor.run {
+            checkAuthorizationStatus()
+            loadUserData()
+        }
+    }
+    
+    private func checkAuthorizationStatus() {
+        // Check if we have authorization for key health types
+        let keyTypes: [HKObjectType] = [
+            HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN)!,
+            HKObjectType.quantityType(forIdentifier: .stepCount)!,
+            HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
+        ]
+        
+        let hasAuthorization = keyTypes.allSatisfy { type in
+            store.authorizationStatus(for: type) == .sharingAuthorized
+        }
+        
+        isAuthorized = hasAuthorization
+    }
+    
+    private func loadUserData() {
+        Task {
+            await loadBirthDate()
+            await loadBiologicalSex()
+            await loadLatestHeight()
+            await loadLatestWeight()
+        }
+    }
+    
+    @MainActor
+    private func loadBirthDate() async {
+        do {
+            let dateOfBirth = try store.dateOfBirthComponents()
+            userBirthDate = Calendar.current.date(from: dateOfBirth)
+        } catch {
+            print("Error loading birth date: \(error)")
+        }
+    }
+    
+    @MainActor
+    private func loadBiologicalSex() async {
+        do {
+            let biologicalSex = try store.biologicalSex()
+            userSex = biologicalSex.biologicalSex
+        } catch {
+            print("Error loading biological sex: \(error)")
+        }
+    }
+    
+    @MainActor
+    private func loadLatestHeight() async {
+        guard let heightType = HKQuantityType.quantityType(forIdentifier: .height) else { return }
+        
+        let query = HKSampleQuery(
+            sampleType: heightType,
+            predicate: nil,
+            limit: 1,
+            sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)]
+        ) { [weak self] _, samples, error in
+            guard let sample = samples?.first as? HKQuantitySample else { return }
+            
+            DispatchQueue.main.async {
+                self?.userHeight = sample.quantity.doubleValue(for: HKUnit.meterUnit(with: .centi))
+            }
+        }
+        
+        store.execute(query)
+    }
+    
+    @MainActor
+    private func loadLatestWeight() async {
+        guard let weightType = HKQuantityType.quantityType(forIdentifier: .bodyMass) else { return }
+        
+        let query = HKSampleQuery(
+            sampleType: weightType,
+            predicate: nil,
+            limit: 1,
+            sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)]
+        ) { [weak self] _, samples, error in
+            guard let sample = samples?.first as? HKQuantitySample else { return }
+            
+            DispatchQueue.main.async {
+                self?.userWeight = sample.quantity.doubleValue(for: .gramUnit(with: .kilo))
+            }
+        }
+        
+        store.execute(query)
+    }
+    
+    func saveHeight(_ height: Double) async throws {
+        guard let heightType = HKQuantityType.quantityType(forIdentifier: .height) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        
+        let heightQuantity = HKQuantity(unit: HKUnit.meterUnit(with: .centi), doubleValue: height)
+        let heightSample = HKQuantitySample(
+            type: heightType,
+            quantity: heightQuantity,
+            start: Date(),
+            end: Date()
+        )
+        
+        try await store.save(heightSample)
+        
+        await MainActor.run {
+            userHeight = height
+        }
+    }
+    
+    func saveWeight(_ weight: Double) async throws {
+        guard let weightType = HKQuantityType.quantityType(forIdentifier: .bodyMass) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        
+        let weightQuantity = HKQuantity(unit: .gramUnit(with: .kilo), doubleValue: weight)
+        let weightSample = HKQuantitySample(
+            type: weightType,
+            quantity: weightQuantity,
+            start: Date(),
+            end: Date()
+        )
+        
+        try await store.save(weightSample)
+        
+        await MainActor.run {
+            userWeight = weight
+        }
+    }
+    
+    // Get recent HRV data
+    func getRecentHRVData(days: Int = 7) async -> [HKQuantitySample]? {
+        guard let hrvType = HKQuantityType.quantityType(forIdentifier: .heartRateVariabilitySDNN) else {
+            return nil
+        }
+        
+        let calendar = Calendar.current
+        let endDate = Date()
+        let startDate = calendar.date(byAdding: .day, value: -days, to: endDate)!
+        
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
+        
+        return await withCheckedContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: hrvType,
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)]
+            ) { _, samples, error in
+                if let error = error {
+                    print("Error fetching HRV data: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                continuation.resume(returning: samples as? [HKQuantitySample])
+            }
+            
+            self.store.execute(query)
+        }
+    }
+    
+    // Get recent heart rate data
+    func getRecentHeartRateData(days: Int = 7) async -> [HKQuantitySample]? {
+        guard let heartRateType = HKQuantityType.quantityType(forIdentifier: .heartRate) else {
+            return nil
+        }
+        
+        let calendar = Calendar.current
+        let endDate = Date()
+        let startDate = calendar.date(byAdding: .day, value: -days, to: endDate)!
+        
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
+        
+        return await withCheckedContinuation { continuation in
+            let query = HKSampleQuery(
+                sampleType: heartRateType,
+                predicate: predicate,
+                limit: HKObjectQueryNoLimit,
+                sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)]
+            ) { _, samples, error in
+                if let error = error {
+                    print("Error fetching heart rate data: \(error)")
+                    continuation.resume(returning: nil)
+                    return
+                }
+                
+                continuation.resume(returning: samples as? [HKQuantitySample])
+            }
+            
+            self.store.execute(query)
+        }
     }
 
     init() {
 #if !targetEnvironment(simulator)
         Task { 
-            await requestAuthorizationIfNeeded() 
+            await requestAuthorizationIfNeeded()
+            checkAuthorizationStatus()
+            loadUserData()
         }
 #endif
     }
@@ -57,13 +302,6 @@ final class HealthKitService {
         } catch {
             print("[HealthKit] Authorization failed: \(error)")
         }
-    }
-
-    func requestAuthorization() async throws -> Bool {
-        guard HKHealthStore.isHealthDataAvailable() else { return false }
-        try await store.requestAuthorization(toShare: [], read: readTypes)
-        isAuthorized = true
-        return true
     }
 
     func fetchTodaySnapshot() async throws -> TodaySnapshot? {
@@ -328,6 +566,153 @@ final class HealthKitService {
         // MET-hours approx = kcal / kg
         return kcal / kg
     }
+    
+    // MARK: - Exercise/Workout Methods
+    
+    /// Fetch recent workouts within the specified number of days
+    func fetchRecentWorkouts(days: Int = 7) async throws -> [HKWorkout] {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        
+        let calendar = Calendar.current
+        let endDate = Date()
+        let startDate = calendar.date(byAdding: .day, value: -days, to: endDate) ?? endDate
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictStartDate)
+        
+        return try await withCheckedThrowingContinuation { cont in
+            let query = HKSampleQuery(sampleType: HKObjectType.workoutType(), 
+                                    predicate: predicate, 
+                                    limit: HKObjectQueryNoLimit, 
+                                    sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)]) { _, samples, error in
+                if let error = error {
+                    cont.resume(throwing: error)
+                    return
+                }
+                
+                let workouts = samples?.compactMap { $0 as? HKWorkout } ?? []
+                cont.resume(returning: workouts)
+            }
+            
+            store.execute(query)
+        }
+    }
+    
+    /// Get today's exercise minutes (Apple Exercise Time)
+    func todayExerciseMinutes() async throws -> Double {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let exerciseType = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        
+        let range = calendar.todayRange
+        let unit = HKUnit.minute()
+        
+        return try await withCheckedThrowingContinuation { cont in
+            let query = HKStatisticsQuery(quantityType: exerciseType, 
+                                        quantitySamplePredicate: .defaultPredicate(for: range), 
+                                        options: .cumulativeSum) { _, result, error in
+                if let error = error {
+                    cont.resume(throwing: error)
+                    return
+                }
+                
+                let minutes = result?.sumQuantity()?.doubleValue(for: unit) ?? 0
+                cont.resume(returning: minutes)
+            }
+            
+            store.execute(query)
+        }
+    }
+    
+    /// Get total distance walked/run today
+    func todayWalkingRunningDistance() async throws -> Double {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let distanceType = HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        
+        let range = calendar.todayRange
+        let unit = HKUnit.meterUnit(with: .kilo) // kilometers
+        
+        return try await withCheckedThrowingContinuation { cont in
+            let query = HKStatisticsQuery(quantityType: distanceType, 
+                                        quantitySamplePredicate: .defaultPredicate(for: range), 
+                                        options: .cumulativeSum) { _, result, error in
+                if let error = error {
+                    cont.resume(throwing: error)
+                    return
+                }
+                
+                let distance = result?.sumQuantity()?.doubleValue(for: unit) ?? 0
+                cont.resume(returning: distance)
+            }
+            
+            store.execute(query)
+        }
+    }
+    
+    /// Get weekly exercise statistics
+    func weeklyExerciseStats() async throws -> (totalMinutes: Double, totalWorkouts: Int, avgDuration: Double) {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        
+        // Get recent workouts from the past 7 days
+        let workouts = try await fetchRecentWorkouts(days: 7)
+        let totalWorkouts = workouts.count
+        
+        // Calculate total duration in minutes
+        let totalMinutes = workouts.reduce(0) { total, workout in
+            total + workout.duration / 60.0 // Convert seconds to minutes
+        }
+        
+        let avgDuration = totalWorkouts > 0 ? totalMinutes / Double(totalWorkouts) : 0
+        
+        return (totalMinutes: totalMinutes, totalWorkouts: totalWorkouts, avgDuration: avgDuration)
+    }
+    
+    /// Get exercise data points for charting
+    func exerciseDataPoints(days: Int = 30) async throws -> [HealthDataPoint] {
+        guard isAuthorized else { throw HealthKitServiceError.notAuthorized }
+        guard let exerciseType = HKObjectType.quantityType(forIdentifier: .appleExerciseTime) else {
+            throw HealthKitServiceError.notAvailable
+        }
+        
+        let calendar = Calendar.current
+        let endDate = Date()
+        let startDate = calendar.date(byAdding: .day, value: -days, to: endDate) ?? endDate
+        let unit = HKUnit.minute()
+        
+        return try await withCheckedThrowingContinuation { cont in
+            var dailyStats: [Date: Double] = [:]
+            
+            let query = HKStatisticsCollectionQuery(
+                quantityType: exerciseType,
+                quantitySamplePredicate: nil,
+                options: .cumulativeSum,
+                anchorDate: startDate,
+                intervalComponents: DateComponents(day: 1)
+            )
+            
+            query.initialResultsHandler = { _, collection, error in
+                if let error = error {
+                    cont.resume(throwing: error)
+                    return
+                }
+                
+                collection?.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
+                    let date = statistics.startDate
+                    let value = statistics.sumQuantity()?.doubleValue(for: unit) ?? 0
+                    dailyStats[date] = value
+                }
+                
+                let dataPoints = dailyStats.map { date, value in
+                    HealthDataPoint(date: date, value: value)
+                }.sorted { $0.date < $1.date }
+                
+                cont.resume(returning: dataPoints)
+            }
+            
+            store.execute(query)
+        }
+    }
 }
 #else
 final class HealthKitService {
@@ -342,5 +727,14 @@ final class HealthKitService {
     func energyProxyDaily(days: Int) async -> [HealthDataPoint] { [] }
     func rollingAverage(_ series: [HealthDataPoint], window: Int) -> [HealthDataPoint] { series }
     func lastNightSleepHours() async throws -> Double { 0 }
+    
+    // Exercise/Workout mock methods
+    func fetchRecentWorkouts(days: Int = 7) async throws -> [Any] { [] }
+    func todayExerciseMinutes() async throws -> Double { 0 }
+    func todayWalkingRunningDistance() async throws -> Double { 0 }
+    func weeklyExerciseStats() async throws -> (totalMinutes: Double, totalWorkouts: Int, avgDuration: Double) { 
+        (totalMinutes: 0, totalWorkouts: 0, avgDuration: 0) 
+    }
+    func exerciseDataPoints(days: Int = 30) async throws -> [HealthDataPoint] { [] }
 }
 #endif

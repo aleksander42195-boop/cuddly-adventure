@@ -1,4 +1,5 @@
 import SwiftUI
+import HealthKit
 
 struct SettingsView: View {
     @EnvironmentObject private var engineManager: CoachEngineManager
@@ -10,6 +11,19 @@ struct SettingsView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: AppTheme.spacing) {
+                    // Health Settings Section
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Health").font(.headline)
+                            NavigationLink("Health & Profile Settings") { 
+                                HealthSettingsView()
+                            }
+                            NavigationLink("Privacy Settings") { 
+                                PrivacySettingsView() 
+                            }
+                        }
+                    }
+                    
                     GlassCard {
                         VStack(alignment: .leading, spacing: AppTheme.spacingS) {
                             Text("Coach").font(.headline)
@@ -62,6 +76,161 @@ struct SettingsView: View {
             .background(AppTheme.background.ignoresSafeArea())
             .navigationTitle("Innstillinger")
             .onAppear { selectedIconKey = AppIconManager.currentKey() }
+        }
+    }
+}
+
+// Temporary inline HealthSettingsView until file inclusion issue is resolved
+struct HealthSettingsView: View {
+    @StateObject private var healthService = HealthKitService.shared
+    @AppStorage("userName") private var userName: String = ""
+    @State private var isRequestingAuthorization = false
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: AppTheme.spacing) {
+                // Authorization Section
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("HealthKit Authorization")
+                            .font(.headline)
+                        
+                        if healthService.isAuthorized {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                Text("Authorized")
+                                    .foregroundColor(.green)
+                            }
+                        } else {
+                            Button("Request Authorization") {
+                                Task {
+                                    isRequestingAuthorization = true
+                                    try? await healthService.requestAuthorization()
+                                    isRequestingAuthorization = false
+                                }
+                            }
+                            .disabled(isRequestingAuthorization)
+                        }
+                    }
+                }
+                
+                // Profile Section
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("Profile")
+                            .font(.headline)
+                        
+                        TextField("Name", text: $userName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                        
+                        Text("Connect Apple Health to sync your health data")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                
+                // Exercise Data Section
+                if healthService.isAuthorized {
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                            Text("Today's Activity")
+                                .font(.headline)
+                            
+                            ExerciseStatsView()
+                                .environmentObject(healthService)
+                        }
+                    }
+                }
+            }
+            .padding()
+        }
+        .navigationTitle("Health Settings")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// Exercise stats component
+struct ExerciseStatsView: View {
+    @EnvironmentObject private var healthService: HealthKitService
+    @State private var exerciseMinutes: Double = 0
+    @State private var walkingDistance: Double = 0
+    @State private var weeklyStats: (totalMinutes: Double, totalWorkouts: Int, avgDuration: Double) = (0, 0, 0)
+    @State private var isLoading = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: AppTheme.spacingXS) {
+            if isLoading {
+                ProgressView("Loading exercise data...")
+                    .frame(maxWidth: .infinity, alignment: .center)
+            } else {
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Exercise")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("\(Int(exerciseMinutes)) min")
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing) {
+                        Text("Distance")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(String(format: "%.1f km", walkingDistance))
+                            .font(.title3)
+                            .fontWeight(.semibold)
+                    }
+                }
+                
+                Divider()
+                
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("This Week")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("\(weeklyStats.totalWorkouts) workouts")
+                            .font(.subheadline)
+                        Text(String(format: "%.0f min total", weeklyStats.totalMinutes))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    VStack(alignment: .trailing) {
+                        Text("Avg Duration")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(String(format: "%.0f min", weeklyStats.avgDuration))
+                            .font(.subheadline)
+                    }
+                }
+            }
+        }
+        .task {
+            await loadExerciseData()
+        }
+    }
+    
+    private func loadExerciseData() async {
+        isLoading = true
+        defer { isLoading = false }
+        
+        do {
+            async let exerciseData = healthService.todayExerciseMinutes()
+            async let distanceData = healthService.todayWalkingRunningDistance()
+            async let weeklyData = healthService.weeklyExerciseStats()
+            
+            exerciseMinutes = try await exerciseData
+            walkingDistance = try await distanceData
+            weeklyStats = try await weeklyData
+        } catch {
+            print("Error loading exercise data: \(error)")
         }
     }
 }
