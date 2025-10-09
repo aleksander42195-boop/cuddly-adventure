@@ -51,8 +51,7 @@ struct MetricCardView: View {
             }
             .padding()
         }
-        .frame(height: 200)
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: 180)
     }
 }
 

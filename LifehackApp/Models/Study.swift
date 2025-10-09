@@ -8,7 +8,6 @@ struct Study: Identifiable, Hashable, Codable {
         case general = "General HRV"
     }
 
-    let id = UUID()
     let title: String
     let authors: String
     let journal: String
@@ -20,9 +19,14 @@ struct Study: Identifiable, Hashable, Codable {
     let category: Category
 
     // Stable identifier derived from DOI if available, otherwise from title
-    var slug: String {
+    var id: String {
         let base = (doi?.lowercased() ?? title.lowercased())
         let allowed = base.unicodeScalars.filter { CharacterSet.alphanumerics.contains($0) }
         return String(String.UnicodeScalarView(allowed))
+    }
+    
+    // Stable identifier derived from DOI if available, otherwise from title  
+    var slug: String {
+        return id
     }
 }

@@ -25,6 +25,7 @@ struct TodayView: View {
                 refreshButton
             }
             .padding()
+            .frame(maxWidth: min(UIScreen.main.bounds.width - 32, 600))
         }
         .refreshable {
             await app.refreshFromHealthIfAvailable()
