@@ -8,75 +8,73 @@ struct SettingsView: View {
     @State private var selectedIconKey: String? = AppIconManager.currentKey()
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: AppTheme.spacing) {
-                    // Health Settings Section
-                    GlassCard {
-                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                            Text("Health").font(.headline)
-                            NavigationLink("Health & Profile Settings") { 
-                                HealthSettingsView()
-                            }
-                            NavigationLink("Privacy Settings") { 
-                                PrivacySettingsView() 
-                            }
+        ScrollView {
+            VStack(spacing: AppTheme.spacing) {
+                // Health Settings Section
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("Health").font(.headline)
+                        NavigationLink("Health & Profile Settings") { 
+                            HealthSettingsView()
                         }
-                    }
-                    
-                    GlassCard {
-                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                            Text("Coach").font(.headline)
-                            NavigationLink("Coach Engine") { CoachEngineSettingsView() }
-                            NavigationLink("HRV Studies") { StudiesView() }
-                        }
-                    }
-                    GlassCard {
-                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                            Text("Appearance").font(.headline)
-                            Picker("App Icon", selection: Binding(
-                                get: { selectedIconKey ?? "__primary__" },
-                                set: { newVal in
-                                    let key: String? = (newVal == "__primary__") ? nil : newVal
-                                    selectedIconKey = key
-                                    AppIconManager.set(key: key)
-                                }
-                            )) {
-                                ForEach(AppIconManager.options) { opt in
-                                    Text(opt.title).tag(opt.key ?? "__primary__")
-                                }
-                            }
-                            .pickerStyle(.menu)
-                        }
-                    }
-                    GlassCard {
-                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                            Text("Preferences").font(.headline)
-                            Toggle("Notifications", isOn: $notificationsEnabled)
-                            Toggle("Haptics", isOn: $hapticsEnabled)
-                        }
-                    }
-                    GlassCard {
-                        VStack(alignment: .leading, spacing: AppTheme.spacingS) {
-                            Text("About").font(.headline)
-                            HStack {
-                                Text("Version")
-                                Spacer()
-                                Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-")
-                                    .foregroundStyle(.secondary)
-                            }
-                            if let url = URL(string: "https://example.com/privacy") {
-                                Link("Privacy Policy", destination: url)
-                            }
+                        NavigationLink("Privacy Settings") { 
+                            PrivacySettingsView() 
                         }
                     }
                 }
-                .padding()
+                
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("Coach").font(.headline)
+                        NavigationLink("Coach Engine") { CoachEngineSettingsView() }
+                        NavigationLink("HRV Studies") { StudiesView() }
+                    }
+                }
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("Appearance").font(.headline)
+                        Picker("App Icon", selection: Binding(
+                            get: { selectedIconKey ?? "__primary__" },
+                            set: { newVal in
+                                let key: String? = (newVal == "__primary__") ? nil : newVal
+                                selectedIconKey = key
+                                AppIconManager.set(key: key)
+                            }
+                        )) {
+                            ForEach(AppIconManager.options) { opt in
+                                Text(opt.title).tag(opt.key ?? "__primary__")
+                            }
+                        }
+                        .pickerStyle(.menu)
+                    }
+                }
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("Preferences").font(.headline)
+                        Toggle("Notifications", isOn: $notificationsEnabled)
+                        Toggle("Haptics", isOn: $hapticsEnabled)
+                    }
+                }
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("About").font(.headline)
+                        HStack {
+                            Text("Version")
+                            Spacer()
+                            Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-")
+                                .foregroundStyle(.secondary)
+                        }
+                        if let url = URL(string: "https://example.com/privacy") {
+                            Link("Privacy Policy", destination: url)
+                        }
+                    }
+                }
             }
-            .background(AppTheme.background.ignoresSafeArea())
-            .navigationTitle("Innstillinger")
-            .onAppear { selectedIconKey = AppIconManager.currentKey() }
+            .padding()
         }
+        .background(AppTheme.background.ignoresSafeArea())
+        .navigationTitle("Innstillinger")
+        .onAppear { selectedIconKey = AppIconManager.currentKey() }
     }
 }
 
