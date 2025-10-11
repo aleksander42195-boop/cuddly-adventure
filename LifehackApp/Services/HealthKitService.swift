@@ -82,11 +82,7 @@ final class HealthKitService: ObservableObject, @unchecked Sendable {
         }
         
         // Create separate sets for different types
-        var allReadTypes = readTypes
-        let characteristicTypes: Set<HKCharacteristicType> = [
-            HKObjectType.characteristicType(forIdentifier: .biologicalSex)!,
-            HKObjectType.characteristicType(forIdentifier: .dateOfBirth)!
-        ]
+        let allReadTypes = readTypes
         
         try await store.requestAuthorization(toShare: writeTypes, read: allReadTypes)
         
@@ -681,8 +677,6 @@ final class HealthKitService: ObservableObject, @unchecked Sendable {
         let unit = HKUnit.minute()
         
         return try await withCheckedThrowingContinuation { cont in
-            var dailyStats: [Date: Double] = [:]
-            
             let query = HKStatisticsCollectionQuery(
                 quantityType: exerciseType,
                 quantitySamplePredicate: nil,
@@ -696,6 +690,8 @@ final class HealthKitService: ObservableObject, @unchecked Sendable {
                     cont.resume(throwing: error)
                     return
                 }
+                
+                var dailyStats: [Date: Double] = [:]
                 
                 collection?.enumerateStatistics(from: startDate, to: endDate) { statistics, _ in
                     let date = statistics.startDate

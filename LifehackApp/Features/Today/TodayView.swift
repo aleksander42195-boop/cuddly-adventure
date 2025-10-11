@@ -68,15 +68,48 @@ struct TodayView: View {
                     }
                 )
                 
-                // Advanced Activity Card
+                // Advanced Activity Card - temporarily commented out for debugging
+                /*
                 AdvancedActivityCard(
                     metHours: app.todayMETHours,
                     steps: app.today.steps,
                     activeMinutes: activeMinutes,
                     walkingDistance: walkingDistance
                 )
+                */
                 
-                // Advanced Sleep Card
+                // Temporary fallback to simple activity section
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        Text("Activity")
+                            .font(.headline)
+                        
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("MET Hours")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text(String(format: "%.1f", app.todayMETHours))
+                                    .font(.title2.monospacedDigit())
+                                    .bold()
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing) {
+                                Text("Steps")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                Text("\(app.today.steps)")
+                                    .font(.title2.monospacedDigit())
+                                    .bold()
+                            }
+                        }
+                    }
+                }
+                
+                // Advanced Sleep Card - temporarily commented out for debugging
+                /*
                 AdvancedSleepCard(
                     sleepHours: app.lastNightSleepHours,
                     bedtime: calculateBedtime(),
@@ -84,6 +117,42 @@ struct TodayView: View {
                     sleepEfficiency: calculateSleepEfficiency(),
                     zodiacSign: Zodiac.from(date: app.birthdate).rawValue
                 )
+                */
+                
+                // Temporary fallback to simple sleep section
+                GlassCard {
+                    VStack(alignment: .leading, spacing: AppTheme.spacingS) {
+                        HStack {
+                            Image(systemName: "moon.fill")
+                                .foregroundStyle(.blue)
+                            Text("Sleep")
+                                .font(.headline)
+                            Spacer()
+                        }
+                        
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text("Last Night")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Text("\(String(format: "%.1f", app.lastNightSleepHours)) hours")
+                                    .font(.title2.monospacedDigit())
+                                    .bold()
+                            }
+                            
+                            Spacer()
+                            
+                            VStack(alignment: .trailing) {
+                                Text("Zodiac")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                                Text(Zodiac.from(date: app.birthdate).rawValue)
+                                    .font(.title3)
+                                    .bold()
+                            }
+                        }
+                    }
+                }
                 refreshButton
             }
             .padding()
