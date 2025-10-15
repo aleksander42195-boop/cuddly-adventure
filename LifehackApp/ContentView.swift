@@ -5,7 +5,9 @@ struct ContentView: View {
 
     var body: some View {
         TabView(selection: $appState.selectedTab) {
-            TodayView()
+            NavigationStack {
+                TodayView()
+            }
                 .tabItem {
                     ZStack(alignment: .topTrailing) {
                         Label("Today", systemImage: "sun.max")
@@ -19,10 +21,14 @@ struct ContentView: View {
                     }
                 }
                 .tag(AppState.Tab.today)
-            JournalView()
+            NavigationStack {
+                JournalView()
+            }
                 .tabItem { Label("Journal", systemImage: "book.closed") }
                 .tag(AppState.Tab.journal)
-            TrendsView()
+            NavigationStack {
+                TrendsView()
+            }
                 .tabItem { Label("Trends", systemImage: "chart.line.uptrend.xyaxis") }
                 .tag(AppState.Tab.trends)
         }

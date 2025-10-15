@@ -57,6 +57,7 @@
 		SECRTS000000000000001 /* Services/Secrets.swift in Sources */ = {isa = PBXBuildFile; fileRef = SECRTS000000000000000 /* Services/Secrets.swift */; };
 		SECSTR000000000000001 /* Services/SecureStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = SECSTR000000000000000 /* Services/SecureStore.swift */; };
 		SETTGV000000000000001 /* Features/Settings/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SETTGV000000000000000 /* Features/Settings/SettingsView.swift */; };
+		SETDASH000000000000001 /* Features/Settings/SettingsDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SETDASH000000000000000 /* Features/Settings/SettingsDashboardView.swift */; };
 		SHRKEYS000000000000001 /* Config/SharedKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = SHRKEYS000000000000000 /* Config/SharedKeys.swift */; };
 		SLPSVC000000000000001 /* Services/SleepService.swift in Sources */ = {isa = PBXBuildFile; fileRef = SLPSVC000000000000000 /* Services/SleepService.swift */; };
 		SSE0000000000000000001 /* Services/SSE.swift in Sources */ = {isa = PBXBuildFile; fileRef = SSE0000000000000000000 /* Services/SSE.swift */; };
@@ -130,6 +131,7 @@
 		SECRTS000000000000000 /* Services/Secrets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/Secrets.swift; sourceTree = "<group>"; };
 		SECSTR000000000000000 /* Services/SecureStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SecureStore.swift; sourceTree = "<group>"; };
 		SETTGV000000000000000 /* Features/Settings/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/SettingsView.swift; sourceTree = "<group>"; };
+		SETDASH000000000000000 /* Features/Settings/SettingsDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Features/Settings/SettingsDashboardView.swift; sourceTree = "<group>"; };
 		SHRKEYS000000000000000 /* Config/SharedKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config/SharedKeys.swift; sourceTree = "<group>"; };
 		SLPSVC000000000000000 /* Services/SleepService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SleepService.swift; sourceTree = "<group>"; };
 		SSE0000000000000000000 /* Services/SSE.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/SSE.swift; sourceTree = "<group>"; };
@@ -209,6 +211,7 @@
 				TODAYV000000000000000 /* Features/Today/TodayView.swift */,
 				STUDYV000000000000000 /* Features/Studies/StudiesView.swift */,
 				SETTGV000000000000000 /* Features/Settings/SettingsView.swift */,
+				SETDASH000000000000000 /* Features/Settings/SettingsDashboardView.swift */,
 				PROFIV000000000000000 /* Features/Profile/ProfileView.swift */,
 				USERME000000000000000 /* Features/Profile/UserMetricsView.swift */,
 				PRIVAC000000000000000 /* Features/Profile/PrivacySettingsView.swift */,
@@ -371,6 +374,7 @@
 				TODAYV000000000000001 /* Features/Today/TodayView.swift in Sources */,
 				STUDYV000000000000001 /* Features/Studies/StudiesView.swift in Sources */,
 				SETTGV000000000000001 /* Features/Settings/SettingsView.swift in Sources */,
+				SETDASH000000000000001 /* Features/Settings/SettingsDashboardView.swift in Sources */,
 				PROFIV000000000000001 /* Features/Profile/ProfileView.swift in Sources */,
 				USERME000000000000001 /* Features/Profile/UserMetricsView.swift in Sources */,
 				PRIVAC000000000000001 /* Features/Profile/PrivacySettingsView.swift in Sources */,
