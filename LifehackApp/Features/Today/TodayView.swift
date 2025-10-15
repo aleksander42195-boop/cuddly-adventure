@@ -179,7 +179,7 @@ struct TodayView: View {
                             .foregroundStyle(.secondary)
                         
                         Button("Enable Health Access") {
-                            Task { await app.requestHealthAuthorization() }
+                            Task { _ = await app.requestHealthAuthorization() }
                         }
                         .buttonStyle(AppTheme.LiquidGlassButtonStyle())
                     }

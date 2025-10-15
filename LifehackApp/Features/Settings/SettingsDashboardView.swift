@@ -47,7 +47,8 @@ struct SettingsDashboardView: View {
                         guard !isRequestingAuthorization else { return }
                         Task {
                             isRequestingAuthorization = true
-                            await app.requestHealthAuthorization()
+                            let granted = await app.requestHealthAuthorization()
+                            if granted { app.successHaptic() }
                             isRequestingAuthorization = false
                         }
                     } label: {
@@ -150,6 +151,7 @@ struct SettingsDashboardView: View {
 
                 NavigationLink {
                     SettingsView()
+                        .environmentObject(app)
                         .environmentObject(coachEngineManager)
                 } label: {
                     Label("Open Full Settings", systemImage: "ellipsis.circle")

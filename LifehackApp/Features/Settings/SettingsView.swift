@@ -2,6 +2,7 @@ import SwiftUI
 import HealthKit
 
 struct SettingsView: View {
+    @EnvironmentObject private var app: AppState
     @EnvironmentObject private var engineManager: CoachEngineManager
     @AppStorage("notificationsEnabled") private var notificationsEnabled: Bool = true
     @AppStorage("hapticsEnabled") private var hapticsEnabled: Bool = true
@@ -80,10 +81,14 @@ struct SettingsView: View {
 
 // Temporary inline HealthSettingsView until file inclusion issue is resolved
 struct HealthSettingsView: View {
-    @StateObject private var healthService = HealthKitService.shared
+    @EnvironmentObject private var app: AppState
     @AppStorage("userName") private var userName: String = ""
     @State private var isRequestingAuthorization = false
+    @State private var authorizationMessage: String? = nil
+    @State private var authorizationSucceeded: Bool? = nil
     
+    private var healthService: HealthKitService { app.healthService }
+
     var body: some View {
         ScrollView {
             VStack(spacing: AppTheme.spacing) {
@@ -101,14 +106,44 @@ struct HealthSettingsView: View {
                                     .foregroundColor(.green)
                             }
                         } else {
-                            Button("Request Authorization") {
-                                Task {
+                            Button {
+                                Task { @MainActor in
+                                    guard !isRequestingAuthorization else { return }
                                     isRequestingAuthorization = true
-                                    try? await healthService.requestAuthorization()
+                                    authorizationMessage = nil
+                                    authorizationSucceeded = nil
+                                    let granted = await app.requestHealthAuthorization()
+                                    authorizationSucceeded = granted
+                                    if granted {
+                                        authorizationMessage = "Health access enabled."
+                                        app.successHaptic()
+                                    } else {
+                                        authorizationMessage = "Authorization was not granted. You can enable access in the Health app."
+                                        app.tapHaptic()
+                                    }
                                     isRequestingAuthorization = false
                                 }
                             }
+                            label: {
+                                HStack(spacing: AppTheme.spacingS) {
+                                    if isRequestingAuthorization {
+                                        ProgressView()
+                                            .progressViewStyle(.circular)
+                                            .tint(.white)
+                                    }
+                                    Text("Request Authorization")
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(AppTheme.LiquidGlassButtonStyle())
                             .disabled(isRequestingAuthorization)
+                        }
+
+                        if let message = authorizationMessage {
+                            Text(message)
+                                .font(.footnote)
+                                .foregroundStyle((authorizationSucceeded ?? false) ? Color.green : Color.orange)
+                                .padding(.top, AppTheme.spacingXS)
                         }
                     }
                 }

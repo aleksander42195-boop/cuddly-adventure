@@ -113,9 +113,15 @@ final class AppState: ObservableObject {
     }
 
     var isHealthAuthorized: Bool { healthService.isAuthorized }
-    func requestHealthAuthorization() async {
-        _ = try? await healthService.requestAuthorization()
+    @discardableResult
+    func requestHealthAuthorization() async -> Bool {
+        do {
+            _ = try await healthService.requestAuthorization()
+        } catch {
+            return false
+        }
         await refreshFromHealthIfAvailable()
+        return healthService.isAuthorized
     }
 
     func tapHaptic() {
