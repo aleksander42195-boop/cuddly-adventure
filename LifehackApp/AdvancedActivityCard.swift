@@ -13,7 +13,13 @@ struct AdvancedActivityCard: View {
     private let timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
     
     private var activityLevel: ActivityLevel {
-        ActivityLevel.from(metHours: metHours)
+        switch metHours {
+        case 0..<3: return .sedentary
+        case 3..<6: return .light
+        case 6..<12: return .moderate
+        case 12..<20: return .active
+        default: return .veryActive
+        }
     }
     
     private var stepGoalProgress: Double {
@@ -191,89 +197,73 @@ struct AdvancedActivityCard: View {
     
     private var rotatingInsights: some View {
         VStack(alignment: .leading, spacing: 12) {
-            insightHeader
-            currentInsightView
-        }
-        .padding(16)
-        .background(insightBackground)
-        .padding(.horizontal, 20)
-        .padding(.bottom, 20)
-    }
-    
-    private var insightHeader: some View {
-        HStack {
-            Text("Activity Insights")
-                .font(.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(.white)
-            
-            Spacer()
-            
-            Text("\(currentMetricIndex + 1)/3")
-                .font(.caption2)
-                .foregroundColor(.white.opacity(0.6))
-        }
-    }
-    
-    private var currentInsightView: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            let insights = getActivityInsights()
-            let currentInsight = insights[currentMetricIndex]
-            
-            insightContent(currentInsight)
-            progressIndicators
-        }
-    }
-    
-    private func insightContent(_ insight: ActivityInsight) -> some View {
-        HStack(spacing: 12) {
-            Image(systemName: insight.icon)
-                .font(.title3)
-                .foregroundColor(insight.color)
-                .frame(width: 32, height: 32)
-                .background(
-                    Circle()
-                        .fill(insight.color.opacity(0.2))
-                )
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text(insight.title)
-                    .font(.subheadline)
+            HStack {
+                Text("Activity Insights")
+                    .font(.headline)
                     .fontWeight(.semibold)
                     .foregroundColor(.white)
                 
-                Text(insight.description)
-                    .font(.caption)
-                    .foregroundColor(.white.opacity(0.8))
-                    .multilineTextAlignment(.leading)
+                Spacer()
+                
+                Text("\(currentMetricIndex + 1)/3")
+                    .font(.caption2)
+                    .foregroundColor(.white.opacity(0.6))
             }
             
-            Spacer()
-        }
-        .transition(.asymmetric(
-            insertion: .move(edge: .trailing).combined(with: .opacity),
-            removal: .move(edge: .leading).combined(with: .opacity)
-        ))
-    }
-    
-    private var progressIndicators: some View {
-        HStack(spacing: 4) {
-            ForEach(0..<3, id: \.self) { index in
-                Capsule()
-                    .fill(index == currentMetricIndex ? activityLevel.primaryColor : Color.white.opacity(0.3))
-                    .frame(width: index == currentMetricIndex ? 20 : 6, height: 4)
-                    .animation(.easeInOut(duration: 0.3), value: currentMetricIndex)
+            VStack(alignment: .leading, spacing: 12) {
+                let insights = getActivityInsights()
+                let currentInsight = insights[currentMetricIndex]
+                
+                HStack(spacing: 12) {
+                    Image(systemName: currentInsight.icon)
+                        .font(.title3)
+                        .foregroundColor(currentInsight.color)
+                        .frame(width: 32, height: 32)
+                        .background(
+                            Circle()
+                                .fill(currentInsight.color.opacity(0.2))
+                        )
+                    
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(currentInsight.title)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.white)
+                        
+                        Text(currentInsight.description)
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.8))
+                            .multilineTextAlignment(.leading)
+                    }
+                    
+                    Spacer()
+                }
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                    removal: .move(edge: .leading).combined(with: .opacity)
+                ))
+                
+                // Progress indicators
+                HStack(spacing: 4) {
+                    ForEach(0..<3, id: \.self) { index in
+                        Capsule()
+                            .fill(index == currentMetricIndex ? activityLevel.primaryColor : Color.white.opacity(0.3))
+                            .frame(width: index == currentMetricIndex ? 20 : 6, height: 4)
+                            .animation(.easeInOut(duration: 0.3), value: currentMetricIndex)
+                    }
+                }
             }
         }
-    }
-    
-    private var insightBackground: some View {
-        RoundedRectangle(cornerRadius: 16)
-            .fill(Color.black.opacity(0.3))
-            .overlay(
-                RoundedRectangle(cornerRadius: 16)
-                    .stroke(activityLevel.primaryColor.opacity(0.3), lineWidth: 1)
-            )
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.3))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(activityLevel.primaryColor.opacity(0.3), lineWidth: 1)
+                )
+        )
+        .padding(.horizontal, 20)
     }
     
     private var actionSection: some View {

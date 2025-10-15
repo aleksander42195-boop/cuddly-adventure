@@ -21,6 +21,7 @@ struct UserMetricsView: View {
     
     // Lifestyle
     @State private var activityLevel: ActivityLevel = .moderate
+    private let activityLevelOptions: [ActivityLevel] = ActivityLevel.allCases
     @State private var fitnessGoals: Set<FitnessGoal> = []
     @State private var sleepHours: Double = 8.0
     
@@ -181,7 +182,7 @@ struct UserMetricsView: View {
     private var lifestyleSection: some View {
         Section("Lifestyle") {
             Picker("Activity Level", selection: $activityLevel) {
-                ForEach(ActivityLevel.allCases, id: \.self) { level in
+                ForEach(activityLevelOptions) { level in
                     VStack(alignment: .leading) {
                         Text(level.title)
                         Text(level.description)
@@ -314,7 +315,7 @@ struct UserMetricsView: View {
         }
         
         if let activityLevelRaw = UserDefaults.standard.string(forKey: "user_activity_level"),
-           let savedActivityLevel = ActivityLevel(rawValue: activityLevelRaw) {
+           let savedActivityLevel = activityLevelFromStoredValue(activityLevelRaw) {
             activityLevel = savedActivityLevel
         }
         
@@ -346,7 +347,7 @@ struct UserMetricsView: View {
         UserDefaults.standard.set(restingHeartRate, forKey: "user_resting_hr")
         UserDefaults.standard.set(bloodType.rawValue, forKey: "user_blood_type")
         
-        UserDefaults.standard.set(activityLevel.rawValue, forKey: "user_activity_level")
+    UserDefaults.standard.set(activityLevelStorageValue(activityLevel), forKey: "user_activity_level")
         UserDefaults.standard.set(sleepHours, forKey: "user_sleep_hours")
         
         if let goalsData = try? JSONEncoder().encode(fitnessGoals) {
@@ -366,6 +367,31 @@ struct UserMetricsView: View {
         if app.isHealthAuthorized {
             // This could be expanded to write user data back to HealthKit
             print("Syncing with HealthKit...")
+        }
+    }
+}
+
+// MARK: - Activity Level Helpers
+
+private extension UserMetricsView {
+    func activityLevelStorageValue(_ level: ActivityLevel) -> String {
+        switch level {
+        case .sedentary: return "sedentary"
+        case .light: return "light"
+        case .moderate: return "moderate"
+        case .active: return "active"
+        case .veryActive: return "very_active"
+        }
+    }
+    
+    func activityLevelFromStoredValue(_ value: String) -> ActivityLevel? {
+        switch value {
+        case "sedentary": return .sedentary
+        case "light": return .light
+        case "moderate": return .moderate
+        case "active": return .active
+        case "very_active": return .veryActive
+        default: return nil
         }
     }
 }
@@ -432,34 +458,6 @@ enum BloodType: String, CaseIterable, Codable {
         switch self {
         case .unknown: return "Unknown"
         default: return rawValue
-        }
-    }
-}
-
-enum ActivityLevel: String, CaseIterable, Codable {
-    case sedentary = "sedentary"
-    case light = "light"
-    case moderate = "moderate"
-    case active = "active"
-    case veryActive = "very_active"
-    
-    var title: String {
-        switch self {
-        case .sedentary: return "Sedentary"
-        case .light: return "Light"
-        case .moderate: return "Moderate"
-        case .active: return "Active"
-        case .veryActive: return "Very Active"
-        }
-    }
-    
-    var description: String {
-        switch self {
-        case .sedentary: return "Desk job, little exercise"
-        case .light: return "Light exercise 1-3 days/week"
-        case .moderate: return "Moderate exercise 3-5 days/week"
-        case .active: return "Heavy exercise 6-7 days/week"
-        case .veryActive: return "Very heavy physical work"
         }
     }
 }

@@ -21,7 +21,8 @@ private extension NSPredicate {
     }
 }
 
-final class HealthKitService: ObservableObject, @unchecked Sendable {
+@MainActor
+final class HealthKitService: ObservableObject {
     static let shared = HealthKitService()
     
     private let store = HKHealthStore()
@@ -86,12 +87,11 @@ final class HealthKitService: ObservableObject, @unchecked Sendable {
         
         try await store.requestAuthorization(toShare: writeTypes, read: allReadTypes)
         
-        await MainActor.run {
-            checkAuthorizationStatus()
-            loadUserData()
-        }
+        await checkAuthorizationStatus()
+        await loadUserData()
     }
     
+    @MainActor
     private func checkAuthorizationStatus() {
         // Check if we have authorization for key health types
         let keyTypes: [HKObjectType] = [
@@ -107,13 +107,12 @@ final class HealthKitService: ObservableObject, @unchecked Sendable {
         isAuthorized = hasAuthorization
     }
     
-    private func loadUserData() {
-        Task {
-            await loadBirthDate()
-            await loadBiologicalSex()
-            await loadLatestHeight()
-            await loadLatestWeight()
-        }
+    @MainActor
+    private func loadUserData() async {
+        await loadBirthDate()
+        await loadBiologicalSex()
+        await loadLatestHeight()
+        await loadLatestWeight()
     }
     
     @MainActor
@@ -145,11 +144,12 @@ final class HealthKitService: ObservableObject, @unchecked Sendable {
             predicate: nil,
             limit: 1,
             sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)]
-        ) { [weak self] _, samples, error in
+        ) { [weak self] _, samples, _ in
             guard let sample = samples?.first as? HKQuantitySample else { return }
-            
-            DispatchQueue.main.async {
-                self?.userHeight = sample.quantity.doubleValue(for: HKUnit.meterUnit(with: .centi))
+
+            let heightValue = sample.quantity.doubleValue(for: HKUnit.meterUnit(with: .centi))
+            Task { @MainActor [weak self] in
+                self?.userHeight = heightValue
             }
         }
         
@@ -165,11 +165,12 @@ final class HealthKitService: ObservableObject, @unchecked Sendable {
             predicate: nil,
             limit: 1,
             sortDescriptors: [NSSortDescriptor(key: HKSampleSortIdentifierEndDate, ascending: false)]
-        ) { [weak self] _, samples, error in
+        ) { [weak self] _, samples, _ in
             guard let sample = samples?.first as? HKQuantitySample else { return }
-            
-            DispatchQueue.main.async {
-                self?.userWeight = sample.quantity.doubleValue(for: .gramUnit(with: .kilo))
+
+            let weightValue = sample.quantity.doubleValue(for: .gramUnit(with: .kilo))
+            Task { @MainActor [weak self] in
+                self?.userWeight = weightValue
             }
         }
         
@@ -282,10 +283,10 @@ final class HealthKitService: ObservableObject, @unchecked Sendable {
 
     init() {
 #if !targetEnvironment(simulator)
-        Task { 
+        Task {
             await requestAuthorizationIfNeeded()
-            checkAuthorizationStatus()
-            loadUserData()
+            await checkAuthorizationStatus()
+            await loadUserData()
         }
 #endif
     }
@@ -294,7 +295,9 @@ final class HealthKitService: ObservableObject, @unchecked Sendable {
         guard HKHealthStore.isHealthDataAvailable() else { return }
         do {
             try await store.requestAuthorization(toShare: [], read: readTypes)
-            isAuthorized = true
+            await MainActor.run {
+                self.isAuthorized = true
+            }
         } catch {
             print("[HealthKit] Authorization failed: \(error)")
         }
