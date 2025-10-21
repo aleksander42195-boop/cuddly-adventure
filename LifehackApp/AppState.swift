@@ -22,7 +22,7 @@ final class AppState: ObservableObject {
     @Published var today: TodaySnapshot = .empty
 
     let haptics = HapticsManager.shared
-    let healthService = HealthKitService()
+    let healthService = HealthKitService.shared
     // Manual sync state (UI bindings)
     @Published var isSyncing: Bool = false
     

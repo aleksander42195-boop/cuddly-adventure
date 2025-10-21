@@ -86,10 +86,8 @@ final class HealthKitService: ObservableObject {
         let allReadTypes = readTypes
         
         try await store.requestAuthorization(toShare: writeTypes, read: allReadTypes)
-        
-        await MainActor.run {
-            self.checkAuthorizationStatus()
-        }
+        isAuthorized = true
+        checkAuthorizationStatus()
         await loadUserData()
     }
     
@@ -102,11 +100,12 @@ final class HealthKitService: ObservableObject {
             HKObjectType.categoryType(forIdentifier: .sleepAnalysis)!
         ]
         
-        let hasAuthorization = keyTypes.allSatisfy { type in
-            store.authorizationStatus(for: type) == .sharingAuthorized
+        let statuses = keyTypes.map { store.authorizationStatus(for: $0) }
+        if statuses.contains(.sharingDenied) {
+            isAuthorized = false
+        } else if statuses.contains(.sharingAuthorized) {
+            isAuthorized = true
         }
-        
-        isAuthorized = hasAuthorization
     }
     
     @MainActor
@@ -296,10 +295,9 @@ final class HealthKitService: ObservableObject {
     private func requestAuthorizationIfNeeded() async {
         guard HKHealthStore.isHealthDataAvailable() else { return }
         do {
-            try await store.requestAuthorization(toShare: [], read: readTypes)
-            await MainActor.run {
-                self.isAuthorized = true
-            }
+            try await store.requestAuthorization(toShare: writeTypes, read: readTypes)
+            isAuthorized = true
+            checkAuthorizationStatus()
         } catch {
             print("[HealthKit] Authorization failed: \(error)")
         }
