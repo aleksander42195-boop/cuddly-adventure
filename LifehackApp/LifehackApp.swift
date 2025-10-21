@@ -10,6 +10,7 @@ struct LifehackApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var coachEngineManager = CoachEngineManager()
     @Environment(\.scenePhase) private var scenePhase
+    @State private var showLaunchScreen = true
     
     init() {
         // Initialize app lifecycle management directly
@@ -19,13 +20,29 @@ struct LifehackApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootTabView()
-                .environmentObject(appState)
-                .environmentObject(coachEngineManager)
-                .onAppear {
-                    AppTheme.configureGlobal()
-                    AppBootstrap.configureNotifications()
+            ZStack {
+                RootTabView()
+                    .environmentObject(appState)
+                    .environmentObject(coachEngineManager)
+                    .onAppear {
+                        AppTheme.configureGlobal()
+                        AppBootstrap.configureNotifications()
+                    }
+                
+                if showLaunchScreen {
+                    LaunchScreenView()
+                        .transition(.opacity)
+                        .zIndex(1)
                 }
+            }
+            .onAppear {
+                // Show launch screen for 2.5 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                    withAnimation(.easeOut(duration: 0.5)) {
+                        showLaunchScreen = false
+                    }
+                }
+            }
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhaseChange(from: oldPhase, to: newPhase)
