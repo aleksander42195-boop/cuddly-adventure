@@ -13,6 +13,10 @@ struct AdvancedStudyCard: View {
     
     private let timer = Timer.publish(every: 4, on: .main, in: .common).autoconnect()
     
+    private var sourceBadgeText: String {
+        study?.sourceBadgeLabel ?? "Peer-reviewed"
+    }
+
     private var categoryColor: Color {
         guard let study = study else { return .blue }
         
@@ -114,9 +118,10 @@ struct AdvancedStudyCard: View {
                 }
                 
                 HStack(spacing: 8) {
-                    Label("PubMed Verified", systemImage: "checkmark.seal.fill")
+                    Label(sourceBadgeText, systemImage: "checkmark.seal.fill")
                         .font(.caption2)
                         .foregroundColor(.green)
+                        .accessibilityLabel(sourceBadgeText)
                     
                     Spacer()
                     
@@ -287,7 +292,7 @@ struct AdvancedStudyCard: View {
             
             // Study source info
             HStack {
-                Text("Source: PubMed Database")
+                Text("Source: \(study.sourceDescription)")
                     .font(.caption2)
                     .foregroundColor(.white.opacity(0.5))
                 

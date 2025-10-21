@@ -206,10 +206,10 @@ struct TodayView: View {
                         Text("Study of the day")
                             .font(.headline)
                         Spacer()
-                        Label("Verified", systemImage: "checkmark.seal.fill")
+                        Label(studyOfTheDay?.sourceBadgeLabel ?? "Peer-reviewed", systemImage: "checkmark.seal.fill")
                             .font(.caption)
                             .foregroundStyle(.green)
-                            .accessibilityLabel("Verified from PubMed")
+                            .accessibilityLabel(studyOfTheDay?.sourceBadgeLabel ?? "Peer-reviewed")
                     }
 
                     Group {
@@ -224,6 +224,9 @@ struct TodayView: View {
                                 Text("• \(s.takeaways[i])")
                                     .font(.caption)
                             }
+                            Text("Source: \(s.sourceDescription)")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
                         } else {
                             HStack { ProgressView().scaleEffect(0.8); Text("Loading...").font(.caption).foregroundStyle(.secondary) }
                         }
