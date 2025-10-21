@@ -87,7 +87,9 @@ final class HealthKitService: ObservableObject {
         
         try await store.requestAuthorization(toShare: writeTypes, read: allReadTypes)
         
-        await checkAuthorizationStatus()
+        await MainActor.run {
+            self.checkAuthorizationStatus()
+        }
         await loadUserData()
     }
     

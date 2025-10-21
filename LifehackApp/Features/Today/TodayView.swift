@@ -93,11 +93,14 @@ struct TodayView: View {
         }
         .refreshable {
             await app.refreshFromHealthIfAvailable()
-            studyOfTheDay = StudyRecommender.shared.selectStudy(for: app.today)
-            await loadActivityData()
+            async let activity: Void = loadActivityData()
+            await reloadStudy(force: true)
+            await activity
         }
         .task {
-            await loadActivityData()
+            async let activity: Void = loadActivityData()
+            await reloadStudy(force: false)
+            await activity
         }
         .background(AppTheme.background.ignoresSafeArea())
         .navigationTitle("Today")
